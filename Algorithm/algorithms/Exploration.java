@@ -17,13 +17,13 @@ public class Exploration {
 	private final int coverageLimit;
 	private final int timeLimit;
 	private int areaExplored;
-	private long startT;
-	private long endT;
+	private long startTime;
+	private long endTime;
 	public static int prevCalibrateTurns;
 	private boolean caliMode;
 	private int caliLimit = 6;
 	public static boolean overwritten = false;
-	public static boolean expEnded = false;
+	public boolean expEnded = false;
 	private static int RFCount = 0;
 
 	// Constructor for real run
@@ -68,190 +68,205 @@ public class Exploration {
 		this.areaExplored = areaExplored;
 	}
 
-	public long getStartT() {
-		return this.startT;
+	public long getStartTime() {
+		return this.startTime;
 	}
 
-	public void setStartT(long startT) {
-		this.startT = startT;
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
 	}
 
-	public long getEndT() {
-		return this.endT;
+	public long getEndTime() {
+		return this.endTime;
 	}
 
-	public void setEndT(long endT) {
-		this.endT = endT;
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
 	}
 
 	public int getPrevCalibrateTurns() {
-		return this.prevCalibrateTurns;
+		return prevCalibrateTurns;
 	}
 
 	public void setPrevCalibrateTurns(int numTurns) {
-		this.prevCalibrateTurns = numTurns;
+		prevCalibrateTurns = numTurns;
 	}
 
 	public void run() {
 		if (this.robot.isRealRobot()) {
 			System.out.println("Start calibration....");
-			this._initialCalibration();
+			this.initialCalibration();
 
 			while (true) {
+				// wating for android to send the start exploration message
 				System.out.println("Waiting for EX_START message from Android....");
 				String msg = CommunicationManager.getCommMgr().receiveMsg();
 				if (msg != null && msg.split(CommunicationManager.SEPARATOR)[0].equals(CommunicationManager.EX_START))
 					break;
 			}
+		}
+		this.startTime = System.currentTimeMillis();
+		this.endTime = this.startTime + (timeLimit * 1000);
 
-			System.out.println("Start exploration....");
-
-			this.startT = System.currentTimeMillis();
-			this.endT = this.startT + (timeLimit * 1000);
-
-		} else {
-			System.out.println("Start exploration....");
-
-			this.startT = System.currentTimeMillis();
-			this.endT = this.startT + (timeLimit * 1000);
+		// send start command
+		System.out.println("Start exploration....");
+		if (this.robot.isRealRobot()) {
+			CommunicationManager.getCommMgr().sendMsg("S", CommunicationManager.ROBOT_START);
 		}
 
-		CommunicationManager.getCommMgr().sendMsg("S", CommunicationManager.ROBOT_START);
+		// sense the environment
 		robotSenseAndMapRepaint();
-
 		this.areaExplored = this.exploredMap.calAreaExplored();
 		System.out.println("Explored Area: " + areaExplored);
 		System.out.println("Starting position: " + this.robot.getRow() + ", " + this.robot.getCol());
 
-		_explore();
+		explore();
 	}
 
 	private void robotSenseAndMapRepaint() {
+		// update the sensor direction
 		this.robot.updateSensorsDirections();
 
+		// sense the update the explored map
 		if (this.robot.isRealRobot()) this.robot.sense(this.exploredMap);
 		else this.robot.simulateSense(this.exploredMap, this.actualMap);
 
+		// TODO: why is areaExplored zero? where it is initialized
 		double areaCoveredPc = (new Double(this.areaExplored) / MapConst.NUM_CELLS) * 100;
 		String areaCoveredPcStr = String.format("%.2f %%", areaCoveredPc);
 		Simulator.areaCoveredLbl.setText(areaCoveredPcStr);
 
+		// repaint the map
 		this.exploredMap.repaint();
 	}
 
-	private void _explore() {
+	private void explore() {
 		do {
-			_nextMove();
+			// move the robot
+			nextMove();
 
+			// calculate area explored
 			this.areaExplored = this.exploredMap.calAreaExplored();
 			System.out.println("Area explored: " + this.areaExplored);
 
-			// termination condition
+			// terminate when the robot is back to the start
+			// and (area explored is more than 60% or 90% percent of the time is used)
 			if ((this.robot.getRow() == MapConst.START_ROW && this.robot.getCol() == MapConst.START_COL)
 					&& ((new Double(this.areaExplored) / MapConst.NUM_CELLS) * 100 > 60)
-					|| (System.currentTimeMillis() > (this.endT - 0.1 * this.timeLimit * 1000))) {
+					|| (System.currentTimeMillis() > (this.endTime - 0.1 * this.timeLimit * 1000))) {
 				break;
 			}
+		} while (this.areaExplored < this.coverageLimit && System.currentTimeMillis() < this.endTime);
 
-		} while (this.areaExplored < this.coverageLimit && System.currentTimeMillis() < this.endT);
-
-		// explore unexplored cells
+		// explore unexplored cells when the areaExplored is smaller than 99% of the map
+		// and there is still more than 15% of the time left until endTime
+		// TODO: no need to explore the whole map?
 		boolean state = true;
-		while (state && this.areaExplored < this.coverageLimit * 0.99 && System.currentTimeMillis() < (this.endT - 0.15 * this.timeLimit * 1000)) {
-			state = _exploreUnexplored();
+		while (state && this.areaExplored < this.coverageLimit * 0.99 && System.currentTimeMillis() < (this.endTime - 0.15 * this.timeLimit * 1000)) {
+			state = exploreUnexplored();
 			this.areaExplored = this.exploredMap.calAreaExplored();
 			System.out.println("Area explored: " + this.areaExplored);
 		}
 
+		// go back to start
 		if (this.robot.isRealRobot()
-				|| (!this.robot.isRealRobot() && this.areaExplored <= this.coverageLimit && System.currentTimeMillis() < (this.endT - 0.1 * this.timeLimit * 1000))) {
-			_goToStart();
-        	/*do {
-        		if (this.robot.getRow() == MapConst.START_ROW && this.robot.getCol() == MapConst.START_COL) 
-        			break;
-        		_nextMove();
-        	} while (true);*/
+				|| (!this.robot.isRealRobot() && this.areaExplored <= this.coverageLimit && System.currentTimeMillis() < (this.endTime - 0.1 * this.timeLimit * 1000))) {
+			goToStart();
 		}
 	}
 
-	private void _nextMove() {
+	private void nextMove() {
 		int r = this.robot.getRow();
 		int c = this.robot.getCol();
-		if (_isRightFree(this.robot.getRow(), this.robot.getCol()) && _isLeftFree(this.robot.getRow(), this.robot.getCol()) &&
+
+		if (isRightFree(r, c) && isLeftFree(r, c) &&
 				(this.robot.getDir().equals(RobotConst.DIRECTION.NORTH) || this.robot.getDir().equals(RobotConst.DIRECTION.SOUTH)) &&
 				overwritten) {
-			_moveRobot(RobotConst.MOVE.TURN_LEFT);
-			if (_isFrontFree(this.robot.getRow(), this.robot.getCol())) {
-				_moveRobot(RobotConst.MOVE.FORWARD);
+			// TODO: what does overwritten mean here?
+			// the robot must be in vertical direction and have nothing blocking on the left and right
+			// the cell on the left and right must be explored, not an obstacle and not a virutla wall
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
+
+			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+				moveRobot(RobotConst.MOVE.FORWARD);
 			}
+
+			// TODO: what does RF mean?
 			RFCount = 0;
 		} else if (RFCount > 4) {
+			// TODO: why compare row index with number of columns?
 			if (this.robot.getRow() < MapConst.NUM_COLS / 2)
-				_turnRobot(RobotConst.DIRECTION.EAST);
+				turnRobot(RobotConst.DIRECTION.EAST);
 			else
-				_turnRobot(RobotConst.DIRECTION.WEST);
-			while (_isFrontFree(this.robot.getRow(), this.robot.getCol())) {
-				_moveRobot(RobotConst.MOVE.FORWARD);
+				turnRobot(RobotConst.DIRECTION.WEST);
+
+			// keep moving forward
+			while (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+				moveRobot(RobotConst.MOVE.FORWARD);
 			}
-//            if (this.robot.getRow() < MapConst.NUM_COLS / 2)
-//                _turnRobot(RobotConst.DIRECTION.SOUTH);
-//            else
-//                _turnRobot(RobotConst.DIRECTION.NORTH);
-//            while (_isFrontFree(this.robot.getRow(), this.robot.getCol())) {
-//                _moveRobot(RobotConst.MOVE.FORWARD);
-//            }
-			_turnRobot(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()));
+
+			turnRobot(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()));
 			RFCount = 0;
-		} else if (_isRightFree(this.robot.getRow(), this.robot.getCol())) { // turn right and move forward
-			_moveRobot(RobotConst.MOVE.TURN_RIGHT);
-			if (_isFrontFree(this.robot.getRow(), this.robot.getCol())) {
-				_moveRobot(RobotConst.MOVE.FORWARD);
+		} else if (isRightFree(this.robot.getRow(), this.robot.getCol())) {
+			// turn right and move forward
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
+			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+				moveRobot(RobotConst.MOVE.FORWARD);
 				RFCount++;
 			}
-		} else if (_isFrontFree(this.robot.getRow(), this.robot.getCol())) { // move forward
-			_moveRobot(RobotConst.MOVE.FORWARD);
+		} else if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+			// move forward
+			moveRobot(RobotConst.MOVE.FORWARD);
 			RFCount = 0;
-		} else if (_isLeftFree(this.robot.getRow(), this.robot.getCol())) { // turn left and move forward
-			_moveRobot(RobotConst.MOVE.TURN_LEFT);
-			if (_isFrontFree(this.robot.getRow(), this.robot.getCol())) {
-				_moveRobot(RobotConst.MOVE.FORWARD);
+		} else if (isLeftFree(this.robot.getRow(), this.robot.getCol())) {
+			// turn left and move forward
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+				moveRobot(RobotConst.MOVE.FORWARD);
 			}
 			RFCount = 0;
-		} else { // u turn
-			_moveRobot(RobotConst.MOVE.TURN_LEFT);
-			_moveRobot(RobotConst.MOVE.TURN_LEFT);
+		} else {
+			// u turn
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
 			RFCount = 0;
 		}
 		overwritten = false;
 
 	}
 
-	private void _moveRobot(RobotConst.MOVE m) {
+	private void moveRobot(RobotConst.MOVE m) {
+		// move the robot
 		this.robot.move(m, this.exploredMap);
+
+		// if it is to calicate, then wait
 		if (m == RobotConst.MOVE.CALIBRATE)
-			this._waitCali();
+			this.waitCali();
+
+		// sense and re-render on the map
 		this.exploredMap.repaint();
 		robotSenseAndMapRepaint();
 
+		// calibrate after movement
 		if (this.robot.isRealRobot() && !this.caliMode && !this.expEnded) {
-
 			this.caliMode = true;
-//            if (_canCalibrate(this.robot.getDir()) && (this.prevCalibrateTurns + 2 >= this.caliLimit)) {
-			if (_canCalibrate(this.robot.getDir())) {
-				if (this.prevCalibrateTurns >= 3 &&
-						!(this._canCalibrate(RobotConst.DIRECTION.getNextClk(this.robot.getDir())) &&
-								this._canCalibrate(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()))))
-					// if the robot is now at a corner, turn and calibrate too. This helps to ensure the robot's orientation
-					// the threshold of 3 is to prevent the bot from calibrating too much
-					this._turnAndCalibrate();
-				this._moveRobot(RobotConst.MOVE.CALIBRATE);
-				this.prevCalibrateTurns = 0;
+
+			if (canCalibrate(this.robot.getDir())) {
+				// if the robot is now at a corner, turn and calibrate too. This helps to ensure the robot's orientation
+				// the threshold of 3 is to prevent the bot from calibrating too much
+				if (prevCalibrateTurns >= 3 &&
+						!(this.canCalibrate(RobotConst.DIRECTION.getNextClk(this.robot.getDir())) &&
+								this.canCalibrate(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()))))
+					this.turnAndCalibrate();
+
+				this.moveRobot(RobotConst.MOVE.CALIBRATE);
+				prevCalibrateTurns = 0;
 			} else {
-				this.prevCalibrateTurns++;
+				prevCalibrateTurns++;
 				// if never calibrate for more than or equals to caliLimit steps
 				// shall force the robot to calibrate
-				if (this.prevCalibrateTurns >= this.caliLimit) {
-					this._turnAndCalibrate();
+				if (prevCalibrateTurns >= this.caliLimit) {
+					this.turnAndCalibrate();
 				}
 			}
 
@@ -259,20 +274,24 @@ public class Exploration {
 		}
 	}
 
-	private void _turnAndCalibrate() {
+	private void turnAndCalibrate() {
 		RobotConst.DIRECTION targetDir;
 		RobotConst.DIRECTION curDir;
-		targetDir = _getCalibrateDir();
+		targetDir = getCalibrateDir();
+
+		// if can calibrate in the next clockwise or
+		// anticlockwise direction, turn to that direction
+		// and calibrate and then turn back
 		if (targetDir != null) {
-			this.prevCalibrateTurns = 0;
+			prevCalibrateTurns = 0;
 			curDir = this.robot.getDir();
-			_turnRobot(targetDir);
-			_moveRobot(RobotConst.MOVE.CALIBRATE);
-			_turnRobot(curDir);
+			turnRobot(targetDir);
+			moveRobot(RobotConst.MOVE.CALIBRATE);
+			turnRobot(curDir);
 		}
 	}
 
-	private void _waitCali() {
+	private void waitCali() {
 		while (true) {
 			if (CommunicationManager.getCommMgr().receiveMsg().split(CommunicationManager.SEPARATOR)[0].equals(CommunicationManager.C_DONE)) {
 				break;
@@ -280,11 +299,12 @@ public class Exploration {
 		}
 	}
 
-	private boolean _canCalibrate(RobotConst.DIRECTION targetDir) {
+	private boolean canCalibrate(RobotConst.DIRECTION targetDir) {
 		int r = this.robot.getRow();
 		int c = this.robot.getCol();
 
 		// using the 3 front SR sensors to do the calibration
+		// TODO: why only calibrate when these conditions are met?
 		switch (targetDir) {
 			case NORTH:
 				return this.exploredMap.isObstacleOrWall(r + 2, c - 1)
@@ -306,119 +326,119 @@ public class Exploration {
 		return false;
 	}
 
-	private RobotConst.DIRECTION _getCalibrateDir() {
+	private RobotConst.DIRECTION getCalibrateDir() {
 		RobotConst.DIRECTION curDir = this.robot.getDir();
 		RobotConst.DIRECTION targetDir;
 
 		targetDir = RobotConst.DIRECTION.getNextAntiClk(curDir);
-		if (this._canCalibrate(targetDir)) return targetDir;
+		if (this.canCalibrate(targetDir)) return targetDir;
 
 		targetDir = RobotConst.DIRECTION.getNextClk(curDir);
-		if (this._canCalibrate(targetDir)) return targetDir;
+		if (this.canCalibrate(targetDir)) return targetDir;
 
 		return null;
 	}
 
-	private void _turnRobot(RobotConst.DIRECTION targetDir) {
+	private void turnRobot(RobotConst.DIRECTION targetDir) {
 		int numMovesNeeded = Math.abs(this.robot.getDir().ordinal() - targetDir.ordinal());
 		if (numMovesNeeded == 0) return;
 		if (numMovesNeeded > 2) numMovesNeeded = numMovesNeeded % 2;
 
 		if (numMovesNeeded == 1) {
 			if (RobotConst.DIRECTION.getNextClk(this.robot.getDir()) == targetDir)
-				_moveRobot(RobotConst.MOVE.TURN_RIGHT);
+				moveRobot(RobotConst.MOVE.TURN_RIGHT);
 			else
-				_moveRobot(RobotConst.MOVE.TURN_LEFT);
+				moveRobot(RobotConst.MOVE.TURN_LEFT);
 		} else {
-			_moveRobot(RobotConst.MOVE.TURN_RIGHT);
-			_moveRobot(RobotConst.MOVE.TURN_RIGHT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
 		}
 	}
 
-	private boolean _isRightFree(int r, int c) {
+	private boolean isRightFree(int r, int c) {
 		switch (this.robot.getDir()) {
 			case NORTH:
-				return _isEastFree(r, c);
+				return isEastFree(r, c);
 			case EAST:
-				return _isSouthFree(r, c);
+				return isSouthFree(r, c);
 			case SOUTH:
-				return _isWestFree(r, c);
+				return isWestFree(r, c);
 			case WEST:
-				return _isNorthFree(r, c);
+				return isNorthFree(r, c);
 		}
 
 		return false;
 	}
 
-	private boolean _isLeftFree(int r, int c) {
+	private boolean isLeftFree(int r, int c) {
 		switch (this.robot.getDir()) {
 			case NORTH:
-				return _isWestFree(r, c);
+				return isWestFree(r, c);
 			case EAST:
-				return _isNorthFree(r, c);
+				return isNorthFree(r, c);
 			case SOUTH:
-				return _isEastFree(r, c);
+				return isEastFree(r, c);
 			case WEST:
-				return _isSouthFree(r, c);
+				return isSouthFree(r, c);
 		}
 
 		return false;
 	}
 
-	private boolean _isFrontFree(int r, int c) {
+	private boolean isFrontFree(int r, int c) {
 		switch (this.robot.getDir()) {
 			case NORTH:
-				return _isNorthFree(r, c);
+				return isNorthFree(r, c);
 			case EAST:
-				return _isEastFree(r, c);
+				return isEastFree(r, c);
 			case SOUTH:
-				return _isSouthFree(r, c);
+				return isSouthFree(r, c);
 			case WEST:
-				return _isWestFree(r, c);
+				return isWestFree(r, c);
 		}
 
 		return false;
 	}
 
-	private boolean _isNorthFree(int r, int c) {
-		return _isExploredAndNotObstacle(r + 1, c - 1)
-				&& _isExploredAndFree(r + 1, c)
-				&& _isExploredAndNotObstacle(r + 1, c + 1);
+	private boolean isNorthFree(int r, int c) {
+		return isExploredAndNotObstacle(r + 1, c - 1)
+				&& isExploredAndFree(r + 1, c)
+				&& isExploredAndNotObstacle(r + 1, c + 1);
 	}
 
-	private boolean _isEastFree(int r, int c) {
-		return _isExploredAndNotObstacle(r + 1, c + 1)
-				&& _isExploredAndFree(r, c + 1)
-				&& _isExploredAndNotObstacle(r - 1, c + 1);
+	private boolean isEastFree(int r, int c) {
+		return isExploredAndNotObstacle(r + 1, c + 1)
+				&& isExploredAndFree(r, c + 1)
+				&& isExploredAndNotObstacle(r - 1, c + 1);
 	}
 
-	private boolean _isSouthFree(int r, int c) {
-		return _isExploredAndNotObstacle(r - 1, c - 1)
-				&& _isExploredAndFree(r - 1, c)
-				&& _isExploredAndNotObstacle(r - 1, c + 1);
+	private boolean isSouthFree(int r, int c) {
+		return isExploredAndNotObstacle(r - 1, c - 1)
+				&& isExploredAndFree(r - 1, c)
+				&& isExploredAndNotObstacle(r - 1, c + 1);
 	}
 
-	private boolean _isWestFree(int r, int c) {
-		return _isExploredAndNotObstacle(r + 1, c - 1)
-				&& _isExploredAndFree(r, c - 1)
-				&& _isExploredAndNotObstacle(r - 1, c - 1);
+	private boolean isWestFree(int r, int c) {
+		return isExploredAndNotObstacle(r + 1, c - 1)
+				&& isExploredAndFree(r, c - 1)
+				&& isExploredAndNotObstacle(r - 1, c - 1);
 	}
 
-	private boolean _isExploredAndNotObstacle(int r, int c) {
+	private boolean isExploredAndNotObstacle(int r, int c) {
 		if (!this.exploredMap.checkValidCoordinates(r, c)) return false;
-		Cell cell = this.exploredMap.getArena()[r][c];
 
+		Cell cell = this.exploredMap.getArena()[r][c];
 		return cell.isExplored() && !cell.isObstacle();
 	}
 
-	private boolean _isExploredAndFree(int r, int c) {
+	private boolean isExploredAndFree(int r, int c) {
 		if (!this.exploredMap.checkValidCoordinates(r, c)) return false;
-		Cell cell = this.exploredMap.getArena()[r][c];
 
+		Cell cell = this.exploredMap.getArena()[r][c];
 		return cell.isExplored() && !cell.isObstacle() && !cell.isVirtualWall();
 	}
 
-	private boolean _exploreUnexplored() {
+	private boolean exploreUnexplored() {
 		int targetR = 1, targetC = 1;
 		Cell cell;
 		boolean flag = false;
@@ -432,7 +452,7 @@ public class Exploration {
 						// assign target coord as the coord of an explored cell near to this unexplored cell
 						for (int i = -2; i < 3; i += 2) {
 							for (int j = -2; j < 3; j += 2) {
-								if (_isExploredAndFree(cell.getRow() + i, cell.getCol() + j)) {
+								if (isExploredAndFree(cell.getRow() + i, cell.getCol() + j)) {
 									targetR = cell.getRow() + i;
 									targetC = cell.getCol() + j;
 									if (targetR != this.robot.getRow() || targetC != this.robot.getCol()) {
@@ -450,7 +470,7 @@ public class Exploration {
 						// assign target coord as the coord of an explored cell near to this unexplored cell
 						for (int i = -1; i < 2; i++) {
 							for (int j = -1; j < 2; j++) {
-								if (_isExploredAndFree(cell.getRow() + i, cell.getCol() + j)) {
+								if (isExploredAndFree(cell.getRow() + i, cell.getCol() + j)) {
 									targetR = cell.getRow() + i;
 									targetC = cell.getCol() + j;
 									if (targetR != this.robot.getRow() || targetC != this.robot.getCol()) {
@@ -491,7 +511,7 @@ public class Exploration {
 		return true;
 	}
 
-	private void _goToStart() {
+	private void goToStart() {
 		System.out.println("Going back to the start zone....");
 		ArrayList<RobotConst.MOVE> moves;
 
@@ -514,33 +534,33 @@ public class Exploration {
 		this.areaExplored = this.exploredMap.calAreaExplored();
 		System.out.printf("Achieved %.2f%% Coverage", (this.areaExplored / 300.0) * 100.0);
 		System.out.println(", " + this.areaExplored + " Cells");
-		System.out.println("Time taken: " + (System.currentTimeMillis() - this.startT) / 1000 + "s");
+		System.out.println("Time taken: " + (System.currentTimeMillis() - this.startTime) / 1000 + "s");
 
 		// Calibrate
 		if (robot.isRealRobot()) {
 			this.expEnded = true;
-			this._finalCalibration();
+			this.finalCalibration();
 		}
 
-		_turnRobot(RobotConst.DIRECTION.NORTH);
+		turnRobot(RobotConst.DIRECTION.NORTH);
 	}
 
-	private void _initialCalibration() {
+	private void initialCalibration() {
 		this.robot.move(RobotConst.MOVE.TURN_LEFT, false, this.exploredMap);
 		CommunicationManager.getCommMgr().receiveMsg();
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-		this._waitCali();
+		this.waitCali();
 		CommunicationManager.getCommMgr().receiveMsg();
 		this.robot.move(RobotConst.MOVE.TURN_LEFT, false, this.exploredMap);
 		CommunicationManager.getCommMgr().receiveMsg();
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-		this._waitCali();
+		this.waitCali();
 		CommunicationManager.getCommMgr().receiveMsg();
 		this.robot.move(RobotConst.MOVE.TURN_LEFT, false, this.exploredMap);
 	}
 
-	private void _finalCalibration() {
-		if (Exploration.expEnded)
+	private void finalCalibration() {
+		if (this.expEnded)
 			CommunicationManager.getCommMgr().sendMsg("", CommunicationManager.EX_DONE);
 		String msg;
 		while (true) {
@@ -550,19 +570,19 @@ public class Exploration {
 				break;
 			}
 		}
-		_turnRobot(RobotConst.DIRECTION.WEST);
+		turnRobot(RobotConst.DIRECTION.WEST);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-		this._waitCali();
+		this.waitCali();
 		CommunicationManager.getCommMgr().receiveMsg();
 
-		_turnRobot(RobotConst.DIRECTION.SOUTH);
+		turnRobot(RobotConst.DIRECTION.SOUTH);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-		this._waitCali();
+		this.waitCali();
 		CommunicationManager.getCommMgr().receiveMsg();
 
-		_turnRobot(RobotConst.DIRECTION.WEST);
+		turnRobot(RobotConst.DIRECTION.WEST);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-		this._waitCali();
+		this.waitCali();
 		CommunicationManager.getCommMgr().receiveMsg();
 	}
 }

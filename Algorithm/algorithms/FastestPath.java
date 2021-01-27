@@ -31,21 +31,21 @@ public class FastestPath {
 		this.exploredMap = exploredMap;
 		this.robot = robot;
 		this.actualMap = null;
-		_initialise();
+		initialise();
 	}
 
 	public FastestPath(Map exploredMap, Robot robot, Map actualMap) {
 		this.exploredMap = exploredMap;
 		this.robot = robot;
 		this.actualMap = actualMap;
-		_initialise();
+		initialise();
 	}
 
 	public void setExMode(Exploration exMode) {
 		this.exMode = exMode;
 	}
 
-	private void _initialise() {
+	private void initialise() {
 		this.toVisit = new ArrayList<>();
 		this.visited = new ArrayList<>();
 		this.parents = new HashMap<>();
@@ -59,7 +59,7 @@ public class FastestPath {
 				// initialise all costs of free cells to 0
 				// and costs of obstacle cells to infinity
 				// will be updated to correct values during the run
-				gCosts[r][c] = _isExploredAndFree(r, c) ? 0 : RobotConst.INF_COST;
+				gCosts[r][c] = isExploredAndFree(r, c) ? 0 : RobotConst.INF_COST;
 			}
 		}
 
@@ -71,78 +71,77 @@ public class FastestPath {
 		this.loopCnt = 0;
 	}
 
-	private boolean _isExploredAndFree(int r, int c) {
+	private boolean isExploredAndFree(int r, int c) {
 		if (!this.exploredMap.checkValidCoordinates(r, c)) return false;
 		Cell cell = this.exploredMap.getArena()[r][c];
 
 		return cell.isExplored() && !cell.isObstacle() && !cell.isVirtualWall();
 	}
 
-	/**
-	 * Compute the fastest path
-	 *
-	 * @param targetR
-	 * @param targetC
-	 * @return String object with movement instructions
-	 */
 	public ArrayList<RobotConst.MOVE> computeFastestPath(int targetR, int targetC) {
+		// declare vars and get target cell
 		Cell potentialCell;
 		Cell targetCell = this.exploredMap.getArena()[targetR][targetC];
 		int curR, curC;
 		double oldG, newG;
-
-		System.out.println("Computing the fastest path from " + this.curCell.getRow() + ", " + this.curCell.getCol() + " to " + targetR + ", " + targetC);
-
 		Stack<Cell> pathStack;
 		this.curDir = robot.getDir();
 
-		System.out.println("Start computing");
+
+		// compute fastest path
+		System.out.println("Computing the fastest path from " + this.curCell.getRow() + ", " + this.curCell.getCol() + " to " + targetR + ", " + targetC);
 		do {
 			this.loopCnt++;
 
 			// get the min cost cell
-			this.curCell = _getMinFCostCell(targetR, targetC);
+			this.curCell = getMinFCostCell(targetR, targetC);
+
+			// update the list
 			this.visited.add(curCell);
 			this.toVisit.remove(curCell);
 
 			// update the current direction of robot,
-			// which is equivalent to the direction of current from its parent
+			// which is equivalent to the direction of current cell from its parent
 			if (this.parents.containsKey(this.curCell))
-				this.curDir = _getTargetDir(this.parents.get(curCell), this.curCell);
+				this.curDir = getTargetDir(this.parents.get(curCell), this.curCell);
 
 			// termination condition
 			if (this.visited.contains(targetCell)) {
 				System.out.println("Reached target. Fastest path found!");
-				pathStack = _getPath(targetR, targetC);
-				_printPathCoords(pathStack);
-				return _getPathMoves(pathStack, targetR, targetC);
+				pathStack = getPath(targetR, targetC);
+				printPathCoords(pathStack);
+				return getPathMoves(pathStack, targetR, targetC);
 			}
 
 			curR = this.curCell.getRow();
 			curC = this.curCell.getCol();
+
 			// top cell
 			potentialCell = this.exploredMap.getArena()[curR + 1][curC];
-			this.neighbours[0] = _isExploredAndFree(curR + 1, curC) ? potentialCell : null;
+			this.neighbours[0] = isExploredAndFree(curR + 1, curC) ? potentialCell : null;
 
 			// bottom cell
 			potentialCell = this.exploredMap.getArena()[curR - 1][curC];
-			this.neighbours[1] = _isExploredAndFree(curR - 1, curC) ? potentialCell : null;
+			this.neighbours[1] = isExploredAndFree(curR - 1, curC) ? potentialCell : null;
 
 			// left cell
 			potentialCell = this.exploredMap.getArena()[curR][curC - 1];
-			this.neighbours[2] = _isExploredAndFree(curR, curC - 1) ? potentialCell : null;
+			this.neighbours[2] = isExploredAndFree(curR, curC - 1) ? potentialCell : null;
 
 			// right cell
 			potentialCell = this.exploredMap.getArena()[curR][curC + 1];
-			this.neighbours[3] = _isExploredAndFree(curR, curC + 1) ? potentialCell : null;
+			this.neighbours[3] = isExploredAndFree(curR, curC + 1) ? potentialCell : null;
 
 			for (Cell cell : this.neighbours) {
 				if (cell != null) {
+					// skip if visited
 					if (this.visited.contains(cell)) continue;
 
-					newG = this.gCosts[this.curCell.getRow()][this.curCell.getCol()] + _calGCost(this.curCell, cell, this.curDir);
+					// calculate the new g cost for the neighbour
+					newG = this.gCosts[this.curCell.getRow()][this.curCell.getCol()] + calGCost(this.curCell, cell, this.curDir);
+
+					// update g cost if the cell is inside toVisit
 					if (this.toVisit.contains(cell)) {
-						//update gCost
 						oldG = this.gCosts[cell.getRow()][cell.getCol()];
 						if (newG < oldG) {
 							this.parents.put(cell, this.curCell);
@@ -161,7 +160,7 @@ public class FastestPath {
 		return null;
 	}
 
-	private Cell _getMinFCostCell(int targetR, int targetC) {
+	private Cell getMinFCostCell(int targetR, int targetC) {
 		double gCost;
 		double fCost;
 		double minCost = RobotConst.INF_COST;
@@ -169,7 +168,7 @@ public class FastestPath {
 
 		for (int i = this.toVisit.size() - 1; i >= 0; i--) {
 			gCost = gCosts[this.toVisit.get(i).getRow()][this.toVisit.get(i).getCol()];
-			fCost = gCost + _calHCost(this.toVisit.get(i), targetR, targetC);
+			fCost = gCost + calHCost(this.toVisit.get(i), targetR, targetC);
 
 			if (fCost < minCost) {
 				minCost = fCost;
@@ -180,7 +179,7 @@ public class FastestPath {
 		return minCostCell;
 	}
 
-	private double _calHCost(Cell cell, int targetR, int targetC) {
+	private double calHCost(Cell cell, int targetR, int targetC) {
 		double moveCost;
 		double turnCost = 0;
 		// heuristics cost is computed with estimated manhattan distance
@@ -189,12 +188,13 @@ public class FastestPath {
 
 		// turn cost here is an estimated cost as it only involves 1x turn cost
 		// and doesnt take into account the exact number of turns required
+		// TODO: is the value of this turn cost reasonable?
 		if (targetR != cell.getRow() || targetC != cell.getCol()) turnCost = RobotConst.T_COST;
 
 		return moveCost + turnCost;
 	}
 
-	private Stack<Cell> _getPath(int targetR, int targetC) {
+	private Stack<Cell> getPath(int targetR, int targetC) {
 		Stack<Cell> path = new Stack<>();
 		Cell cell = this.exploredMap.getArena()[targetR][targetC];
 
@@ -206,7 +206,7 @@ public class FastestPath {
 		return path;
 	}
 
-	private void _printPathCoords(Stack<Cell> pathStack) {
+	private void printPathCoords(Stack<Cell> pathStack) {
 		Stack<Cell> pathStackCopy = (Stack<Cell>) pathStack.clone();
 		Cell cell;
 
@@ -230,7 +230,7 @@ public class FastestPath {
 		System.out.println();
 	}
 
-	private ArrayList<RobotConst.MOVE> _getPathMoves(Stack<Cell> pathStack, int targetR, int targetC) {
+	private ArrayList<RobotConst.MOVE> getPathMoves(Stack<Cell> pathStack, int targetR, int targetC) {
 		StringBuilder movesStr = new StringBuilder();
 		ArrayList<RobotConst.MOVE> moves = new ArrayList<>();
 		Cell cell = pathStack.pop();
@@ -248,8 +248,8 @@ public class FastestPath {
 				cell = pathStack.pop();
 
 			simulatedRobotCell = this.exploredMap.getArena()[simulatedRobot.getRow()][simulatedRobot.getCol()];
-			targetDir = _getTargetDir(simulatedRobotCell, cell);
-			if (simulatedRobot.getDir() != targetDir) targetMove = _getTargetMove(simulatedRobot, targetDir);
+			targetDir = getTargetDir(simulatedRobotCell, cell);
+			if (simulatedRobot.getDir() != targetDir) targetMove = getTargetMove(simulatedRobot, targetDir);
 			else targetMove = RobotConst.MOVE.FORWARD;
 
 			simulatedRobot.move(targetMove, exploredMap);
@@ -262,7 +262,7 @@ public class FastestPath {
 		return moves;
 	}
 
-	private RobotConst.DIRECTION _getTargetDir(Cell fromCell, Cell toCell) {
+	private RobotConst.DIRECTION getTargetDir(Cell fromCell, Cell toCell) {
 		if (fromCell.getRow() < toCell.getRow()) return RobotConst.DIRECTION.NORTH;
 		else if (fromCell.getRow() > toCell.getRow()) return RobotConst.DIRECTION.SOUTH;
 		else {
@@ -273,7 +273,7 @@ public class FastestPath {
 		return this.robot.getDir();
 	}
 
-	private RobotConst.MOVE _getTargetMove(Robot robot, RobotConst.DIRECTION targetDir) {
+	private RobotConst.MOVE getTargetMove(Robot robot, RobotConst.DIRECTION targetDir) {
 		RobotConst.DIRECTION robotDir = robot.getDir();
 
 		switch (robotDir) {
@@ -317,20 +317,20 @@ public class FastestPath {
 		return RobotConst.MOVE.FORWARD;
 	}
 
-	private double _calGCost(Cell fromCell, Cell toCell, RobotConst.DIRECTION curDir) {
+	private double calGCost(Cell fromCell, Cell toCell, RobotConst.DIRECTION curDir) {
 		double moveCost = RobotConst.M_COST;
 		double turnCost;
 		RobotConst.DIRECTION targetDir;
 
-		targetDir = _getTargetDir(fromCell, toCell);
-		turnCost = _getTurnCost(curDir, targetDir);
+		targetDir = getTargetDir(fromCell, toCell);
+		turnCost = getTurnCost(curDir, targetDir);
 
 		// 1x movement cost as the neighbouring cell is only 1 move away
 		// turn cost is the exact number of turns required
 		return moveCost + turnCost;
 	}
 
-	private double _getTurnCost(RobotConst.DIRECTION curDir, RobotConst.DIRECTION targetDir) {
+	private double getTurnCost(RobotConst.DIRECTION curDir, RobotConst.DIRECTION targetDir) {
 		double turnCost = RobotConst.T_COST;
 		int numTurns = Math.abs(curDir.ordinal() - targetDir.ordinal());
 		if (numTurns > 2) numTurns %= 2; // only need to turn 2 times at most to get to another target direction
@@ -340,13 +340,15 @@ public class FastestPath {
 
 	public void executeMoves(ArrayList<RobotConst.MOVE> moves, Robot robot) {
 		System.out.println("Started fastest path!");
-//    	double timeElapsed;
+
 		if (!robot.isRealRobot()) {
+			// simulation mode
 			RobotConst.MOVE m;
 			for (int _m = 0; _m < moves.size(); _m++) {
 				m = moves.get(_m);
 				if (m == RobotConst.MOVE.FORWARD) {
-					if (!_canMoveForward(robot)) {
+					if (!canMoveForward(robot)) {
+						// TODO: should recompute fastest path?
 						System.out.println("Early termination of fastestpath algorithm");
 					}
 				}
@@ -354,16 +356,8 @@ public class FastestPath {
 				robot.move(m, this.exploredMap);
 				this.exploredMap.repaint();
 
-//                // if the robot has not explored all cells
-//                // try to explore more on its way on fastest path
-//                if (this.exploredMap.calAreaExplored() < 300) {
-//                    robot.updateSensorsDirections();
-//                    robot.simulateSense(this.exploredMap, this.actualMap);
-//                    this.exploredMap.repaint();
-//                }
-
 				// as there might be phantom blocks on fastest path
-				// better resense at every move
+				// better re-sense at every move
 				robot.updateSensorsDirections();
 				robot.simulateSense(this.exploredMap, this.actualMap);
 				this.exploredMap.repaint();
@@ -410,7 +404,7 @@ public class FastestPath {
 		}
 	}
 
-	private boolean _canMoveForward(Robot robot) {
+	private boolean canMoveForward(Robot robot) {
 		int r = robot.getRow();
 		int c = robot.getCol();
 

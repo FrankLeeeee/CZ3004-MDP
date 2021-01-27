@@ -179,11 +179,6 @@ public class Robot {
 			CommunicationManager.getCommMgr().sendMsg(RobotConst.MOVE.getMove(m) + "", CommunicationManager.INSTRUCTIONS);
 
 		System.out.println(this.getRow() + ", " + this.getCol() + " " + this.getDir());
-//		if (m != RobotConst.MOVE.CALIBRATE && sendMoveToAndroidFlag) {
-		//CommMgr.getCommMgr().sendMsg(this.row + CommMgr.SEPARATOR + this.col + CommMgr.SEPARATOR + RobotConst.DIRECTION.getD(this.dir), CommMgr.ROBOT_POS);
-
-		//sendDataToAndroid(exploredMap);
-//		}
 	}
 
 
@@ -261,7 +256,8 @@ public class Robot {
 
         /*String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
         CommMgr.getCommMgr().sendMsg(mapDescriptors[0] + CommMgr.SEPARATOR + mapDescriptors[1], CommMgr.MAP_STRINGS);*/
-		sendDataToAndroid(exploredMap);
+
+		// sendDataToAndroid(exploredMap);
 	}
 
 	public void sense(Map exploredMap) {

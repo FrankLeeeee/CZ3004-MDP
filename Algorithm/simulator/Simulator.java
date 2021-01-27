@@ -272,11 +272,10 @@ public class Simulator {
 			exploration.run();
 			String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
 			MapDescriptor.writeFile(mapDescriptors);
-			CommunicationManager.getCommMgr().sendMsg(mapDescriptors[0] + CommunicationManager.SEPARATOR + mapDescriptors[1], CommunicationManager.MAP_STRINGS);
 
 			if (realRun) {
+				CommunicationManager.getCommMgr().sendMsg(mapDescriptors[0] + CommunicationManager.SEPARATOR + mapDescriptors[1], CommunicationManager.MAP_STRINGS);
 				(new Fastest(exploration)).execute();
-
 			}
 			timer.stop();
 
