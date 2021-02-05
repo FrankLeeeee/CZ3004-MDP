@@ -132,6 +132,7 @@ public class Exploration {
 		else this.robot.simulateSense(this.exploredMap, this.actualMap);
 
 		// TODO: why is areaExplored zero? where it is initialized
+		// Where 
 		double areaCoveredPc = (new Double(this.areaExplored) / MapConst.NUM_CELLS) * 100;
 		String areaCoveredPcStr = String.format("%.2f %%", areaCoveredPc);
 		Simulator.areaCoveredLbl.setText(areaCoveredPcStr);
@@ -161,6 +162,7 @@ public class Exploration {
 		// explore unexplored cells when the areaExplored is smaller than 99% of the map
 		// and there is still more than 15% of the time left until endTime
 		// TODO: no need to explore the whole map?
+		// ANSWER: remove 0.99, run normally with different map
 		boolean state = true;
 		while (state && this.areaExplored < this.coverageLimit * 0.99 && System.currentTimeMillis() < (this.endTime - 0.15 * this.timeLimit * 1000)) {
 			state = exploreUnexplored();
@@ -192,6 +194,7 @@ public class Exploration {
 			}
 
 			// TODO: what does RF mean?
+			// ANSWER: only increment when turn right and move forward -> RF: Right Forward?
 			RFCount = 0;
 		} else if (RFCount > 4) {
 			// TODO: why compare row index with number of columns?

@@ -52,11 +52,14 @@ public class MapDescriptor {
 		String[] descriptor = new String[2];
 
 		// TODO: what is p1 and p2
+		// ANSWER: p1: explored or not cell? p2: obstacle or not?
 		StringBuilder p1Hex = new StringBuilder();
 		StringBuilder p1Bin = new StringBuilder();
 		StringBuilder p2Hex = new StringBuilder();
 		StringBuilder p2Bin = new StringBuilder();
-
+		
+		// TODO: why p1 set 11?
+		// robot X_offset  = 10, y_offset = 20
 		p1Bin.append("11");
 		for (Cell[] row : map.getArena()) {
 			for (Cell cell : row) {
