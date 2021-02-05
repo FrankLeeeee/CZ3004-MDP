@@ -52,7 +52,7 @@ public class MapDescriptor {
 		String[] descriptor = new String[2];
 
 		// TODO: what is p1 and p2
-		// ANSWER: p1: explored or not cell? p2: obstacle or not?
+		// DONE: p1: explored or not cell? p2: obstacle or not?
 		StringBuilder p1Hex = new StringBuilder();
 		StringBuilder p1Bin = new StringBuilder();
 		StringBuilder p2Hex = new StringBuilder();

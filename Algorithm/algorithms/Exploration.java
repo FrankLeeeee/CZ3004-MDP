@@ -132,7 +132,7 @@ public class Exploration {
 		else this.robot.simulateSense(this.exploredMap, this.actualMap);
 
 		// TODO: why is areaExplored zero? where it is initialized
-		// Where 
+		// DONE: areaExplored alr initialized before main call as it is private var of class
 		double areaCoveredPc = (new Double(this.areaExplored) / MapConst.NUM_CELLS) * 100;
 		String areaCoveredPcStr = String.format("%.2f %%", areaCoveredPc);
 		Simulator.areaCoveredLbl.setText(areaCoveredPcStr);
@@ -162,7 +162,7 @@ public class Exploration {
 		// explore unexplored cells when the areaExplored is smaller than 99% of the map
 		// and there is still more than 15% of the time left until endTime
 		// TODO: no need to explore the whole map?
-		// ANSWER: remove 0.99, run normally with different map
+		// DONE: remove 0.99, run normally with different map
 		boolean state = true;
 		while (state && this.areaExplored < this.coverageLimit * 0.99 && System.currentTimeMillis() < (this.endTime - 0.15 * this.timeLimit * 1000)) {
 			state = exploreUnexplored();
@@ -182,9 +182,11 @@ public class Exploration {
 		int c = this.robot.getCol();
 
 		if (isRightFree(r, c) && isLeftFree(r, c) &&
-				(this.robot.getDir().equals(RobotConst.DIRECTION.NORTH) || this.robot.getDir().equals(RobotConst.DIRECTION.SOUTH)) &&
-				overwritten) {
+				(this.robot.getDir().equals(RobotConst.DIRECTION.NORTH) || this.robot.getDir().equals(RobotConst.DIRECTION.SOUTH )&& overwritten)) {
 			// TODO: what does overwritten mean here?
+			// DONE: ?Cannot stop exploration if remove overwritten
+			// TODO: where set overwritten True? 
+			// DONE: in sensor
 			// the robot must be in vertical direction and have nothing blocking on the left and right
 			// the cell on the left and right must be explored, not an obstacle and not a virutla wall
 			moveRobot(RobotConst.MOVE.TURN_LEFT);
@@ -194,10 +196,11 @@ public class Exploration {
 			}
 
 			// TODO: what does RF mean?
-			// ANSWER: only increment when turn right and move forward -> RF: Right Forward?
+			// DONE: only increment when turn right and move forward -> RF: Right Forward?
 			RFCount = 0;
 		} else if (RFCount > 4) {
 			// TODO: why compare row index with number of columns?
+			// DONE: ?after go right and forward 4 times
 			if (this.robot.getRow() < MapConst.NUM_COLS / 2)
 				turnRobot(RobotConst.DIRECTION.EAST);
 			else

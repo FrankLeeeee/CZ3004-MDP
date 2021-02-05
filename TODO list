@@ -1,0 +1,10 @@
+TODO:
+1. TODO: is the value of this turn cost reasonable?
+2. TODO: should recompute fastest path?
+3. TODO: what does overwritten mean here?
+4. TODO: why compare row index with number of columns?
+5. TODO: why only calibrate when these conditions are met?
+6. TODO: why p1 set 11?
+
+Van do: 5, 6, and read through the Map Descriptor, write file
+You can do the remained ones.

@@ -1,7 +1,7 @@
 package utils;
 
 import java.io.*;
-import java.net.Socket;
+import java.net.Socket; //RPC with RPI
 import java.net.UnknownHostException;
 
 public class CommunicationManager {
