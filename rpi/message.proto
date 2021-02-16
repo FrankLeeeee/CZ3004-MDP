@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+message MoveRequest {
+  uint32 step = 1;
+}
+
+message MoveResponse {
+  bool status = 1;
+}
+
+message TurnRequest {
+  uint32 angle = 1;
+}
+
+message TurnResponse {
+  bool status = 1;
+}
+
+message MetricRequest {
+  // Sensor ID. Leave this field at default value (0) to fetch all metric data
+  uint32 id = 1;
+
+  // Period for getting metrics. This field is only for `StreamGetMetrics`.
+  uint32 period = 2;
+}
+
+message MetricResponse {
+  map<uint32, double> values = 1;
+}
+
+message PositionRequest {
+  // Period for getting position info. This field is only for `StreamGetMetrics`.
+  uint32 period = 1;
+}
+
+message PositionResponse {
+  uint32 x = 1;
+  uint32 y = 2;
+}
