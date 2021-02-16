@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+import "message.proto";
+
+service GRPCControlService {
+  rpc Forward(MoveRequest) returns (MoveResponse) {}
+
+  rpc Backward(MoveRequest) returns (MoveResponse) {}
+
+  rpc Left(MoveRequest) returns (MoveResponse) {}
+
+  rpc Right(MoveRequest) returns (MoveResponse) {}
+
+  rpc TurnClockwise(MoveRequest) returns (TurnResponse) {}
+
+  rpc TurnAntiClockwise(MoveRequest) returns (TurnResponse) {}
+}
+
+service GRPCDataService {
+  rpc GetMetrics(MetricRequest) returns (MetricResponse) {}
+
+  rpc StreamGetMetrics(stream MetricRequest) returns (stream MetricResponse) {}
+
+  rpc GetPosition(PositionRequest) returns (PositionResponse) {}
+
+  rpc StreamGetPosition(stream PositionRequest) returns (stream PositionResponse) {}
+}
