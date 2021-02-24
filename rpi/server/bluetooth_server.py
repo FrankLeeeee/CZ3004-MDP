@@ -24,7 +24,7 @@ class BluetoothServer(object):
 
     def __init__(self):
         self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self.server_sock.bind((BD_ADDRESS, PORT))
+        self.server_sock.bind(("", PORT))
         self.server_sock.listen(1)
 
         bluetooth.advertise_service(
@@ -58,22 +58,28 @@ class BluetoothServer(object):
         await self._loop.run_in_executor(self._executor, self.server_sock.close)
 
 
-server = BluetoothServer()
-_, client_info = server.accept()
-print('Waiting for connection on RFCOMM channel', PORT)
+async def test():
+    server = BluetoothServer()
 
-print('Accepted connection from', client_info)
+    print('Waiting for connection on RFCOMM channel', PORT)
+    _, client_info = await server.accept()
 
-try:
-    while True:
-        data = server.receive(1024)
-        if not data:
-            break
-        print('Received', data)
-except OSError:
-    pass
+    print('Accepted connection from', client_info)
 
-print('Disconnected.')
+    try:
+        while True:
+            data = await server.receive(1024)
+            if not data:
+                break
+            print('Received', data)
+    except OSError:
+        pass
 
-server.close()
-print('All done.')
+    print('Disconnected.')
+
+    await server.close()
+    print('All done.')
+
+
+if __name__ == '__main__':
+    asyncio.run(test())

@@ -7,6 +7,7 @@ fastapi==0.63.0
 h11==0.12.0
 idna==2.10
 picamera==1.13
+PyBluez==0.23
 pydantic==1.7.3
 python-dateutil==2.8.1
 python-multipart==0.0.5
