@@ -7,10 +7,20 @@ Date: 2/16/2021
 
 gRPC server for interfacing with the PC.
 """
+import argparse
 import asyncio
 import signal
+import time
+from concurrent import futures
+from typing import Dict, Type, Callable
 
 import grpc
+
+from config import GRPCServerConfig
+from core import grpc_service_pb2_grpc
+from core.grpc_service_pb2_grpc import add_GRPCControlServiceServicer_to_server
+from core.message_pb2 import MoveResponse, TurnResponse
+from utils import Logger
 
 
 class GRPCAioServer(object):
@@ -19,6 +29,8 @@ class GRPCAioServer(object):
         host (str): Host address. Default listening on [::].
         port (int): Binding port number. Default to value in `grpc_config.port`.
         thread_concurrency (int): Number of thread concurrency. Default to value in `grpc_config.thread_num`.
+        servicers: A dictionary of servicers for registrations. The key is servicer class, and the value is a
+            method defining how to add the service to the server.
     Attributes:
         server (grpc.aio.Server): gRPC Aio Server.
     References:
@@ -27,8 +39,7 @@ class GRPCAioServer(object):
 
     def __init__(
             self,
-            servicer_cls,
-            add_servicer_to_server_func,
+            servicers: Dict[Type, Callable],
             thread_concurrency,
             host='[::]',
             port=50051,
@@ -52,8 +63,11 @@ class GRPCAioServer(object):
             futures.ThreadPoolExecutor(max_workers=self.thread_concurrency),
             options=self.options,
         )
-        self.servicer = servicer_cls(*args, **kwargs)
-        add_servicer_to_server_func(self.servicer, self.server)
+        self.servicers = list()
+        for servicer, add_servicer_to_server_func in servicers.items():
+            servicer = servicer(*args, **kwargs)
+            self.servicers.append(servicer)
+            add_servicer_to_server_func(servicer, self.server)
         self.server.add_insecure_port(self.bind_address)
 
     async def start(self):
@@ -72,8 +86,6 @@ class GRPCAioServer(object):
         loop = asyncio.get_event_loop()
         self.logger.info(f'Receive exit signal {s.name}')
         await self.server.stop(1)
-        if hasattr(self.servicer, 'terminate'):
-            self.servicer.terminate()
 
         current_task = asyncio.current_task(loop=loop)
         tasks = list()
@@ -86,3 +98,89 @@ class GRPCAioServer(object):
         await asyncio.gather(*tasks, return_exceptions=True)
         loop.stop()
         self.logger.info('gRPC server stopped.')
+
+
+class ControlServicer(grpc_service_pb2_grpc.GRPCControlServiceServicer):
+
+    def __init__(self, host, config: GRPCServerConfig):
+        self.host = host
+        self.port = config.port
+        self._logger = Logger('Backend gRPC server')
+
+    def terminate(self):
+        # wait for its child servers to terminate if they also receive the signal
+        time.sleep(1)
+
+    @property
+    def url(self):
+        return f'{self.host}:{self.port}'
+
+    def Forward(self, request, context):
+        return MoveResponse(status=True)
+
+    def Backward(self, request, context):
+        return MoveResponse(status=True)
+
+    def Left(self, request, context):
+        return MoveResponse(status=True)
+
+    def Right(self, request, context):
+        return MoveResponse(status=True)
+
+    def TurnClockwise(self, request, context):
+        return TurnResponse(status=True)
+
+    def TurnAntiClockwise(self, request, context):
+        return TurnResponse(status=True)
+
+
+class BackendRPCServer(GRPCAioServer):
+    def __init__(self, host: str, config: GRPCServerConfig):
+        super().__init__(
+            servicers={
+                ControlServicer: add_GRPCControlServiceServicer_to_server,
+            },
+            thread_concurrency=config.thread_num,
+            port=config.port,
+            kwargs={
+                'host': host,
+                'config': config,
+            }
+        )
+
+
+def get_args():
+    parser = argparse.ArgumentParser(description='Model inference gRPC server.')
+    parser.add_argument('-t', '--thread-num', type=int, help='thread concurrency of each gRPC process')
+    parser.add_argument('--host', type=str, default='localhost', help='Host name or IP. Default to localhost.')
+    parser.add_argument('-p', '--port', type=int, help='gRPC bind port number.')
+    args = parser.parse_args()
+
+    return args
+
+
+async def runner():
+    await server.start()
+    await server.join()
+
+
+if __name__ == '__main__':
+    args_ = get_args()
+
+    update_config_data = {
+        'port': args_.port,
+        'thread_num': args_.thread_num,
+    }
+    config = GRPCServerConfig.parse_obj(
+        GRPCServerConfig.parse_obj(update_config_data).dict(exclude_none=True)
+    )
+
+    host_ = args_.host
+
+    print(f'Using configuration:\n{config}')
+
+    server = BackendRPCServer(host=host_, config=config)
+    loop = asyncio.get_event_loop()
+
+    loop.create_task(runner())
+    loop.run_forever()
