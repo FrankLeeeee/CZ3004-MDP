@@ -1,0 +1,36 @@
+syntax = "proto3";
+option java_package = "grpc";
+import "message.proto";
+
+
+service GRPCControlService {
+
+  rpc Forward(MoveRequest) returns (BinaryResponse) {}
+
+  rpc TurnClockwise(MoveRequest) returns (BinaryResponse) {}
+
+  rpc TurnAntiClockwise(MoveRequest) returns (BinaryResponse) {}
+
+  rpc Calibrate(EmptyRequest) returns (BinaryResponse) {}
+
+  rpc CanStartExp(EmptyRequest) returns (BinaryResponse) {}
+
+  rpc CanStartFP(EmptyRequest) returns (BinaryResponse) {}
+
+  rpc UpdateExpStatus(BinaryRequest) returns (BinaryResponse) {}
+
+  rpc UpdateFPStatus(BinaryRequest) returns (BinaryResponse) {}
+
+}
+
+service GRPCDataService {
+  rpc GetMetrics(MetricRequest) returns (MetricResponse) {}
+
+  rpc GetPosition(PositionRequest) returns (PositionResponse) {}
+
+  rpc GetSensorData(EmptyRequest) returns (SensorResponse) {}
+
+  rpc SendMapToAndroid(MapRequest) returns (BinaryResponse) {}
+
+  rpc GetWayPoint(EmptyRequest) returns (PositionResponse) {}
+}
