@@ -13,10 +13,3 @@ class CommandCode(Enum):
     GetMetrics = b'\x07'
     StreamGetMetrics = b'\x08'
     BroadCast = b'\xff'
-
-
-# Session
-SESSION_CODE_LENGTH = 1
-
-VERSION = 1
-HEADER_LENGTH = 6  # VERSION (1) + DATA LEN (4) + COMMAND CODE (1)
