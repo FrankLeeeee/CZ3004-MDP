@@ -12,6 +12,7 @@ Reference:
     * https://pyserial-asyncio.readthedocs.io/en/latest/shortintro.html
 """
 import asyncio
+import os
 from typing import Optional
 
 import serial_asyncio
@@ -74,9 +75,11 @@ class SerialAioTransport(object):
         return await self._queue.get()
 
     async def write(self, data: bytes):
-        # FIXME: self.transport.write not working for windows (nt)
-        # self.transport.write(data)
-        return await self._loop.run_in_executor(None, self.transport.serial.write, data)
+        # self.transport.write not working for windows (nt) FIXME: pyserial-asyncio v0.5
+        if os.name == "nt":
+            await self._loop.run_in_executor(None, self.transport.serial.write, data)
+        else:
+            self.transport.write(data)
 
     def close(self):
         self.transport.close()
