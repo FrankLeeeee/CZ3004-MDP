@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "core/message.proto";
-
 service GRPCControlService {
   rpc Forward(MoveRequest) returns (MoveResponse) {}
 
@@ -19,9 +17,40 @@ service GRPCControlService {
 service GRPCDataService {
   rpc GetMetrics(MetricRequest) returns (MetricResponse) {}
 
-  rpc StreamGetMetrics(stream MetricRequest) returns (stream MetricResponse) {}
+  rpc SetPosition(PositionRequest) returns (PositionResponse) {}
+}
 
-  rpc GetPosition(PositionRequest) returns (PositionResponse) {}
+message MoveRequest {
+  uint32 step = 1;
+}
 
-  rpc StreamGetPosition(stream PositionRequest) returns (stream PositionResponse) {}
+message MoveResponse {
+  bool status = 1;
+}
+
+message TurnRequest {
+  uint32 angle = 1;
+}
+
+message TurnResponse {
+  bool status = 1;
+}
+
+message MetricRequest {
+  // Sensor ID. Leave this field at default value (0) to fetch all metric data
+  uint32 id = 1;
+}
+
+message MetricResponse {
+  map<uint32, double> values = 1;
+}
+
+message PositionRequest {
+  // Period for getting position info. This field is only for `StreamGetMetrics`.
+  uint32 x = 1;
+  uint32 y = 2;
+}
+
+message PositionResponse {
+  bool status = 1;
 }
