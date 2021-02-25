@@ -8,91 +8,75 @@ Date: 2/16/2021
 Serial communication for interfacing with the Arduino.
 
 Reference:
-    https://github.com/zmitchell/async-serial
+    * https://tinkering.xyz/async-serial/
+    * https://pyserial-asyncio.readthedocs.io/en/latest/shortintro.html
 """
 import asyncio
+from typing import Optional
+
 import serial_asyncio
 from functools import partial
 
+from utils.logger import Logger
 
-class Reader(asyncio.Protocol):
-    def __init__(self, q):
+
+class SerialProtocol(asyncio.Protocol):
+    def __init__(self, queue: asyncio.Queue, logger: Logger):
         """Store the queue.
         """
         super().__init__()
-        self.transport = None
-        self.buf = None
-        self.msgs_recvd = None
-        self.q = q
+        self._queue = queue
+        self._buffer: Optional[bytes] = None
+        self._logger = logger
 
-    def connection_made(self, transport):
+    def connection_made(self, transport: serial_asyncio.SerialTransport):
         """Store the serial transport and prepare to receive data.
         """
-        self.transport = transport
-        self.transport.serial.rts = False
-        self.buf = bytes()
-        self.msgs_recvd = 0
-        print('Reader connection created')
+        self._buffer = bytes()
+        transport.serial.rts = False
+        transport.flush()
+        self._logger.info('Reader connection created')
 
     def data_received(self, data):
         """Store characters until a newline is received.
         """
-        self.buf += data
-        if b'\n' in self.buf:
-            lines = self.buf.split(b'\n')
-            self.buf = lines[-1]  # whatever was left over
+        self._buffer += data
+        if b'\n' in self._buffer:
+            lines = self._buffer.split(b'\n')
+            self._buffer = lines[-1]  # whatever was left over
             for line in lines[:-1]:
-                asyncio.ensure_future(self.q.put(line))
-                self.msgs_recvd += 1
-        if self.msgs_recvd == 4:
-            self.transport.close()
+                asyncio.ensure_future(self._queue.put(line))
+        print(data)
 
     def connection_lost(self, exc):
-        print('Reader closed')
+        self._logger.error(f'Connection lost, reason: {exc}')
 
 
-class Writer(asyncio.Protocol):
-    def connection_made(self, transport):
-        """Store the serial transport and schedule the task to send data.
-        """
-        self.transport = transport
-        self.buf = bytes()
-        print('Writer connection created')
-        asyncio.ensure_future(self.send())
-        print('Writer.send() scheduled')
+class SerialAioTransport(object):
+    def __init__(self, url, baudrate=115200, loop=None):
+        self.url = url
+        self.baudrate = baudrate
+        self.transport: Optional[serial_asyncio.SerialTransport] = None
+        self.protocol = None
 
-    def connection_lost(self, exc):
-        print('Writer closed')
+        self._loop = loop or asyncio.get_event_loop()
+        self._queue = asyncio.Queue(loop=loop)
+        self._logger = Logger('Serial Server')
+        self.protocol_cls = partial(SerialProtocol, self._queue, self._logger)
 
-    async def send(self):
-        """Send four newline-terminated messages, one byte at a time.
-        """
-        message = b'foo\nbar\nbaz\nqux\n'
-        for b in message:
-            await asyncio.sleep(0.5)
-            self.transport.write(bytes([b]))
-            print(f'Writer sent: {bytes([b])}')
+    async def start(self):
+        self.transport, self.protocol = await serial_asyncio.create_serial_connection(
+            self._loop, self.protocol_cls, self.url, baudrate=self.baudrate
+        )
+        await asyncio.sleep(3)
+
+    async def read(self):
+        return await self._queue.get()
+
+    async def write(self, data: bytes):
+        # FIXME: self.transport.write not working for windows (nt)
+        # self.transport.write(data)
+        return await self._loop.run_in_executor(None, self.transport.serial.write, data)
+
+    def close(self):
         self.transport.close()
-
-
-async def print_received(loop, q):
-    counter = 0
-    while counter < 4:
-        msg = await q.get()
-        print(f'Message received: {msg}')
-        counter += 1
-    loop.stop()
-
-
-queue = asyncio.Queue()
-reader_partial = partial(Reader, queue)
-loop = asyncio.get_event_loop()
-reader = serial_asyncio.create_serial_connection(loop, reader_partial, 'reader', baudrate=115200)
-writer = serial_asyncio.create_serial_connection(loop, Writer, 'writer', baudrate=115200)
-asyncio.ensure_future(reader)
-print('Reader scheduled')
-asyncio.ensure_future(writer)
-print('Writer scheduled')
-asyncio.ensure_future(print_received(loop, queue))
-loop.run_forever()
-print('Done')
