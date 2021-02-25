@@ -10,7 +10,6 @@ gRPC server for interfacing with the PC.
 import argparse
 import asyncio
 import signal
-import time
 from concurrent import futures
 from typing import Dict, Type, Callable
 
@@ -18,9 +17,8 @@ import grpc
 
 from config import GRPCServerConfig
 from core import grpc_service_pb2_grpc
-from core.grpc_service_pb2_grpc import add_GRPCControlServiceServicer_to_server
-from core.message_pb2 import MoveResponse, TurnResponse
-from utils import Logger
+from core.grpc_service_pb2 import MoveResponse, TurnResponse, MetricResponse, PositionResponse
+from utils.logger import Logger
 
 
 class GRPCAioServer(object):
@@ -107,14 +105,6 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCControlServiceServicer):
         self.port = config.port
         self._logger = Logger('Backend gRPC server')
 
-    def terminate(self):
-        # wait for its child servers to terminate if they also receive the signal
-        time.sleep(1)
-
-    @property
-    def url(self):
-        return f'{self.host}:{self.port}'
-
     def Forward(self, request, context):
         return MoveResponse(status=True)
 
@@ -134,11 +124,28 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCControlServiceServicer):
         return TurnResponse(status=True)
 
 
+class DataServicer(grpc_service_pb2_grpc.GRPCDataServiceServicer):
+    def __init__(self, host, config: GRPCServerConfig):
+        self.host = host
+        self.port = config.port
+        self._logger = Logger('Backend gRPC server')
+
+    async def GetMetrics(self, request, context):
+        id = request.id
+        response = MetricResponse()
+        response.values[id] = 0.
+        return response
+
+    def GetPosition(self, request, context):
+        return PositionResponse(status=True)
+
+
 class BackendRPCServer(GRPCAioServer):
     def __init__(self, host: str, config: GRPCServerConfig):
         super().__init__(
             servicers={
-                ControlServicer: add_GRPCControlServiceServicer_to_server,
+                ControlServicer: grpc_service_pb2_grpc.add_GRPCControlServiceServicer_to_server,
+                DataServicer: grpc_service_pb2_grpc.add_GRPCDataServiceServicer_to_server,
             },
             thread_concurrency=config.thread_num,
             port=config.port,
