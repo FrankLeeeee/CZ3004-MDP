@@ -13,6 +13,8 @@ from concurrent.futures.thread import ThreadPoolExecutor
 
 import bluetooth
 
+from core.constant import CommandCode
+
 BD_ADDRESS = 'B8:27:EB:E6:BF:AA'
 PORT = 4
 BUFFER_SIZE = 1024
@@ -45,6 +47,17 @@ class BluetoothServer(object):
         self.client_socks.append(client_sock)
         return client_sock, client_info
 
+    async def start(self):
+        # always receive
+
+        # parse header
+
+        # parse data
+
+        # setup a session
+        # find handler, execute
+        pass
+
     async def disconnect(self, client_sock):
         return await self._loop.run_in_executor(self._executor, client_sock.close)
 
@@ -56,6 +69,18 @@ class BluetoothServer(object):
     async def close(self):
         await asyncio.gather(self.disconnect(client_sock) for client_sock in self.client_socks)
         await self._loop.run_in_executor(self._executor, self.server_sock.close)
+
+
+def add_BluetoothControlServicer_to_server(servicer, server):
+    rpc_method_handler = {
+        CommandCode.HeartBeat: (servicer.HeartBeat, request_deserializer, response_serializer)
+    }
+
+
+class BluetoothControlServicer(object):
+
+    async def HeartBeat(self, request: bytes):
+        return request
 
 
 async def test():
