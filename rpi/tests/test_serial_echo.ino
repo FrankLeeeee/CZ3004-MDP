@@ -15,6 +15,7 @@ void loop() {
     temp = Serial.read();
     while (!Serial.availableForWrite())
       delay(10);
+      temp++;
     Serial.write(temp);
   }
 }
