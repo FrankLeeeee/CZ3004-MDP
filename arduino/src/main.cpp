@@ -60,11 +60,13 @@ void readInput()
     case 'e':
       getSensorReading();
       // default: getSensorReading();
+      break;
     case 'f':
       encodeMessage();
       break;
     case 'g':
       decodeMessage();
+      break;
     }
   }
   // else{
