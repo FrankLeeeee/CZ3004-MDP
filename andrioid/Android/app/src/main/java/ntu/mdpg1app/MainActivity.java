@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
             menu_show_bluetooth_chat.setChecked(true);
             fragment.showChat(true);
 
-            String msg = readMsg.substring(1,readMsg.length()-1);
+            String msg = readMsg.substring(1,readMsg.length()-1); // remove curly brackets
             Log.e( "TESTE", "msg = " + msg);
 
 
@@ -389,8 +389,8 @@ public class MainActivity extends AppCompatActivity {
 
             // - delimiter for imgReg, : delimiter for everythig else
             if(readMsg.contains(":")) {
-                message = readMsg.split(":");
-                message[0] = message[0].substring(2, message[0].length()-2).toUpperCase();
+                message = msg.split(":");
+                message[0] = message[0].substring(1, message[0].length()-2).toUpperCase(); // removes inverted comma
                 Log.e( "TESTE", "msg[0] = " + message[0]);
             }else{
                 message = readMsg.split("-");
@@ -401,7 +401,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
-                message[1] = message[1].substring(2, message[1].length()-2);
+                message[1] = message[1].substring(2, message[1].length()-1);
                 Log.e( "TESTE", "msg[1] = " + message[1]);
                 Map.getInstance().setMapJson(message[1]);
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
@@ -424,22 +424,33 @@ public class MainActivity extends AppCompatActivity {
             }
 
             else if (message[0].equals("BLOCK")) { //receive numbered block
+                Log.e("TESTE", "BLOCK[1] = " + message[1]);
                 String data[] = message[1].split(","); //x, y, id
-                    IDblock input = new IDblock(data[2], Integer.parseInt(data[0]), Integer.parseInt(data[1]));
-                    Map.getInstance().addNumberedBlocks(input);
-                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                        loadGrid();
-                    }
+                Log.e("TESTE", "DATA[0] = " + data[0]);
+                Log.e("TESTE", "DATA[1] = " + data[1]);
+                Log.e("TESTE", "DATA[2] = " + data[2]);
+
+                IDblock input = new IDblock(data[2], Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+                Log.e("TESTE", input.getID());
+                Map.getInstance().addNumberedBlocks(input);
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
                 }
+            }
 
 
             else if (message[0].equals("ROBOTPOSITION")) { //receive robot position
-                message[1] = message[1].substring(2, message[1].length()-2);
+                message[1] = message[1].substring(2, message[1].length()-1);
                 Log.e("TESTE", "message[1] = " + message[1]);
                 String posAndDirect[] = message[1].split(",");
-                r.setPosX(Float.parseFloat(posAndDirect[0]));
-                r.setPosY(Float.parseFloat(posAndDirect[1]));
-                r.setDirection(posAndDirect[2]);
+//                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
+//                r.setPosY(Float.parseFloat(posAndDirect[1])+1);
+//                r.setDirection(posAndDirect[2]);
+
+                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
+                r.setPosY(((Float.parseFloat(posAndDirect[1])+1) - 19) * -1);
+                Log.e("TESTE", "direction = " + posAndDirect[2]);
+                r.setDirection(posAndDirect[2].substring(1));
 
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();

@@ -148,8 +148,8 @@ public class MapCanvas extends View implements View.OnTouchListener {
 
     private void drawCoords(Canvas canvas) {
         //draw explored
-        for(int x =0;x<15;x++){
-            for(int y =0;y<20;y++){
+        for(int x =14;x>=0;x--){
+            for(int y =19;y>=0;y--){
                 float posX = (paddingX+x*cellWidth);
                 float posY = (paddingY+(19-y)*cellHeight);
                 canvas.drawText(String.valueOf(x) + ", " + String.valueOf(y), posX+(0.5f)*cellWidth, posY+cellHeight-10, coords);

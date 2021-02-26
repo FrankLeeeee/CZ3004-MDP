@@ -1,13 +1,17 @@
 package ntu.mdpg1app.model;
 
 
+import com.example.android.common.logger.Log;
+
 import java.util.ArrayList;
 
 public class Map {
-	public static Map map=null;
+
+	public static Map map = null;
+
 	public static Map getInstance(){
-		if(map==null){
-			map= new Map();
+		if(map == null){
+			map = new Map();
 		}
 		return map;
 	}

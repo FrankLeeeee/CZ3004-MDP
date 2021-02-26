@@ -1,4 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.protobuf'
+
+sourceSets{
+    main.java.srcDirs += "${protobuf.generatedFilesBaseDir}/main/javalite"
+}
 
 android {
     compileSdkVersion 24
@@ -19,9 +24,37 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        // You still need protoc like in the non-Android case
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+    }
+    plugins {
+        javalite {
+            // The codegen for lite comes as a separate artifact
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                // In most cases you don't need the full Java output
+                // if you use the lite output.
+                remove java
+            }
+            task.plugins {
+                javalite { }
+            }
+        }
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     implementation 'com.android.support:appcompat-v7:24.2.1'
     implementation 'com.android.support:design:24.2.1'
+    implementation 'com.google.protobuf:protobuf-lite:3.0.0'
 }
+
+

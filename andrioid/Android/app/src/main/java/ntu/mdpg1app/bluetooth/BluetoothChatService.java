@@ -492,6 +492,14 @@ public class BluetoothChatService {
             while (mState == STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
+//                    message = []
+//                    buffer = bytes()
+//                    temp = read()
+//                    for i in len(temp):
+//                        if temp[i] == b';':
+//                            message.append(buffer + temp[:i])
+//                            buffer = temp[i:]
+
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
