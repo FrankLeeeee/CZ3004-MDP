@@ -31,12 +31,12 @@ void getSensorReading()
     unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
 
     //Change according to pin (A0 = PS1, A1 = PS2, etc)
-    V1 = analogRead(A0)*0.0049; // Read voltage
-    V2 = analogRead(A1)*0.0049;
-    V3 = analogRead(A2)*0.0049;
-    V4 = analogRead(A3)*0.0049;
-    V5 = analogRead(A4)*0.0049;
-    V6 = analogRead(A5)*0.0049;
+    V1 = analogRead(A0); // Read voltage
+    V2 = analogRead(A1);
+    V3 = analogRead(A2);
+    V4 = analogRead(A3);
+    V5 = analogRead(A4);
+    V6 = analogRead(A5);
 
     if (oldFiltered1 == -1) // sanity check for t=0
         oldFiltered1 = V1;
@@ -106,6 +106,15 @@ void getSensorReading()
     // Serial.print("  ");
     // Serial.println(getDist6(curFiltered6 * 0.0049));
 
+    unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    Serial.print("Time taken (ms): ");
+    Serial.println(pepe2);
+}
+
+void printSensorReading()
+{
+    unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
+
     Serial.print("Sensor 1: ");
     Serial.print(curFiltered1);
     Serial.print("  ");
@@ -146,32 +155,32 @@ double getDist1(double x)
 {
     //  return -5.7108*pow(x,5) + 47.988*pow(x,4) - 159.85*pow(x,3) + 270.34*pow(x,2) - 247.46*x + 120.28;
     // return -13.696 * pow(x, 5) + 101.4 * pow(x, 4) - 296.49 * pow(x, 3) + 438.4 * pow(x, 2) - 348.66 * x + 144.17;
-    return 1 / (0.0418 * x + 0.00007);
+    return 204.0816327 / (0.0418 * x + 0.00007);
 }
 
 // Sensor 2
 double getDist2(double x)
 {
     // return -11.577 * pow(x, 5) + 92.006 * pow(x, 4) - 288.75 * pow(x, 3) + 455 * pow(x, 2) - 377.91 * x + 155.37;
-    return 1 / (0.0448 * x - 0.0022);
+    return 204.0816327 / (0.0448 * x - 0.0022);
 }
 
 double getDist3(double x)
 {
     // return 25.863 * pow(x, -1.268);
-    return 1 / (0.0483 * x - 0.0082);
+    return 204.0816327 / (0.0483 * x - 0.0082);
 }
 
 double getDist4(double x)
 {
     // return -20.988 * pow(x, 5) + 143.17 * pow(x, 4) - 383.55 * pow(x, 3) + 520.2 * pow(x, 2) - 382.96 * x + 148.66;
-    return 1 / (0.0429 * x - 0.00008);
+    return 204.0816327 / (0.0429 * x - 0.00008);
 }
 // 3 & 5
 double getDist5(double x)
 {
     // return 26.353 * pow(x, -1.056);
-    return 1 / (0.0413 * x - 0.0027);
+    return 204.0816327 / (0.0413 * x - 0.0027);
 }
 
 // Long distance sensor
@@ -179,7 +188,7 @@ double getDist6(double x)
 {
     // return -17.686 * pow(x, 5) + 143.29 * pow(x, 4) - 454.79 * pow(x, 3) + 718.36 * pow(x, 2) - 600.2 * x + 265.99;
     // return 3.9597*pow(x,6) - 50.124*pow(x,5) + 247.27*pow(x,4) - 620.04*pow(x,3) + 854.23*pow(x,2) - 654.48*x + 274.19;
-    return 1 / (0.0181 * x + 0.0008);
+    return 204.0816327 / (0.0181 * x + 0.0008);
     // if (x >= 1.8)
     // {
     //     return 1 / (0.0273 * x - 0.0183);

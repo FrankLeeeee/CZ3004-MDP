@@ -2,6 +2,7 @@
 #define Sensor_H
 
 void getSensorReading();
+void printSensorReading();
 double filter(double volt, double oldVal);
 double getDist1(double x);
 double getDist2(double x);
