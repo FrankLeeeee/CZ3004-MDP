@@ -5,6 +5,8 @@
 
 void readInput();
 
+uint8_t rpi_receive[1024] = {0x02, 0x31, 0xFF, 0xAB, 0xFF, 0xFF, 0xFF, 0xFF, 0xF1, 0xCC};
+
 //==========================
 //===== Main Functions =====
 //==========================
@@ -65,7 +67,8 @@ void readInput()
       encodeMessage();
       break;
     case 'g':
-      decodeMessage();
+      // decodeMessage();
+      receiveMessage(rpi_receive);
       break;
     }
   }
