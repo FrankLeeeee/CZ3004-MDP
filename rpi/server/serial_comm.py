@@ -47,7 +47,6 @@ class SerialProtocol(asyncio.Protocol):
             self._buffer = lines[-1]  # whatever was left over
             for line in lines[:-1]:
                 asyncio.ensure_future(self._queue.put(line))
-        print(data)
 
     def connection_lost(self, exc):
         self._logger.error(f'Connection lost, reason: {exc}')
