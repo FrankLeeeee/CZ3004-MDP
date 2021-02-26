@@ -60,8 +60,7 @@ void readInput()
       state = 5;
       break;
     case 'e':
-      getSensorReading();
-      // default: getSensorReading();
+      printSensorReading();
       break;
     case 'f':
       encodeMessage();
@@ -72,9 +71,9 @@ void readInput()
       break;
     }
   }
-  // else{
-  //   getSensorReading();
-  // }
+  else{
+    getSensorReading();
+  }
 }
 
 

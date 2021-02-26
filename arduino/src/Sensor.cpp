@@ -10,14 +10,14 @@
 #define IRPin4 A3
 #define IRPin5 A4
 #define IRPin6 A5
-#define model GP2Y0A21YK0F
-#define model1 GP2Y0A02YK0F
-SharpIR mySensor(SharpIR::model, A0);
-SharpIR mySensor2(SharpIR::model, A1);
-SharpIR mySensor3(SharpIR::model, A2);
-SharpIR mySensor4(SharpIR::model, A3);
-SharpIR mySensor5(SharpIR::model, A4);
-SharpIR mySensor6(SharpIR::model1, A5);
+// #define model GP2Y0A21YK0F
+// #define model1 GP2Y0A02YK0F
+// SharpIR mySensor(SharpIR::model, A0);
+// SharpIR mySensor2(SharpIR::model, A1);
+// SharpIR mySensor3(SharpIR::model, A2);
+// SharpIR mySensor4(SharpIR::model, A3);
+// SharpIR mySensor5(SharpIR::model, A4);
+// SharpIR mySensor6(SharpIR::model1, A5);
 
 //===== Sensor Variables =====
 double curFiltered1, curFiltered2, curFiltered3, curFiltered4, curFiltered5, curFiltered6;
@@ -107,8 +107,8 @@ void getSensorReading()
     // Serial.println(getDist6(curFiltered6 * 0.0049));
 
     unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-    Serial.print("Time taken (ms): ");
-    Serial.println(pepe2);
+ //   Serial.print("Time taken (ms): ");
+ //   Serial.println(pepe2);
 }
 
 void printSensorReading()
@@ -186,17 +186,10 @@ double getDist5(double x)
 // Long distance sensor
 double getDist6(double x)
 {
-    // return -17.686 * pow(x, 5) + 143.29 * pow(x, 4) - 454.79 * pow(x, 3) + 718.36 * pow(x, 2) - 600.2 * x + 265.99;
+    return -17.686 * pow(x, 5) + 143.29 * pow(x, 4) - 454.79 * pow(x, 3) + 718.36 * pow(x, 2) - 600.2 * x + 265.99;
     // return 3.9597*pow(x,6) - 50.124*pow(x,5) + 247.27*pow(x,4) - 620.04*pow(x,3) + 854.23*pow(x,2) - 654.48*x + 274.19;
-    return 204.0816327 / (0.0181 * x + 0.0008);
-    // if (x >= 1.8)
-    // {
-    //     return 1 / (0.0273 * x - 0.0183);
-    // }
-    // else
-    // {
-    //     return 1 / (0.0163 * x + 0.0021);
-    // }
+    //return 204.0816327 / (0.0181 * x + 0.0008);
+
 }
 
 double alpha = 0.1; // Smoothing Factor
