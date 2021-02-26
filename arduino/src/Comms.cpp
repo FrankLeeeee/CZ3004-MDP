@@ -6,8 +6,30 @@
 
 size_t message_length;
 uint8_t buffer[10];
+uint8_t rpi_receive[1024];
 
 bool status;
+
+void receiveMessage(uint8_t rpi_receive[1024]){
+  int counter = 0; 
+  for(uint8_t i = 0; i <sizeof(rpi_receive); i++){
+    if (i == 0xFF){
+      if(i+1 == 0xFF){
+        counter++;
+      }
+      if(counter == 5){
+        Serial.println("ending sequence detected after " + i-5);
+      }
+      else{
+        counter = 0;
+      }
+    }
+
+  }
+  Serial.println("ENDING");
+  
+
+}
 
 void encodeMessage()
 {
