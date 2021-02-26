@@ -371,34 +371,26 @@ public class MainActivity extends AppCompatActivity {
     //method is ran when new message comes in
     @SuppressLint("LongLogTag")
     public void incomingMessage(String readMsg) {
-        Log.e( "TESTE",readMsg);
         //update map
-
         final Robot r = Robot.getInstance();
 
         if(readMsg.length()>0){
             menu_show_bluetooth_chat.setChecked(true);
             fragment.showChat(true);
 
-            String msg = readMsg.substring(1,readMsg.length()-1); // remove curly brackets
+            String msg = readMsg.substring(1,readMsg.length()-1); // remove curly brackets for commands
             Log.e( "TESTE", "msg = " + msg);
-
 
             String message[];
 
-
-            // - delimiter for imgReg, : delimiter for everythig else
+            // - delimiter for imgReg, : delimiter for everything else
             if(readMsg.contains(":")) {
                 message = msg.split(":");
-                message[0] = message[0].substring(1, message[0].length()-2).toUpperCase(); // removes inverted comma
+                message[0] = message[0].substring(1, message[0].length()-2).toUpperCase(); // removes inverted commas for commands
                 Log.e( "TESTE", "msg[0] = " + message[0]);
             }else{
                 message = readMsg.split("-");
             }
-
-
-
-
 
             if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
                 message[1] = message[1].substring(2, message[1].length()-1);
@@ -456,25 +448,26 @@ public class MainActivity extends AppCompatActivity {
                     loadGrid();
                 }
             }
-            else if(message[0].equals("S")){
-                if (message[1].equals("F")) {
-                    updateStatus("Moving Forward");
-                }
-                if (message[1].equals("TR")) {
-                    updateStatus("Turning Right");
-                }
-                if (message[1].equals("TL")) {
-                    updateStatus("Turning Left");
-                }
-                if (message[1].equals("FP")) {
-                    updateStatus("Fastest Path");
-                }
-                if (message[1].equals("EX")) {
-                    updateStatus("Exploration");
-                }
-                if (message[1].equals("DONE")) {
-                    updateStatus("Done!");
-                }
+            else if(message[0].equals("STATUS")){
+                updateStatus(message[1]);
+//                if (message[1].equals("F")) {
+//                    updateStatus("Moving Forward");
+//                }
+//                if (message[1].equals("TR")) {
+//                    updateStatus("Turning Right");
+//                }
+//                if (message[1].equals("TL")) {
+//                    updateStatus("Turning Left");
+//                }
+//                if (message[1].equals("FP")) {
+//                    updateStatus("Fastest Path");
+//                }
+//                if (message[1].equals("EX")) {
+//                    updateStatus("Exploration");
+//                }
+//                if (message[1].equals("DONE")) {
+//                    updateStatus("Done!");
+//                }
             }
             else if(message[0].trim().equals("Y")){ //harmonize with algo
                 updateStatus("Moving");
@@ -484,8 +477,8 @@ public class MainActivity extends AppCompatActivity {
             }
             else {
                 updateStatus("Invalid Message");
-                }
             }
+        }
     }
 
 
@@ -632,4 +625,3 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
-
