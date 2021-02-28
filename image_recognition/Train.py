@@ -26,11 +26,11 @@ class Train:
         #self.upper_blue = np.array([120,20,255])
 
         self.lower_blue = np.array([90,50,50])
-        self.upper_blue = np.array([120,255,255])
+        self.upper_blue = np.array([110,255,255])
         #masks for Green
         #cant detect the lower green values ,need make mask more accurate
-        self.lower_green = np.array([50,30,50])
-        self.upper_green = np.array([70,255,255])
+        self.lower_green = np.array([40,40,40])
+        self.upper_green = np.array([80,255,255])
 
         #masks for Red 
         #red is separated into 2 channels
@@ -40,16 +40,15 @@ class Train:
         self.upper_red_2 = np.array([180,255,255])
 
         #Mask for White
-        self.lower_white = np.array([0,12,30])
-        self.upper_white = np.array([255,20,255])
+        self.lower_white = np.array([0,0,70])
+        self.upper_white = np.array([255,255,255])
         #Mask for Yellow
         self.lower_yellow = np.array([20,50,100])
         self.upper_yellow = np.array([30,255,255])
-
+        print("load finished")
     
     def input_image(self, bgr_image):
         self.bgr_img = bgr_image
-        return self.bgr_img
 
     # https://docs.opencv.org/master/df/d9d/tutorial_py_colorspaces.html
     # convert to hsv format for easier segmentation
@@ -61,24 +60,27 @@ class Train:
         #make a mask of array[0,1,...]and apply colour mask by comparing bitwise to actual image
         if colour == self.BLUE:
             mask = cv.inRange(img_hsv,self.lower_blue,self.upper_blue)
+            self.colour = "BLUE"
         elif colour == self.GREEN:
             mask = cv.inRange(img_hsv,self.lower_green,self.upper_green)
+            self.colour = "GREEN"
         elif colour == self.RED:
             mask1 = cv.inRange(img_hsv,self.lower_red_1,self.upper_red_1)
             mask2 = cv.inRange(img_hsv,self.lower_red_2,self.upper_red_2)
             mask = mask1+mask2
+            self.colour = "RED"
         elif colour == self.WHITE:
             mask = cv.inRange(img_hsv,self.lower_white,self.upper_white)
+            self.colour = "WHITE"
         elif colour == self.YELLOW:
             mask = cv.inRange(img_hsv,self.lower_yellow,self.upper_yellow)
+            self.colour = "YELLOW"
         else:
             print("Colour not in list. Add a valid colour")
         
         # apply mask to filter out colour
         self.segmented_img = cv.bitwise_and(self.bgr_img.copy(),self.bgr_img.copy(),mask=mask)
         
-
-        print(self.segmented_img)
         return self.segmented_img
 
     def detect_object(self):
@@ -94,9 +96,7 @@ class Train:
         #_,self.thresh_img = cv.threshold(self.equalised_img.copy(),100,100,100)
         #Find all the contours of the grayscale images
         contours,hierarchy = cv.findContours(self.equalised_img.copy(),cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
-        if contours == None:
-            print("no contours found")
-            return
+        
         # Find the contour with the maximum area/ length
         max_contour_area=-1
         max_index=None
@@ -106,27 +106,57 @@ class Train:
                 max_index = count
                 max_contour_area = cv.contourArea(c)
             count+=1
+        if max_contour_area == -1:
+            print("no Contours found!")
+            return
         
         # draw contour with maximum area on the image
-        contour_img = cv.drawContours(self.bgr_img.copy(),contours[max_index],-1,(0,0,255),3)
+        self.bgr_img = cv.drawContours(self.bgr_img,contours[max_index],-1,(0,0,255),3)
 
         # draw a bounding box for the contours
         x,y,w,h = cv.boundingRect(contours[max_index])
-        self.image_after_detection = cv.rectangle(
-        self.bgr_img,
-        (x,y),
-        (x+w,y+h),
-        (0,255,0),
-        2
+        cv.rectangle(
+            self.bgr_img,
+            (x,y),
+            (x+w,y+h),
+            (0,255,0),
+            2
         )
-        with open("./data/data/info.dat","w") as f:
-            f.write(
-                
-            )
+        cv.putText(
+            self.bgr_img,
+            self.colour,
+            (x,y-10),
+            cv.FONT_HERSHEY_SIMPLEX,
+            0.9,
+            (0,0,255),
+            2
+        )
         # draw all the contours on the image
-        self.image_after_detection = cv.drawContours(self.image_after_detection,contours,-1,(0,0,255),3)
+        #self.image_after_detection = cv.drawContours(self.image_after_detection,contours,-1,(0,0,255),3)
 
         # return the maximum contour area image and the image after detection
-        return self.equalised_img, contour_img,self.image_after_detection,x,y,w,h
+        return self.bgr_img
 
 
+cap = cv.VideoCapture(0)
+colour_seg = Train()
+
+while True:
+    ret,frame = cap.read()
+    colour_seg.input_image(frame)
+    colour_seg.segment_image_by_colour(colour_seg.BLUE)
+    colour_seg.detect_object()
+    colour_seg.segment_image_by_colour(colour_seg.GREEN)
+    colour_seg.detect_object()
+    colour_seg.segment_image_by_colour(colour_seg.RED)
+    colour_seg.detect_object()
+    colour_seg.segment_image_by_colour(colour_seg.YELLOW)
+    colour_seg.detect_object()
+    colour_seg.segment_image_by_colour(colour_seg.WHITE)
+    frame_res = colour_seg.detect_object()
+    cv.imshow("video",frame_res)
+    k = cv.waitKey(30)
+    if k == 27:
+        break
+cap.release()
+cv.destroyAllWindows()
