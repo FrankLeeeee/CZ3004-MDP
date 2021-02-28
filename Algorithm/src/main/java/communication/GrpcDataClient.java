@@ -6,25 +6,30 @@ import grpc.GRPCDataServiceGrpc;
 import grpc.GrpcService.*;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class GrpcDataClient {
 	private ManagedChannel channel;
 	private GRPCDataServiceGrpc.GRPCDataServiceBlockingStub blockingStub;
 	private boolean isConnected;
-	private static final Logger logger = Logger.getLogger("src/main/java/communication");
 	private static final String host = "127.0.0.1";
 	private static final int port = 50051;
 	private static GrpcDataClient client;
+	private static Logger logger = org.apache.log4j.Logger.getLogger("io.grpc");
 
 
 	// Singleton class is used. Only one client is present at any time
 	public static GrpcDataClient getInstance() {
 		if (client == null)
 			client = new GrpcDataClient();
+
+		// set to INFO to prevent gRPC from outputing
+		// internal debug logs
+		logger.setLevel(Level.INFO);
 		return client;
 	}
 

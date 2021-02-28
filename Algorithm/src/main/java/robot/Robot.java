@@ -6,6 +6,7 @@ import communication.MapDescriptor;
 import config.MapConst;
 import config.RobotConst;
 import map.Map;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +28,8 @@ public class Robot {
 	private GrpcControlClient controlClient;
 	private boolean hasReachedGoal;
 	private boolean hasReturnedStart = false;
+
+	private static Logger logger = Logger.getLogger(Robot.class);
 
 	public Robot(int row, int col, boolean isRealRobot) {
 		this.row = row;
@@ -134,7 +137,7 @@ public class Robot {
 				if (this.speed != 0) TimeUnit.MILLISECONDS.sleep((long) 1000.0 / this.speed);
 				else TimeUnit.MILLISECONDS.sleep(0);
 			} catch (InterruptedException e) {
-				System.out.println("Robot movement error: " + e);
+				logger.info("Robot movement error: " + e);
 			}
 		}
 
@@ -162,12 +165,12 @@ public class Robot {
 			case CALIBRATE:
 				break;
 			default:
-				System.out.println("Error in movement!");
+				logger.info("Error in movement!");
 				break;
 		}
 
 		if (this.isRealRobot) sendMove(m, sendToAndroidFlag, exploredMap);
-		else System.out.println("Move: " + RobotConst.MOVE.getMove(m));
+		else logger.info("Move: " + RobotConst.MOVE.getMove(m));
 
 		// check if robot has reached goal
 		if (this.row == MapConst.GOAL_ROW && this.col == MapConst.GOAL_COL) this.hasReachedGoal = true;
@@ -188,7 +191,6 @@ public class Robot {
 
 		if (sendMoveToAndroidFlag) {
 			sendDataToAndroid(exploredMap);
-
 		}
 	}
 
@@ -215,7 +217,7 @@ public class Robot {
 					break;
 			}
 
-			System.out.println(this.getRow() + ", " + this.getCol() + " " + this.getDir());
+			logger.info(this.getRow() + ", " + this.getCol() + " " + this.getDir());
 			sendDataToAndroid(exploredMap);
 		}
 	}
@@ -264,11 +266,6 @@ public class Robot {
 		this.SRLeft.simulateSense(exploredMap, actualMap);
 		this.SRRight.simulateSense(exploredMap, actualMap);
 		this.LRLeft.simulateSense(exploredMap, actualMap);
-
-        /*String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
-        CommMgr.getCommMgr().sendMsg(mapDescriptors[0] + CommMgr.SEPARATOR + mapDescriptors[1], CommMgr.MAP_STRINGS);*/
-
-		// sendDataToAndroid(exploredMap);
 	}
 
 	public void sense(Map exploredMap) {
@@ -287,15 +284,16 @@ public class Robot {
 		SRRight.sense(exploredMap, sensorInt[4]);
 		LRLeft.sense(exploredMap, sensorInt[5]);
 
-        /*String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
-        CommMgr.getCommMgr().sendMsg(mapDescriptors[0] + CommMgr.SEPARATOR + mapDescriptors[1], CommMgr.MAP_STRINGS);*/
 		sendDataToAndroid(exploredMap);
 	}
 
 	public void sendDataToAndroid(Map exploredMap) {
 		String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
 		String mapDescrptorString = mapDescriptors[0] + mapDescriptors[1];
-		boolean response = dataClient.setMap(mapDescrptorString);
+//		mapDescrptorString = new BigInteger(mapDescrptorString, 16).toString(2);
+
+		// TODO: fix the map string
+		boolean response = dataClient.setMap("010");
 		assert response : "Sending explored map to Android returns 0";
 	}
 }

@@ -9,22 +9,24 @@ import grpc.GrpcService.RobotStatus;
 import grpc.GrpcService.Status;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.security.InvalidParameterException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class GrpcControlClient {
 	private ManagedChannel channel;
 	private GRPCControlServiceGrpc.GRPCControlServiceBlockingStub blockingStub;
 	private boolean isConnected;
-	private static final Logger logger = Logger.getLogger("src/main/java/communication");
 	private static GrpcControlClient client;
+	private static Logger logger = Logger.getLogger("io.grpc");
 
 	// Singleton class is used. Only one client is present at any time
 	public static GrpcControlClient getInstance() {
 		if (client == null)
 			client = new GrpcControlClient();
+		logger.setLevel(Level.INFO);
 		return client;
 	}
 

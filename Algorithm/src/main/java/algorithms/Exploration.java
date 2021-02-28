@@ -7,11 +7,12 @@ import config.RobotConst;
 import grpc.GrpcService;
 import map.Cell;
 import map.Map;
+import org.apache.log4j.Logger;
 import robot.Robot;
 import simulator.Simulator;
 
 import java.util.ArrayList;
-import java.util.logging.Logger;
+
 
 public class Exploration {
 	private final Map actualMap;
@@ -31,7 +32,7 @@ public class Exploration {
 	private GrpcControlClient controlClient;
 	private GrpcDataClient dataClient;
 
-	private static Logger logger = Logger.getLogger("src/main/java/algorithms");
+	private static Logger logger = Logger.getLogger(Exploration.class);
 
 	// Constructor for real run
 	public Exploration(Map exploredMap, Robot robot, int coverageLimit, int timeLimit) {
@@ -51,6 +52,8 @@ public class Exploration {
 		this.robot = robot;
 		this.coverageLimit = coverageLimit;
 		this.timeLimit = timeLimit;
+		this.controlClient = GrpcControlClient.getInstance();
+		this.dataClient = GrpcDataClient.getInstance();
 	}
 
 	public Map getExploredMap() {
@@ -103,14 +106,15 @@ public class Exploration {
 
 	public void run() {
 		if (this.robot.isRealRobot()) {
-			System.out.println("Start calibration....");
+			logger.info("Start calibration");
 			this.initialCalibration();
+			logger.info("Initial calibration done");
 
 			while (true) {
-				// wating for android to send the start exploration message
-				logger.info("Waiting for EX_START message from Android....");
+				// waiting for android to send the start exploration message
 				boolean response = controlClient.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
 				assert response : "gRPC server claims that the robot is not started";
+				logger.info("Rpi signals to start exploration after initial calibration.");
 				break;
 			}
 		}
@@ -140,8 +144,8 @@ public class Exploration {
 		double areaCoveredPc = (new Double(this.areaExplored) / MapConst.NUM_CELLS) * 100;
 		String areaCoveredPcStr = String.format("%.2f %%", areaCoveredPc);
 		Simulator.areaCoveredLbl.setText(areaCoveredPcStr);
-
-		// repaint the map
+//
+//		// repaint the map
 		this.exploredMap.repaint();
 	}
 
@@ -152,7 +156,7 @@ public class Exploration {
 
 			// calculate area explored
 			this.areaExplored = this.exploredMap.calAreaExplored();
-			System.out.println("Area explored: " + this.areaExplored);
+			logger.info("Area explored: " + this.areaExplored);
 
 			// terminate when the robot is back to the start
 			// and (area explored is more than 60% or 90% percent of the time is used)
@@ -167,11 +171,12 @@ public class Exploration {
 		// and there is still more than 15% of the time left until endTime
 		// Q: no need to explore the whole map?
 		// A: remove 0.99, run normally with different map
+		logger.info("Start exploring the remaining unknown area");
 		boolean state = true;
-		while (state && this.areaExplored < this.coverageLimit * 0.99 && System.currentTimeMillis() < (this.endTime - 0.15 * this.timeLimit * 1000)) {
+		while (state && this.areaExplored < this.coverageLimit * 1 && System.currentTimeMillis() < (this.endTime - 0.15 * this.timeLimit * 1000)) {
 			state = exploreUnexplored();
 			this.areaExplored = this.exploredMap.calAreaExplored();
-			System.out.println("Area explored: " + this.areaExplored);
+			logger.info("Area explored: " + this.areaExplored);
 		}
 
 		// go back to start
@@ -192,7 +197,7 @@ public class Exploration {
 			// Q: where set overwritten True?
 			// A: in sensor
 			// the robot must be in vertical direction and have nothing blocking on the left and right
-			// the cell on the left and right must be explored, not an obstacle and not a virutla wall
+			// the cell on the left and right must be explored, not an obstacle and not a virtual wall
 			moveRobot(RobotConst.MOVE.TURN_LEFT);
 
 			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
@@ -220,6 +225,7 @@ public class Exploration {
 		} else if (isRightFree(this.robot.getRow(), this.robot.getCol())) {
 			// turn right and move forward
 			moveRobot(RobotConst.MOVE.TURN_RIGHT);
+
 			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
 				moveRobot(RobotConst.MOVE.FORWARD);
 				RFCount++;
@@ -242,12 +248,12 @@ public class Exploration {
 			RFCount = 0;
 		}
 		overwritten = false;
-
 	}
 
 	private void moveRobot(RobotConst.MOVE m) {
 		// move the robot
 		this.robot.move(m, this.exploredMap);
+		logger.info("move: " + m);
 
 		// sense and re-render on the map
 		this.exploredMap.repaint();
@@ -399,27 +405,19 @@ public class Exploration {
 	}
 
 	private boolean isNorthFree(int r, int c) {
-		return isExploredAndNotObstacle(r + 1, c - 1)
-				&& isExploredAndFree(r + 1, c)
-				&& isExploredAndNotObstacle(r + 1, c + 1);
+		return isExploredAndFree(r + 1, c);
 	}
 
 	private boolean isEastFree(int r, int c) {
-		return isExploredAndNotObstacle(r + 1, c + 1)
-				&& isExploredAndFree(r, c + 1)
-				&& isExploredAndNotObstacle(r - 1, c + 1);
+		return isExploredAndFree(r, c + 1);
 	}
 
 	private boolean isSouthFree(int r, int c) {
-		return isExploredAndNotObstacle(r - 1, c - 1)
-				&& isExploredAndFree(r - 1, c)
-				&& isExploredAndNotObstacle(r - 1, c + 1);
+		return isExploredAndFree(r - 1, c);
 	}
 
 	private boolean isWestFree(int r, int c) {
-		return isExploredAndNotObstacle(r + 1, c - 1)
-				&& isExploredAndFree(r, c - 1)
-				&& isExploredAndNotObstacle(r - 1, c - 1);
+		return isExploredAndFree(r, c - 1);
 	}
 
 	private boolean isExploredAndNotObstacle(int r, int c) {
@@ -441,7 +439,7 @@ public class Exploration {
 		Cell cell;
 		boolean flag = false;
 
-		System.out.println("Trying to explore the unexplored....");
+		logger.info("Trying to explore the unexplored....");
 		for (int r = this.robot.getRow(); r < MapConst.NUM_ROWS; r++) {
 			for (int c = 0; c < MapConst.NUM_COLS; c++) {
 				cell = this.exploredMap.getArena()[r][c];
@@ -491,13 +489,14 @@ public class Exploration {
 
 
 		if (targetR == 1 && targetC == 1) {
-			System.out.println("Can't explore the unexplored....");
+			logger.info("Can't explore the unexplored....");
 			return false;
 		}
 
 		// compute fastest path to the unexplored cell
 		FastestPath pathToUnExplored;
 		ArrayList<RobotConst.MOVE> moves;
+
 		pathToUnExplored = !this.robot.isRealRobot() ? new FastestPath(this.exploredMap, this.robot, this.actualMap) : new FastestPath(this.exploredMap, this.robot);
 		moves = pathToUnExplored.computeFastestPath(targetR, targetC);
 		if (moves == null) {
@@ -510,7 +509,7 @@ public class Exploration {
 	}
 
 	private void goToStart() {
-		System.out.println("Going back to the start zone....");
+		logger.info("Going back to the start zone....");
 		ArrayList<RobotConst.MOVE> moves;
 
 		// if robot has not reached goal, go to goal
@@ -528,11 +527,11 @@ public class Exploration {
 		if (moves != null)
 			pathToStart.executeMoves(moves, this.robot);
 
-		System.out.println("Exploration has completed!");
+		logger.info("Exploration has completed!");
 		this.areaExplored = this.exploredMap.calAreaExplored();
-		System.out.printf("Achieved %.2f%% Coverage", (this.areaExplored / 300.0) * 100.0);
-		System.out.println(", " + this.areaExplored + " Cells");
-		System.out.println("Time taken: " + (System.currentTimeMillis() - this.startTime) / 1000 + "s");
+		logger.info(String.format("Achieved %.2f%% Coverage", (this.areaExplored / 300.0) * 100.0));
+		logger.info(", " + this.areaExplored + " Cells");
+		logger.info("Time taken: " + (System.currentTimeMillis() - this.startTime) / 1000 + "s");
 
 		// Calibrate
 		if (robot.isRealRobot()) {
@@ -555,27 +554,13 @@ public class Exploration {
 		if (this.expEnded)
 			controlClient.stopRobot(GrpcService.RobotStatus.Mode.EXPLORATION);
 
-		// TODO: not sure if this is needed
-//		String msg;
-//		while (true) {
-//			msg = CommunicationManager.getCommMgr().receiveMsg();
-//			String[] msgArr = msg.split(CommunicationManager.SEPARATOR);
-//			if (msgArr[0].equals(CommunicationManager.WAY_POINT)) {
-//				break;
-//			}
-//		}
-
-
 		turnRobot(RobotConst.DIRECTION.WEST);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-//		CommunicationManager.getCommMgr().receiveMsg();
 
 		turnRobot(RobotConst.DIRECTION.SOUTH);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-//		CommunicationManager.getCommMgr().receiveMsg();
 
 		turnRobot(RobotConst.DIRECTION.WEST);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);
-//		CommunicationManager.getCommMgr().receiveMsg();
 	}
 }

@@ -1,5 +1,7 @@
 package communication;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -27,6 +29,8 @@ public class CommunicationManager {
 	public static final String ROBOT_INFO = "ROBOT"; // PC --> Android [Refer to parseToJSON method below]
 	public static final String EX_DONE = "EX_DONE";
 
+	private static Logger logger = Logger.getLogger(CommunicationManager.class);
+
 	private CommunicationManager() {
 	}
 
@@ -39,7 +43,7 @@ public class CommunicationManager {
 	}
 
 	public void openConnection() {
-		System.out.println("Connecting to RPi....");
+		logger.info("Connecting to RPi....");
 
 		try {
 			_connection = new Socket(HOST, PORT);
@@ -48,22 +52,22 @@ public class CommunicationManager {
 			this._writer = new BufferedWriter(
 					new OutputStreamWriter(new BufferedOutputStream(_connection.getOutputStream())));
 
-			System.out.println("Connection established.");
+			logger.info("Connection established.");
 
 			return;
 		} catch (UnknownHostException e) {
-			System.out.println("Error while connecting: UnknownHostException");
+			logger.info("Error while connecting: UnknownHostException");
 		} catch (IOException e) {
-			System.out.println("Error while connecting: IOException");
+			logger.info("Error while connecting: IOException");
 		} catch (Exception e) {
-			System.out.println("Error while connecting: " + e.toString());
+			logger.info("Error while connecting: " + e.toString());
 		}
 
-		System.out.println("Failed to establish connection!");
+		logger.info("Failed to establish connection!");
 	}
 
 	public void closeConnection() {
-		System.out.println("Closing connection to RPi...");
+		logger.info("Closing connection to RPi...");
 
 		try {
 			this._reader.close();
@@ -73,16 +77,16 @@ public class CommunicationManager {
 				_connection = null;
 			}
 
-			System.out.println("Connection closed.");
+			logger.info("Connection closed.");
 		} catch (IOException e) {
-			System.out.println("Error while closing: IOException");
+			logger.info("Error while closing: IOException");
 		} catch (NullPointerException e) {
-			System.out.println("Error while closing: NullPointerException");
+			logger.info("Error while closing: NullPointerException");
 		} catch (Exception e) {
-			System.out.println("Error while closing: " + e.toString());
+			logger.info("Error while closing: " + e.toString());
 		}
 
-		System.out.println("Failed to close connection!");
+		logger.info("Failed to close connection!");
 	}
 
 	public void sendMsg(String msg, String msgType) {
@@ -97,20 +101,20 @@ public class CommunicationManager {
 				outputMsg = msgType + SEPARATOR + msg + "\n";
 			}
 
-			System.out.println("Sending out message: " + outputMsg);
+			logger.info("Sending out message: " + outputMsg);
 			this._writer.write(outputMsg);
 			this._writer.flush();
-			System.out.println("Message sent!");
+			logger.info("Message sent!");
 		} catch (IOException e) {
-			System.out.println("Error while sending message: IOException");
+			logger.info("Error while sending message: IOException");
 		} catch (Exception e) {
-			System.out.println("Error while sending message: " + e.toString());
+			logger.info("Error while sending message: " + e.toString());
 		}
-		System.out.println("===========");
+		logger.info("===========");
 	}
 
 	public String receiveMsg() {
-		System.out.println("Receiving message....");
+		logger.info("Receiving message....");
 
 		try {
 
@@ -119,16 +123,16 @@ public class CommunicationManager {
 
 			if (input != null && input.length() > 0) {
 				strBuilder.append(input);
-				System.out.println("Message received: " + strBuilder.toString());
+				logger.info("Message received: " + strBuilder.toString());
 				return strBuilder.toString();
 			}
 		} catch (IOException e) {
-			System.out.println("Error while receiving message: IOException");
+			logger.info("Error while receiving message: IOException");
 		} catch (Exception e) {
-			System.out.println("Error while receiving message: Exception");
-			System.out.println(e.toString());
+			logger.info("Error while receiving message: Exception");
+			logger.info(e.toString());
 		}
-		System.out.println("===========");
+		logger.info("===========");
 		return null;
 	}
 

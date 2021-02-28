@@ -3,6 +3,7 @@ package communication;
 import config.MapConst;
 import map.Cell;
 import map.Map;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -10,6 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MapDescriptor {
+
+	private static Logger logger = Logger.getLogger(MapDescriptor.class);
+
 	public static void readMap(Map map, String mapPath) {
 		try {
 			InputStream inStream = new FileInputStream(mapPath);
@@ -40,7 +44,7 @@ public class MapDescriptor {
 
 
 		} catch (IOException e) {
-			System.out.println("Error reading map: " + e.toString());
+			logger.error("Error reading map: " + e.toString());
 		}
 	}
 
@@ -51,15 +55,13 @@ public class MapDescriptor {
 	public static String[] generateMapDescriptor(Map map) {
 		String[] descriptor = new String[2];
 
-		// TODO: what is p1 and p2
-		// DONE: p1: explored or not cell? p2: obstacle or not?
+		// DONE: p1: explored or not cell p2: obstacle or not
 		StringBuilder p1Hex = new StringBuilder();
 		StringBuilder p1Bin = new StringBuilder();
 		StringBuilder p2Hex = new StringBuilder();
 		StringBuilder p2Bin = new StringBuilder();
 
-		// TODO: why p1 set 11?
-		// robot X_offset  = 10, y_offset = 20
+		// need to append to make it complete bytes
 		p1Bin.append("11");
 		for (Cell[] row : map.getArena()) {
 			for (Cell cell : row) {

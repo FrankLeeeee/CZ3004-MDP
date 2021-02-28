@@ -12,6 +12,7 @@ import config.SimulatorConst;
 import grpc.GrpcService;
 import map.Cell;
 import map.Map;
+import org.apache.log4j.Logger;
 import robot.Robot;
 
 import javax.swing.*;
@@ -23,14 +24,16 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class Simulator {
 	private static JFrame mainFrame;
 	private static JPanel mapPanel;
 	private static JPanel btnPanel;
-	private static JPanel statusPanel;
+	private static JButton btnSettings;
+	private static JButton btnReadMap;
+	private static JButton btnExplore;
+	private static JButton btnFastestPath;
 	public static JPanel specPanel;
 	public static JLabel timeElapsedLbl;
 	public static JLabel areaCoveredLbl;
@@ -50,15 +53,13 @@ public class Simulator {
 
 	private static final String EXP_MAP = "EXPLORED_MAP";
 	private static final String ACT_MAP = "ACTUAL_MAP";
-	private static final Logger logger = Logger.getLogger("src/main/java/simulator");
+	public static Logger logger = Logger.getLogger(Simulator.class);
 
 	private static final boolean realRun = false;
+	private static final String task = "EXP";
 
 
 	public static void main(String[] args) throws InterruptedException {
-		// set logging level
-		logger.setLevel(Level.INFO);
-
 		// create a Robot object
 		robot = new Robot(MapConst.START_ROW, MapConst.START_COL, realRun);
 
@@ -70,15 +71,18 @@ public class Simulator {
 		initializeFrame();
 
 		if (realRun) {
-			// create instances
+			logger.info("Initializing gRPC clients");
+
+			// create gRPC client instances
 			GrpcDataClient dataClient = GrpcDataClient.getInstance();
 			GrpcControlClient controlClient = GrpcControlClient.getInstance();
+
 
 			while (!dataClient.isConnected()) {
 				try {
 					dataClient.connect(GrpcConst.DATA_CLIENT_HOST, GrpcConst.DATA_CLIENT_PORT);
 				} catch (Exception e) {
-					logger.severe("data client encountered connection error, retrying after 5 seconds...");
+					logger.error("data client encountered connection error, retrying after 5 seconds...");
 					TimeUnit.SECONDS.sleep(5);
 				}
 			}
@@ -87,24 +91,28 @@ public class Simulator {
 				try {
 					controlClient.connect(GrpcConst.CONTROL_CLIENT_HOST, GrpcConst.CONTROL_CLIENT_PORT);
 				} catch (Exception e) {
-					logger.severe("Control client encountered connection error, retrying after 5 seconds...");
+					logger.error("Control client encountered connection error, retrying after 5 seconds...");
 					TimeUnit.SECONDS.sleep(5);
 				}
 			}
-			assert controlClient.isConnected() && dataClient.isConnected();
-			logger.info("gRpc conneciton is set up.");
 
-//			(new Simulator.Explore()).execute();
+			assert controlClient.isConnected() && dataClient.isConnected();
+			logger.info("gRPC connection is set up.");
+
+			(new Simulator.Explore()).execute();
+
 		} else {
 			// run virtual testing
+			logger.info("Run virtual testing");
 			actualMap = new Map(robot);
 			actualMap.setAllCellsUnexplored();
 			mapPanel.add(actualMap, ACT_MAP);
 		}
 
 		// sample map display
+		// map panel needs to have two cards for it to show
 		mapPanel.add(exploredMap, EXP_MAP);
-
+		logger.info("Simulator started");
 	}
 
 
@@ -121,7 +129,7 @@ public class Simulator {
 		int y = (dim.height - mainFrame.getSize().height) / 2;
 		mainFrame.setLocation(x, y);
 
-		// initialze panels
+		// initialize panels
 		initializeMapPanel();
 		initializeButtonPanel();
 		initliazeSpecPanel();
@@ -151,8 +159,9 @@ public class Simulator {
 		btnPanelParent.add(btnPanel);
 
 		// read map Button
+		// button is only added when it is simulation
 		if (!realRun) {
-			JButton btnReadMap = new JButton("READ MAP");
+			btnReadMap = new JButton("READ MAP");
 			standardiseBtn(btnReadMap);
 			btnReadMap.addMouseListener(new MouseAdapter() {
 				@Override
@@ -176,7 +185,7 @@ public class Simulator {
 			btnPanel.add(btnReadMap);
 
 			// explore button
-			JButton btnExplore = new JButton("EXPLORE");
+			btnExplore = new JButton("EXPLORE");
 			standardiseBtn(btnExplore);
 			btnExplore.addMouseListener(new MouseAdapter() {
 				@Override
@@ -192,7 +201,7 @@ public class Simulator {
 
 
 			// fastest path button
-			JButton btnFastestPath = new JButton("FASTEST PATH");
+			btnFastestPath = new JButton("FASTEST PATH");
 			standardiseBtn(btnFastestPath);
 			btnFastestPath.addMouseListener(new MouseAdapter() {
 				@Override
@@ -209,7 +218,7 @@ public class Simulator {
 			btnPanel.add(btnFastestPath);
 
 			// settings button
-			JButton btnSettings = new JButton("SETTINGS");
+			btnSettings = new JButton("SETTINGS");
 			standardiseBtn(btnSettings);
 			btnSettings.addMouseListener(new MouseAdapter() {
 				@Override
@@ -272,25 +281,36 @@ public class Simulator {
 
 	static class Explore extends SwingWorker<Integer, String> {
 		protected Integer doInBackground() throws Exception {
+			// disable button
+			if (!realRun) {
+				btnExplore.setEnabled(false);
+				btnFastestPath.setEnabled(false);
+				btnReadMap.setEnabled(false);
+				btnSettings.setEnabled(false);
+			}
+
+			// initialize the setting
 			robot.setRow(MapConst.START_ROW);
 			robot.setCol(MapConst.START_COL);
 			robot.setSpeed(speed);
 			exploredMap.repaint();
 			Exploration exploration;
 
-			GrpcControlClient controlClient = GrpcControlClient.getInstance();
-			GrpcDataClient dataClient = GrpcDataClient.getInstance();
-
 			if (!realRun)
+				// the actual map is given to simulate sensor data
 				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit, actualMap);
 			else {
-				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit);
-
+				// check if android sets to start exploration
+				GrpcControlClient controlClient = GrpcControlClient.getInstance();
 				boolean response = controlClient.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
 				assert response : "Waiting for the robot to start returns 0";
+				logger.info("Android signals to start");
+
+				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit);
 			}
+
 			exStartTime = System.currentTimeMillis();
-			_displayElapsedTime("EX");
+			displayElapsedTime("EX");
 			timer.start();
 			exploration.run();
 			String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
@@ -298,9 +318,19 @@ public class Simulator {
 
 			if (realRun) {
 				robot.sendDataToAndroid(exploredMap);
-				(new Fastest(exploration)).execute();
+				// no need to run fastest path as it
+				// is an independent task now
+//				(new Fastest(exploration)).execute();
 			}
 			timer.stop();
+
+			// enable button
+			if (!realRun) {
+				btnExplore.setEnabled(true);
+				btnFastestPath.setEnabled(true);
+				btnReadMap.setEnabled(true);
+				btnSettings.setEnabled(true);
+			}
 
 			return 111;
 		}
@@ -319,6 +349,13 @@ public class Simulator {
 		}
 
 		protected Integer doInBackground() throws Exception {
+			// disable button
+			btnExplore.setEnabled(false);
+			btnFastestPath.setEnabled(false);
+			btnReadMap.setEnabled(false);
+			btnSettings.setEnabled(false);
+
+			// start fastest path
 			robot.setRow(MapConst.START_ROW);
 			robot.setCol(MapConst.START_COL);
 			robot.setSpeed(speed);
@@ -357,7 +394,7 @@ public class Simulator {
 			}
 
 			fpStartTime = System.currentTimeMillis();
-			_displayElapsedTime("FP");
+			displayElapsedTime("FP");
 			timer.start();
 			fastestPathWayPoint.setToGoal(true);
 			movesWayPoint = fastestPathWayPoint.computeFastestPath(wayPointR, wayPointC);
@@ -370,7 +407,14 @@ public class Simulator {
 			movesGoal = fastestPathGoal.computeFastestPath(MapConst.GOAL_ROW, MapConst.GOAL_COL);
 			fastestPathGoal.executeMoves(movesGoal, robot);
 			timer.stop();
-			System.out.println("Time taken: " + (System.currentTimeMillis() - fpStartTime) / 1000 + "s");
+			logger.info("Time taken: " + (System.currentTimeMillis() - fpStartTime) / 1000 + "s");
+
+			// enable button
+			btnExplore.setEnabled(true);
+			btnFastestPath.setEnabled(true);
+			btnReadMap.setEnabled(true);
+			btnSettings.setEnabled(true);
+
 			return 222;
 		}
 	}
@@ -405,7 +449,7 @@ public class Simulator {
 
 				int tmpR = Integer.parseInt(wayPointRInput.getText());
 				int tmpC = Integer.parseInt(wayPointCInput.getText());
-				if (_isExploredAndFree(tmpR, tmpC)) {
+				if (isExploredAndFree(tmpR, tmpC)) {
 					wayPointR = tmpR;
 					wayPointC = tmpC;
 					exploredMap.getArena()[wayPointR][wayPointC].setWayPoint(true);
@@ -449,7 +493,7 @@ public class Simulator {
 	}
 
 
-	private static boolean _isExploredAndFree(int r, int c) {
+	private static boolean isExploredAndFree(int r, int c) {
 		if (!exploredMap.checkValidCoordinates(r, c))
 			return false;
 		Cell cell = exploredMap.getArena()[r][c];
@@ -458,7 +502,7 @@ public class Simulator {
 	}
 
 	// to reset and display the timer
-	private static void _displayElapsedTime(String mode) {
+	private static void displayElapsedTime(String mode) {
 		int delay = 1000;
 
 		timer = new Timer(delay, new ActionListener() {

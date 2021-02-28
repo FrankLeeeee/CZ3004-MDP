@@ -3,6 +3,7 @@ package robot;
 import algorithms.Exploration;
 import config.RobotConst;
 import map.Map;
+import org.apache.log4j.Logger;
 
 public class Sensor {
 	private final String id;
@@ -12,6 +13,8 @@ public class Sensor {
 	private int row;
 	private int col;
 	private RobotConst.DIRECTION dir;
+
+	private static Logger logger = Logger.getLogger(Sensor.class);
 
 	public Sensor(String id, int lRange, int uRange, int row, int col, RobotConst.DIRECTION dir) {
 		this.id = id;
@@ -110,6 +113,7 @@ public class Sensor {
 				break;
 			}
 		}
+
 	}
 
 	public void sense(Map exploredMap, int sensorVal) {
@@ -170,7 +174,8 @@ public class Sensor {
 
 				if (id.startsWith("SRF") || id.startsWith("SRR") && i == this.lRange) {
 					if (Exploration.prevCalibrateTurns < 6) {
-						System.out.println("Overwriting");
+
+						logger.info("Overwriting");
 						exploredMap.setObstacleCell(r, c, false);
 						Exploration.overwritten = true;
 					}

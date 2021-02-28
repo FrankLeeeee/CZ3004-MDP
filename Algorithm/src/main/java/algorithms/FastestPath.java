@@ -4,6 +4,7 @@ import config.MapConst;
 import config.RobotConst;
 import map.Cell;
 import map.Map;
+import org.apache.log4j.Logger;
 import robot.Robot;
 import simulator.Simulator;
 
@@ -25,6 +26,7 @@ public class FastestPath {
 	private Robot robot;
 	private boolean toGoal = false;
 	private Exploration exMode;
+	private static Logger logger = Logger.getLogger(FastestPath.class);
 
 	public FastestPath(Map exploredMap, Robot robot) {
 		this.exploredMap = exploredMap;
@@ -88,7 +90,7 @@ public class FastestPath {
 
 
 		// compute fastest path
-		System.out.println("Computing the fastest path from " + this.curCell.getRow() + ", " + this.curCell.getCol() + " to " + targetR + ", " + targetC);
+		logger.info("Computing the fastest path from " + this.curCell.getRow() + ", " + this.curCell.getCol() + " to " + targetR + ", " + targetC);
 		do {
 			this.loopCnt++;
 
@@ -106,7 +108,7 @@ public class FastestPath {
 
 			// termination condition
 			if (this.visited.contains(targetCell)) {
-				System.out.println("Reached target. Fastest path found!");
+				logger.info("Reached target. Fastest path found!");
 				pathStack = getPath(targetR, targetC);
 				printPathCoords(pathStack);
 				return getPathMoves(pathStack, targetR, targetC);
@@ -155,7 +157,7 @@ public class FastestPath {
 			}
 		} while (!toVisit.isEmpty());
 
-		System.out.println("No path is found!");
+		logger.info("No path is found!");
 		return null;
 	}
 
@@ -209,10 +211,9 @@ public class FastestPath {
 		Stack<Cell> pathStackCopy = (Stack<Cell>) pathStack.clone();
 		Cell cell;
 
-		System.out.println(this.loopCnt + " number of loops has been run.");
-		System.out.println("Number of steps required: " + (pathStack.size() - 1));
-		System.out.println();
-		System.out.println("Path found: ");
+		logger.info(this.loopCnt + " number of loops has been run.");
+		logger.info("Number of steps required: " + (pathStack.size() - 1));
+		String path = "";
 
 		while (!pathStackCopy.isEmpty()) {
 			cell = pathStackCopy.pop();
@@ -223,10 +224,11 @@ public class FastestPath {
 			}
 
 			// print
-			System.out.print(cell.getRow() + ", " + cell.getCol());
-			if (!pathStackCopy.isEmpty()) System.out.print(" => ");
+			path += cell.getRow() + ", " + cell.getCol();
+			if (!pathStackCopy.isEmpty()) path += " => ";
 		}
-		System.out.println();
+
+		logger.info("Path found: " + path);
 	}
 
 	private ArrayList<RobotConst.MOVE> getPathMoves(Stack<Cell> pathStack, int targetR, int targetC) {
@@ -256,7 +258,7 @@ public class FastestPath {
 			movesStr.append(RobotConst.MOVE.getMove(targetMove));
 		}
 
-		System.out.println("Moves to take: " + movesStr.toString());
+		logger.info("Moves to take: " + movesStr.toString());
 
 		return moves;
 	}
@@ -338,8 +340,7 @@ public class FastestPath {
 	}
 
 	public void executeMoves(ArrayList<RobotConst.MOVE> moves, Robot robot) {
-		System.out.println("Started fastest path!");
-
+		logger.info("Started fastest path!");
 		if (!robot.isRealRobot()) {
 			// simulation mode
 			RobotConst.MOVE m;
@@ -348,7 +349,7 @@ public class FastestPath {
 				if (m == RobotConst.MOVE.FORWARD) {
 					if (!canMoveForward(robot)) {
 						// TODO: should recompute fastest path?
-						System.out.println("Early termination of fastestpath algorithm");
+						logger.info("Early termination of fastestpath algorithm");
 					}
 				}
 

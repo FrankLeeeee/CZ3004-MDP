@@ -15,7 +15,7 @@ public class Cell {
 	private final int x;
 	private final int y;
 	private final int size;
-	w
+	
 
 	public Cell(int row, int col) {
 		this.row = row;
