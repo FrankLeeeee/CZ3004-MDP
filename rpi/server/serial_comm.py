@@ -13,11 +13,12 @@ Reference:
 """
 import asyncio
 import os
-from typing import Optional
+from typing import Optional, Callable
 
 import serial_asyncio
 from functools import partial
 
+from utils.constants import SEPARATOR, COMMAND_SEPARATOR
 from utils.logger import Logger
 
 
@@ -41,9 +42,10 @@ class SerialProtocol(asyncio.Protocol):
     def data_received(self, data):
         """Store characters until a newline is received.
         """
+        self._logger.debug(data)
         self._buffer += data
-        if b'\n' in self._buffer:
-            lines = self._buffer.split(b'\n')
+        if SEPARATOR.encode() in self._buffer:
+            lines = self._buffer.split(SEPARATOR)
             self._buffer = lines[-1]  # whatever was left over
             for line in lines[:-1]:
                 asyncio.ensure_future(self._queue.put(line))
@@ -52,7 +54,7 @@ class SerialProtocol(asyncio.Protocol):
         self._logger.error(f'Connection lost, reason: {exc}')
 
 
-class SerialAioTransport(object):
+class SerialAioChannel(object):
     def __init__(self, url, baudrate=115200, loop=None):
         self.url = url
         self.baudrate = baudrate
@@ -61,7 +63,8 @@ class SerialAioTransport(object):
 
         self._loop = loop or asyncio.get_event_loop()
         self._queue = asyncio.Queue(loop=loop)
-        self._logger = Logger('Serial Server')
+        self._channel_lock = asyncio.Lock(loop=loop)
+        self._logger = Logger('Serial Server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
         self.protocol_cls = partial(SerialProtocol, self._queue, self._logger)
 
     async def start(self):
@@ -70,15 +73,39 @@ class SerialAioTransport(object):
         )
         await asyncio.sleep(3)
 
-    async def read(self):
+    async def read_channel(self):
         return await self._queue.get()
 
-    async def write(self, data: bytes):
+    async def write_channel(self, data: bytes):
+        self._logger.debug(data)
         # self.transport.write not working for windows (nt) FIXME: pyserial-asyncio v0.5
-        if os.name == "nt":
-            await self._loop.run_in_executor(None, self.transport.serial.write, data)
-        else:
-            self.transport.write(data)
+        async with self._channel_lock:
+            if os.name == "nt":
+                await self._loop.run_in_executor(None, self.transport.serial.write_channel, data)
+            else:
+                self.transport.write(data)
 
     def close(self):
         self.transport.close()
+
+    def unary_unary(self, method: str, request_serializer: Callable, response_deserializer: Callable):
+        """Creates a UnaryUnaryMultiCallable for a unary-unary method."""
+
+        async def _callable(request):
+            request_data: str = request_serializer(request)
+            for char in [SEPARATOR, COMMAND_SEPARATOR]:
+                if char in request_data:
+                    raise ValueError(f'Invalid character {char} found at char({request_data.index(char)})'
+                                     f'in request data: {request_data}')
+            await self.write_channel((method + COMMAND_SEPARATOR + request_data + SEPARATOR).encode())
+            response = await self.read_channel()
+            return response_deserializer(response)
+
+        return _callable
+
+    async def __aenter__(self):
+        await self.start()
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        self.close()

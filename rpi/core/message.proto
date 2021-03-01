@@ -1,5 +1,15 @@
 syntax = "proto3";
 
+
+message EchoRequest {
+  bytes message = 1;
+}
+
+message EchoResponse {
+  bytes message = 1;
+  bool status = 2;
+}
+
 message MoveRequest {
   uint32 step = 1;
 }
@@ -33,7 +43,8 @@ message MetricRequest {
 }
 
 message MetricResponse {
-  map<uint32, double> values = 1;
+  map<uint32, float> values = 1;
+  bool status = 2;
 }
 
 message Position {
