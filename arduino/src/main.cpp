@@ -73,11 +73,11 @@ void readInput()
       wallCalibrate();
     }
   }
-  else{
+  else
+  {
     getSensorReading();
   }
 }
-
 
 //char readInput(){
 //  if(Serial.available()>0){

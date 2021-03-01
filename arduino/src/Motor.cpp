@@ -415,6 +415,31 @@ void wallCalibrate()
     md.setSpeeds(0, 0);
 }
 
+void CCW_Calibrate()
+{
+    int speed = 100;
+    double readingsL;
+    double readingsR;
+    md.setSpeeds(speed * motorfactor, -speed);
+    boolean calibrated = false;
+    while (!calibrated)
+    {
+        getSensorReading();
+        readingsL = getDist2(get_curFiltered2());
+        readingsR = getDist4(get_curFiltered4());
+        double diff = (readingsL - readingsR);
+        Serial.print(diff);
+        if ((diff > -(calibrationTolerence)) && (diff < calibrationTolerence)) //if diff between readings is close to 0
+        {
+            calibrated = true;
+        }
+        if (readingsR < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        {
+            return;
+        }
+    }
+}
+
 void CW_Calibrate()
 {
     int speed = 100;
@@ -434,31 +459,7 @@ void CW_Calibrate()
         {
             calibrated = true;
         }
-        if (readingsL < readingsR)
-        {
-            return;
-        }
-    }
-}
-void CCW_Calibrate()
-{
-    int speed = 100;
-    double readingsL;
-    double readingsR;
-    md.setSpeeds(speed * motorfactor, -speed);
-    boolean calibrated = false;
-    while (!calibrated)
-    {
-        getSensorReading();
-        readingsL = getDist2(get_curFiltered2());
-        readingsR = getDist4(get_curFiltered4());
-        double diff = (readingsL - readingsR);
-        Serial.print(diff);
-        if ((diff > -(calibrationTolerence)) && (diff < calibrationTolerence)) //if diff between readings is close to 0
-        {
-            calibrated = true;
-        }
-        if (readingsR < readingsL)
+        if (readingsL < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
         {
             return;
         }
