@@ -69,6 +69,8 @@ void readInput()
       // decodeMessage();
       receiveMessage(rpi_receive);
       break;
+    case 'r':
+      wallCalibrate();
     }
   }
   else{

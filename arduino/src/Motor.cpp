@@ -194,32 +194,32 @@ void moveB(double dist)
     md.setBrakes(400, 400);
 }
 
-void turnL()
-{
-    speedL = 350;
-    speedR = speedL * motorfactor;
-    md.setSpeeds(speedR, speedL);
-    delay(delayms);
-    oldTickR = (double)TickR;
-    oldTickL = (double)TickL;
-    PIDInit();
-    brakes = false;
+// void turnL()
+// {
+//     speedL = 350;
+//     speedR = speedL * motorfactor;
+//     md.setSpeeds(speedR, speedL);
+//     delay(delayms);
+//     oldTickR = (double)TickR;
+//     oldTickL = (double)TickL;
+//     PIDInit();
+//     brakes = false;
 
-    while (!brakes)
-    {
-        curTickR = TickR - oldTickR;
-        curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
-        PID1.Compute();
-        PID2.Compute();
-        md.setSpeeds(speedR * motorfactor, -speedL);
-        oldTickR += curTickR;
-        oldTickL += curTickL;
-        delay(delayms);
-    }
-}
+//     while (!brakes)
+//     {
+//         curTickR = TickR - oldTickR;
+//         curTickL = TickL - oldTickL;
+//         Serial.print(curTickR);
+//         Serial.print(" ");
+//         Serial.println(curTickL);
+//         PID1.Compute();
+//         PID2.Compute();
+//         md.setSpeeds(speedR * motorfactor, -speedL);
+//         oldTickR += curTickR;
+//         oldTickL += curTickL;
+//         delay(delayms);
+//     }
+// }
 
 void turnL(double angle)
 {
@@ -252,32 +252,32 @@ void turnL(double angle)
     md.setBrakes(400, 400);
 }
 
-void turnR()
-{
-    speedL = 350;
-    speedR = speedL * motorfactor;
-    md.setSpeeds(speedR, speedL);
-    delay(delayms);
-    oldTickR = (double)TickR;
-    oldTickL = (double)TickL;
-    PIDInit();
-    brakes = false;
+// void turnR()
+// {
+//     speedL = 350;
+//     speedR = speedL * motorfactor;
+//     md.setSpeeds(speedR, speedL);
+//     delay(delayms);
+//     oldTickR = (double)TickR;
+//     oldTickL = (double)TickL;
+//     PIDInit();
+//     brakes = false;
 
-    while (!brakes)
-    {
-        curTickR = TickR - oldTickR;
-        curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
-        PID1.Compute();
-        PID2.Compute();
-        md.setSpeeds(-speedR * motorfactor, speedL);
-        oldTickR += curTickR;
-        oldTickL += curTickL;
-        delay(delayms);
-    }
-}
+//     while (!brakes)
+//     {
+//         curTickR = TickR - oldTickR;
+//         curTickL = TickL - oldTickL;
+//         Serial.print(curTickR);
+//         Serial.print(" ");
+//         Serial.println(curTickL);
+//         PID1.Compute();
+//         PID2.Compute();
+//         md.setSpeeds(-speedR * motorfactor, speedL);
+//         oldTickR += curTickR;
+//         oldTickL += curTickL;
+//         delay(delayms);
+//     }
+// }
 
 void turnR(double angle)
 {
@@ -361,4 +361,106 @@ void setTickLoop()
     //     delay(delayms);
     // }
     return;
+}
+
+double calibrationTolerence = 0.6;
+// double calibrationTolerence = 0.75;
+
+void wallCalibrate()
+{
+    int readSample = 20;
+    double sensorL_Readings[readSample];
+    double sensorR_Readings[readSample];
+
+    for (int i = 0; i < readSample; i++)
+    {
+        getSensorReading();
+        sensorL_Readings[i] = getDist2(get_curFiltered2());
+        sensorR_Readings[i] = getDist4(get_curFiltered4());
+    }
+
+    double sumL = 0;
+    double sumR = 0;
+
+    for (int i = 0; i < readSample; i++)
+    {
+        sumL = sumL + sensorL_Readings[i];
+        sumR = sumR + sensorR_Readings[i];
+    }
+
+    double sensorL = sumL / readSample;
+    double sensorR = sumR / readSample;
+
+    Serial.println(sensorL);
+    Serial.println(sensorR);
+
+    double diff = sensorL - sensorR;
+    Serial.println(diff);
+
+    if ((diff > -(calibrationTolerence)) && (diff < calibrationTolerence))
+    {
+        return;
+    }
+
+    if (sensorL < sensorR) //if Sensor 2(L) nearer than Sensor 4(R)
+    {
+        Serial.print("CCW");
+        CCW_Calibrate();
+    }
+    else if (sensorR < sensorL) //if Sensor 4(R) nearer than Sensor 2(L)
+    {
+        Serial.print("CW");
+        CW_Calibrate();
+    }
+    md.setSpeeds(0, 0);
+}
+
+void CW_Calibrate()
+{
+    int speed = 100;
+    double readingsL;
+    double readingsR;
+    md.setSpeeds(-speed * motorfactor, speed);
+    boolean calibrated = false;
+    while (!calibrated)
+    {
+        getSensorReading();
+        readingsL = getDist2(get_curFiltered2());
+        readingsR = getDist4(get_curFiltered4());
+
+        double diff = (readingsL - readingsR);
+        Serial.print(diff);
+        if ((diff > -(calibrationTolerence)) && (diff < calibrationTolerence)) //if diff between readings is close to 0
+        {
+            calibrated = true;
+        }
+        if (readingsL < readingsR)
+        {
+            return;
+        }
+    }
+}
+void CCW_Calibrate()
+{
+    int speed = 100;
+    double readingsL;
+    double readingsR;
+    md.setSpeeds(speed * motorfactor, -speed);
+    boolean calibrated = false;
+    while (!calibrated)
+    {
+        getSensorReading();
+        readingsL = getDist2(get_curFiltered2());
+        readingsR = getDist4(get_curFiltered4());
+        double diff = (readingsL - readingsR);
+        Serial.print(diff);
+        if ((diff > -(calibrationTolerence)) && (diff < calibrationTolerence)) //if diff between readings is close to 0
+        {
+            calibrated = true;
+        }
+        if (readingsR < readingsL)
+        {
+            return;
+        }
+    }
 }
