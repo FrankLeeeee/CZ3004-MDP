@@ -18,7 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import ntu.mdpg1app.bluetooth.BluetoothChatFragment;
 import ntu.mdpg1app.model.HexBin;
@@ -422,11 +425,23 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("TESTE", "DATA[1] = " + data[1]);
                 Log.e("TESTE", "DATA[2] = " + data[2]);
 
-                IDblock input = new IDblock(data[2], Integer.parseInt(data[0]), Integer.parseInt(data[1]));
-                Log.e("TESTE", input.getID());
-                Map.getInstance().addNumberedBlocks(input);
-                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                    loadGrid();
+
+                String[] blockID = new String[]{"0", "6", "7", "8", "9", "V", "W", "X", "Y", "Z", "GC", "WA", "BA", "YA", "RA"};
+                //GC = Green Circle
+                //WA = White Arrow
+                //BA = Blue Arrow
+                //YA = Yellow Arrow
+                //RA = Red Arrow
+
+
+                if(Arrays.asList(blockID).contains(data[0].toUpperCase())) {
+
+                    IDblock input = new IDblock(data[0].toUpperCase(), Integer.parseInt(data[1]), Integer.parseInt(data[2]));
+                    Log.e("TESTE", input.getID());
+                    Map.getInstance().addNumberedBlocks(input);
+                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                        loadGrid();
+                    }
                 }
             }
 
