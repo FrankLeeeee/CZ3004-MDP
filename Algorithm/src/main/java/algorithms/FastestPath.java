@@ -94,8 +94,11 @@ public class FastestPath {
 		do {
 			this.loopCnt++;
 
-			// get the min cost cell
-			this.curCell = getMinFCostCell(targetR, targetC);
+			if (getMinFCostCell(targetR, targetC)!=null) {
+				// get the min cost cell
+				this.curCell = getMinFCostCell(targetR, targetC);
+				
+			}
 
 			// update the list
 			this.visited.add(curCell);

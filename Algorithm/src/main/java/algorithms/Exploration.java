@@ -198,7 +198,7 @@ public class Exploration {
 			// A: in sensor
 			// the robot must be in vertical direction and have nothing blocking on the left and right
 			// the cell on the left and right must be explored, not an obstacle and not a virtual wall
-			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
 
 			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
 				moveRobot(RobotConst.MOVE.FORWARD);
@@ -451,7 +451,7 @@ public class Exploration {
 								if (isExploredAndFree(cell.getRow() + i, cell.getCol() + j)) {
 									targetR = cell.getRow() + i;
 									targetC = cell.getCol() + j;
-									if (targetR != this.robot.getRow() || targetC != this.robot.getCol()) {
+									if (targetR != this.robot.getRow() && targetC != this.robot.getCol()) {
 										flag = true;
 										break;
 									} else {
@@ -469,7 +469,7 @@ public class Exploration {
 								if (isExploredAndFree(cell.getRow() + i, cell.getCol() + j)) {
 									targetR = cell.getRow() + i;
 									targetC = cell.getCol() + j;
-									if (targetR != this.robot.getRow() || targetC != this.robot.getCol()) {
+									if (targetR != this.robot.getRow() && targetC != this.robot.getCol()) {
 										flag = true;
 										break;
 									} else {
