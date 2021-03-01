@@ -18,6 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,34 +111,73 @@ public class MainActivity extends AppCompatActivity {
                 //check if robot is out of bounds
                 if(!Robot.getInstance().isOutOfBounds()) {
                     Robot.getInstance().moveForward(10);
-                    outgoingMessage("W", 1);
-                    loadGrid();
+//                    outgoingMessage("W", 1);
+//                    loadGrid();
+
+                    try {
+                        String instructionValue = new JSONObject().put("step", 1).toString();
+                        String instruction = "Forward\\" + instructionValue + ";";
+                        outgoingMessage(instruction);
+                        loadGrid();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
         btn_left.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateLeft();
-                outgoingMessage("A", 1);
-                loadGrid();
+//                outgoingMessage("A", 1);
+//                loadGrid();
+
+                try {
+                    String instructionValue = new JSONObject().put("angle", 270).toString();
+                    String instruction = "TurnLeft\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    loadGrid();
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
             }
         });
         btn_right.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateRight();
-                outgoingMessage("D", 1);
-                loadGrid();
+//                outgoingMessage("D", 1);
+//                loadGrid();
+
+                try {
+                    String instructionValue = new JSONObject().put("angle", 90).toString();
+                    String instruction = "TurnRight\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    loadGrid();
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
             }
         });
+
         btn_terminate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                outgoingMessage("X", 0);
+                String instruction = "Terminate\\;";
+                outgoingMessage(instruction);
+//                outgoingMessage("X", 0);
                 updateStatus(STATUS_TERMINATE_DESC);
             }
         });
+
         btn_explr.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                outgoingMessage("BEGINEX", 0);
+                try {
+                    String instructionValue = new JSONObject().put("EXPLORATION", 0).toString();
+                    String instruction = "Explore\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+//                outgoingMessage("BEGINEX", 0);
                 updateStatus(STATUS_EX_DESC);
             }
         });
@@ -150,11 +193,17 @@ public class MainActivity extends AppCompatActivity {
                     toast.show();
 
                 }else{
-                    outgoingMessage("BEGINFP", 0);
+                    try {
+                        String instructionValue = new JSONObject().put("FASTEST_PATH", 1).toString();
+                        String instruction = "FastestPath\\" + instructionValue + ";";
+                        outgoingMessage(instruction);
+                    }catch(JSONException e) {
+                        e.printStackTrace();
+                    }
+
+//                    outgoingMessage("BEGINFP", 0);
                     updateStatus(STATUS_FP_DESC);
                 }
-
-
             }
         });
         btn_config1.setOnClickListener(new View.OnClickListener() {
@@ -395,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
                 message = readMsg.split("-");
             }
 
+            //Updating of obstacles on the map
             if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
                 message[1] = message[1].substring(2, message[1].length()-1);
                 Log.e( "TESTE", "msg[1] = " + message[1]);
@@ -418,6 +468,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+
+            //Updating of numbered blocks on obstacles on the map
             else if (message[0].equals("BLOCK")) { //receive numbered block
                 Log.e("TESTE", "BLOCK[1] = " + message[1]);
                 String data[] = message[1].split(","); //x, y, id
@@ -445,44 +497,50 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-
+            //Updating of robot's position on the map
             else if (message[0].equals("ROBOTPOSITION")) { //receive robot position
                 message[1] = message[1].substring(2, message[1].length()-1);
                 Log.e("TESTE", "message[1] = " + message[1]);
                 String posAndDirect[] = message[1].split(",");
-//                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
-//                r.setPosY(Float.parseFloat(posAndDirect[1])+1);
-//                r.setDirection(posAndDirect[2]);
-
                 r.setPosX(Float.parseFloat(posAndDirect[0])+1);
-                r.setPosY(((Float.parseFloat(posAndDirect[1])+1) - 19) * -1);
-                Log.e("TESTE", "direction = " + posAndDirect[2]);
+                r.setPosY(Float.parseFloat(posAndDirect[1])+1);
                 r.setDirection(posAndDirect[2].substring(1));
+
+//                for checklist
+//                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
+//                r.setPosY(((Float.parseFloat(posAndDirect[1])+1) - 19) * -1);
+//                Log.e("TESTE", "direction = " + posAndDirect[2]);
+//                r.setDirection(posAndDirect[2].substring(1));
 
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();
                 }
             }
+
+            //Updating of robot's status
             else if(message[0].equals("STATUS")){
-                updateStatus(message[1]);
-//                if (message[1].equals("F")) {
-//                    updateStatus("Moving Forward");
-//                }
-//                if (message[1].equals("TR")) {
-//                    updateStatus("Turning Right");
-//                }
-//                if (message[1].equals("TL")) {
-//                    updateStatus("Turning Left");
-//                }
-//                if (message[1].equals("FP")) {
-//                    updateStatus("Fastest Path");
-//                }
-//                if (message[1].equals("EX")) {
-//                    updateStatus("Exploration");
-//                }
-//                if (message[1].equals("DONE")) {
-//                    updateStatus("Done!");
-//                }
+
+//                for checklist
+//                updateStatus(message[1]);
+
+                if (message[1].equals("F")) {
+                    updateStatus("Moving Forward");
+                }
+                if (message[1].equals("TR")) {
+                    updateStatus("Turning Right");
+                }
+                if (message[1].equals("TL")) {
+                    updateStatus("Turning Left");
+                }
+                if (message[1].equals("FP")) {
+                    updateStatus("Fastest Path");
+                }
+                if (message[1].equals("EX")) {
+                    updateStatus("Exploration");
+                }
+                if (message[1].equals("DONE")) {
+                    updateStatus("Done!");
+                }
             }
             else if(message[0].trim().equals("Y")){ //harmonize with algo
                 updateStatus("Moving");
@@ -499,7 +557,8 @@ public class MainActivity extends AppCompatActivity {
 
     //method to send out message to rpi thru bluetooth -kept for backward compatibility
     public boolean outgoingMessage(String sendMsg) {
-        return fragment.sendMsg("@t" + sendMsg + "!");
+        //return fragment.sendMsg("@t" + sendMsg + "!");
+        return fragment.sendMsg(sendMsg);
     }
     public boolean outgoingMessage(String sendMsg, int destination) {
         //add delimiters
@@ -511,6 +570,11 @@ public class MainActivity extends AppCompatActivity {
         }
         return fragment.sendMsg(sendMsg);
     }
+
+//    public boolean outgoingMessage(JSONObject sendMsg){
+//        String stringMsg = sendMsg.toString();
+//        return fragment.sendMsg("@t" + stringMsg + "!");
+//    }
     //on the coordinate tapped
     //set waypoint, if menuitem is checked
     //set robot, if menuitem is checked

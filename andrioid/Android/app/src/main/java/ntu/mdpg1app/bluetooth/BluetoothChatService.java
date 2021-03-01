@@ -491,6 +491,7 @@ public class BluetoothChatService {
             // Keep listening to the InputStream while connected
             while (mState == STATE_CONNECTED) {
                 try {
+
                     // Read from the InputStream
 //                    message = []
 //                    buffer = bytes()
