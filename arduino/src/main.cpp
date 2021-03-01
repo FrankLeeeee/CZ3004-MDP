@@ -2,10 +2,17 @@
 #include "Sensor.h"
 #include "Arduino.h"
 #include "Comms.h"
+#include <ArduinoJson.h>
+
 
 void readInput();
+uint8_t rpi_receive[1024];
+uint8_t rpi_receive_cur = 0;
 
-uint8_t rpi_receive[1024] = {0x02, 0x31, 0xFF, 0xAB, 0xFF, 0xFF, 0xFF, 0xFF, 0xF1, 0xCC};
+ 
+
+uint8_t temp;
+ uint8_t rpi_receive1[1024] = {'C','A', 'L', 'I', 'B', 'R', 'A','T','E','\\','{','"','s','t','e','p','"',':','3','}',';'};
 
 //==========================
 //===== Main Functions =====
@@ -14,12 +21,33 @@ void setup()
 {
   Serial.begin(115200);
   EncoderInit();
+  while (!Serial)
+  Serial.flush();
 }
 
 void loop()
 {
-  readInput();
+
+    if (Serial.available() > 0)
+  {
+    temp = Serial.read();
+  if (temp == ';') {
+    rpi_receive[rpi_receive_cur] = ';';
+    rpi_receive_cur++;
+
+  
+      receiveMessage(rpi_receive, rpi_receive_cur);
+  
+      rpi_receive_cur = 0;
+  }
+  else{
+      rpi_receive[rpi_receive_cur] = temp;
+      Serial.print((char) rpi_receive[rpi_receive_cur]);
+      rpi_receive_cur+=1;
+  }
 }
+}
+
 
 //===== Inputs =====
 int state = 0;
@@ -67,8 +95,7 @@ void readInput()
       encodeMessage();
       break;
     case 'g':
-      // decodeMessage();
-      receiveMessage(rpi_receive);
+      //receiveMessage(rpi_receive1);
       break;
     }
   }
