@@ -7,21 +7,22 @@ Date: 2/16/2021
 
 gRPC server for interfacing with the PC.
 """
-import argparse
 import asyncio
 
-from config import GRPCServerConfig
+import yaml
+
+from config import ServerConfig
 from core import grpc_service_pb2_grpc
 from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from core.grpc_aio_server import GRPCAioServer
-from core.message_pb2 import Status, MetricResponse, Position
 from server.serial_comm import SerialAioChannel
+from utils.constants import PROJECT_ROOT_PATH
 from utils.logger import Logger
 
 
 class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
 
-    def __init__(self, host, config: GRPCServerConfig, serial_channel: SerialAioChannel):
+    def __init__(self, host, config: ServerConfig, serial_channel: SerialAioChannel):
         self.host = host
         self.port = config.port
         self.serial_channel = serial_channel
@@ -54,7 +55,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
 
 
 class BackendRPCServer(GRPCAioServer):
-    def __init__(self, host: str, config: GRPCServerConfig, **deps):
+    def __init__(self, host: str, config: ServerConfig, **deps):
         super().__init__(
             servicers={
                 ControlServicer: grpc_service_pb2_grpc.add_GRPCServiceServicer_to_server,
@@ -69,16 +70,6 @@ class BackendRPCServer(GRPCAioServer):
         )
 
 
-def get_args():
-    parser = argparse.ArgumentParser(description='Model inference gRPC server.')
-    parser.add_argument('-t', '--thread-num', type=int, help='thread concurrency of each gRPC process')
-    parser.add_argument('--host', type=str, default='localhost', help='Host name or IP. Default to localhost.')
-    parser.add_argument('-p', '--port', type=int, help='gRPC bind port number.')
-    args = parser.parse_args()
-
-    return args
-
-
 async def runner():
     await server.start()
     await server.join()
@@ -90,26 +81,20 @@ async def before_server_start(loop):
 
 
 @BackendRPCServer.register_hook('after_server_stop')
-def after_server_stop(loop):
+async def after_server_stop(loop):  # noqa
     serial_channel.close()
 
 
 if __name__ == '__main__':
-    args_ = get_args()
+    with open(PROJECT_ROOT_PATH / 'server/config.yml') as f:
+        config = yaml.safe_load(f)
+    config = ServerConfig.parse_obj(config)
 
-    update_config_data = {
-        'port': args_.port,
-        'thread_num': args_.thread_num,
-    }
-    config = GRPCServerConfig.parse_obj(
-        GRPCServerConfig.parse_obj(update_config_data).dict(exclude_none=True)
-    )
-
-    host_ = args_.host
+    host_ = '0.0.0.0'
 
     print(f'Using configuration:\n{config}')
 
-    serial_channel = SerialAioChannel('/dev/cu.usbmodem1411401')
+    serial_channel = SerialAioChannel(config.serial_url, baudrate=config.baudrate)
     server = BackendRPCServer(host=host_, config=config, serial_channel=serial_channel)
 
     loop = asyncio.get_event_loop()

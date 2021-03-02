@@ -1,0 +1,2 @@
+serial_url: '/dev/cu.usbmodem1411401'
+baudrate: 115200

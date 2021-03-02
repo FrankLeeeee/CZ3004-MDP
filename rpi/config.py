@@ -12,6 +12,8 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class GRPCServerConfig(BaseModel):
+class ServerConfig(BaseModel):
     port: Optional[int] = 8001
     thread_num: Optional[int] = 8
+    serial_url: str
+    baudrate: Optional[int] = 115200
