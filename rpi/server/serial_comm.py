@@ -18,7 +18,7 @@ from typing import Optional, Callable
 import serial_asyncio
 from functools import partial
 
-from utils.constants import SEPARATOR, COMMAND_SEPARATOR
+from utils.constants import SEPARATOR
 from utils.logger import Logger
 
 
@@ -44,7 +44,7 @@ class SerialProtocol(asyncio.Protocol):
         """
         self._logger.debug(data)
         self._buffer += data
-        if SEPARATOR.encode() in self._buffer:
+        if SEPARATOR in self._buffer:
             lines = self._buffer.split(SEPARATOR)
             self._buffer = lines[-1]  # whatever was left over
             for line in lines[:-1]:
@@ -88,16 +88,15 @@ class SerialAioChannel(object):
     def close(self):
         self.transport.close()
 
-    def unary_unary(self, method: str, request_serializer: Callable, response_deserializer: Callable):
+    def unary_unary(self, method: bytes, request_serializer: Callable, response_deserializer: Callable):
         """Creates a UnaryUnaryMultiCallable for a unary-unary method."""
 
         async def _callable(request):
-            request_data: str = request_serializer(request)
-            for char in [SEPARATOR, COMMAND_SEPARATOR]:
-                if char in request_data:
-                    raise ValueError(f'Invalid character {char} found at char({request_data.index(char)})'
-                                     f'in request data: {request_data}')
-            await self.write_channel((method + COMMAND_SEPARATOR + request_data + SEPARATOR).encode())
+            request_data: bytes = request_serializer(request)
+            if SEPARATOR in request_data:
+                raise ValueError(f'Invalid character {SEPARATOR} found at char({request_data.index(SEPARATOR)})'
+                                 f'in request data: {request_data}')
+            await self.write_channel(method + request_data + SEPARATOR)
             response = await self.read_channel()
             return response_deserializer(response)
 
