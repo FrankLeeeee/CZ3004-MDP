@@ -137,6 +137,8 @@ void getSensorReading()
     // Serial.println(pepe2);
 }
 
+
+
 double get_curFiltered1()
 {
     return curFiltered1;
