@@ -61,13 +61,15 @@ class SerialAioChannel(object):
         self.transport: Optional[serial_asyncio.SerialTransport] = None
         self.protocol = None
 
-        self._loop = loop or asyncio.get_event_loop()
-        self._queue = asyncio.Queue(loop=loop)
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._queue: Optional[asyncio.Queue] = None
         self._channel_lock = asyncio.Lock(loop=loop)
         self._logger = Logger('Serial Server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
         self.protocol_cls = partial(SerialProtocol, self._queue, self._logger)
 
-    async def start(self):
+    async def start(self, loop=None):
+        self._loop = loop or asyncio.get_event_loop()
+        self._queue = asyncio.Queue(loop=loop)
         self.transport, self.protocol = await serial_asyncio.create_serial_connection(
             self._loop, self.protocol_cls, self.url, baudrate=self.baudrate
         )
