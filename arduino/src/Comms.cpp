@@ -18,6 +18,8 @@ bool status = true;
 StaticJsonDocument<300> doc;
 
 
+
+
 uint8_t messageBuffer(uint8_t* rpi_receive, int length){
   int start = 0;
   int counter = 0;
@@ -40,13 +42,16 @@ uint8_t receiveMessage(uint8_t* rpi_receive, int length)
   {
     if (rpi_receive[i] == '\\')
     {
-      start = i+1;
+      start = i+1; 
     }
     if(rpi_receive[i]==';'){
       end = i;
     }
   }
-   uint8_t command[start];
+   char command[start];
+   char moveReqStr[12] = "MoveRequest";
+   char turnReqStr[12] = "TurnRequest";
+
   uint8_t encodedData[end-start];
       Serial.print("JSON Data: ");
   for (int i = start; i < end; i++){
@@ -58,11 +63,17 @@ uint8_t receiveMessage(uint8_t* rpi_receive, int length)
   
     Serial.print("Command: ");
   for(int i = 0; i < start-1; i++){
-    command[m] = rpi_receive[i];
-    Serial.print((char)command[m]);
+    command[m] = char(rpi_receive[i]);
+    Serial.print(command[m]);
   }
       Serial.println("");
-
+      Serial.println(command);
+      if (strcmp(command, moveReqStr)==0)
+  {//do stuff here because it was a match
+    Serial.println("forward cmd");
+  } else{
+    Serial.println("other cmd");
+  }
 
 
     // Deserialize the JSON document

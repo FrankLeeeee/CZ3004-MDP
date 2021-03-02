@@ -3,15 +3,18 @@
 #include "Arduino.h"
 #include "Comms.h"
 #include <ArduinoJson.h>
+#define MESSAGE_SEPARATOR ';'
 
 
 void readInput();
+void parseMessage();
+
 uint8_t rpi_receive[1024];
 uint8_t rpi_receive_cur = 0;
-
+String message;
  
 
-uint8_t temp;
+uint8_t temp1;
  uint8_t rpi_receive1[1024] = {'C','A', 'L', 'I', 'B', 'R', 'A','T','E','\\','{','"','s','t','e','p','"',':','3','}',';'};
 
 //==========================
@@ -25,30 +28,43 @@ void setup()
   Serial.flush();
 }
 
-void loop()
-{
 
-    if (Serial.available() > 0)
-  {
-    temp = Serial.read();
-  if (temp == ';') {
-    rpi_receive[rpi_receive_cur] = ';';
-    rpi_receive_cur++;
 
-  
-      receiveMessage(rpi_receive, rpi_receive_cur);
-  
-      rpi_receive_cur = 0;
-  }
-  else{
-      rpi_receive[rpi_receive_cur] = temp;
-      Serial.print((char) rpi_receive[rpi_receive_cur]);
-      rpi_receive_cur+=1;
-  }
-}
+void loop() {
+  char temp;
+  while (Serial.available() > 0) {
+      temp = Serial.read();
+
+      // send the message to queue
+      if (temp == (uint8_t) MESSAGE_SEPARATOR) {  // find the end of message
+          parseMessage();
+          message = String("");
+      }
+      else
+          message.concat((char)temp);
+    }
 }
 
 
+void parseMessage() {  
+  char command = message.charAt(0);
+  int argument = 0;
+  if (message.length() > 1){
+    argument = (int)message.charAt(1);
+  }
+
+    switch(command){
+    case '1':
+    Serial.println("case 1");
+    break;
+
+    case '2':
+    Serial.println("case 2");
+    break;
+  }
+
+  
+}
 //===== Inputs =====
 int state = 0;
 // 0 - idle
