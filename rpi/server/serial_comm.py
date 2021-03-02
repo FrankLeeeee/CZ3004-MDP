@@ -75,6 +75,8 @@ class SerialAioChannel(object):
         )
         await asyncio.sleep(3)
 
+        self._logger.info(f'Listening on device {self.url} with {self.baudrate}')
+
     async def read_channel(self):
         return await self._queue.get()
 
