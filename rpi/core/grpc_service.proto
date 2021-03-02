@@ -3,6 +3,8 @@ syntax = "proto3";
 import "core/message.proto";
 
 service GRPCControlService {
+  rpc Echo(EchoRequest) returns (EchoResponse) {}
+
   rpc Forward(MoveRequest) returns (Status) {}
 
   rpc TurnClockwise(MoveRequest) returns (Status) {}
