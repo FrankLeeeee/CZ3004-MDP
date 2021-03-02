@@ -2,23 +2,21 @@ syntax = "proto3";
 
 import "core/message.proto";
 
-service GRPCControlService {
+service GRPCService {
   rpc Echo(EchoRequest) returns (EchoResponse) {}
 
-  rpc Forward(MoveRequest) returns (Status) {}
+  rpc Forward(MoveRequest) returns (MetricResponse) {}
 
-  rpc TurnClockwise(MoveRequest) returns (Status) {}
+  rpc TurnLeft(MoveRequest) returns (MetricResponse) {}
 
-  rpc TurnAntiClockwise(MoveRequest) returns (Status) {}
+  rpc TurnRight(MoveRequest) returns (MetricResponse) {}
 
   rpc Calibrate(CalibrateRequest) returns (Status) {}
 
   rpc WaitForRobotStart(RobotStatus) returns (Status) {}
 
   rpc StopRobot(RobotStatus) returns (Status) {}
-}
 
-service GRPCDataService {
   rpc GetMetrics(MetricRequest) returns (MetricResponse) {}
 
   rpc SetPosition(Position) returns (Position) {}

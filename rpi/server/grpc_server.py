@@ -9,149 +9,62 @@ gRPC server for interfacing with the PC.
 """
 import argparse
 import asyncio
-import signal
-from concurrent import futures
-from typing import Dict, Type, Callable
-
-import grpc
 
 from config import GRPCServerConfig
 from core import grpc_service_pb2_grpc
-from core.grpc_service_pb2 import MoveResponse, TurnResponse, MetricResponse, PositionResponse
+from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from core.grpc_aio_server import GRPCAioServer
+from core.message_pb2 import Status, MetricResponse, Position
+from server.serial_comm import SerialAioChannel
 from utils.logger import Logger
 
 
-class GRPCAioServer(object):
-    """gRPC asyncio server is a template server class.
-    Args:
-        host (str): Host address. Default listening on [::].
-        port (int): Binding port number. Default to value in `grpc_config.port`.
-        thread_concurrency (int): Number of thread concurrency. Default to value in `grpc_config.thread_num`.
-        servicers: A dictionary of servicers for registrations. The key is servicer class, and the value is a
-            method defining how to add the service to the server.
-    Attributes:
-        server (grpc.aio.Server): gRPC Aio Server.
-    References:
-        https://www.roguelynn.com/words/asyncio-graceful-shutdowns/
-    """
+class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
 
-    def __init__(
-            self,
-            servicers: Dict[Type, Callable],
-            thread_concurrency,
-            host='[::]',
-            port=50051,
-            args=(),
-            kwargs=None,
-    ):
-        if kwargs is None:
-            kwargs = dict()
-
-        self.options = [
-            # ('grpc.so_reuseport', 1),  # reusable port
-            ('grpc.max_send_message_length', -1),
-            ('grpc.max_receive_message_length', -1),
-        ]
-        self.bind_address = f'{host}:{port}'
-        self.thread_concurrency = thread_concurrency
-        self.logger = Logger('gRPC server')
-
-        grpc.aio.init_grpc_aio()
-        self.server = grpc.aio.server(
-            futures.ThreadPoolExecutor(max_workers=self.thread_concurrency),
-            options=self.options,
-        )
-        self.servicers = list()
-        for servicer, add_servicer_to_server_func in servicers.items():
-            servicer = servicer(*args, **kwargs)
-            self.servicers.append(servicer)
-            add_servicer_to_server_func(servicer, self.server)
-        self.server.add_insecure_port(self.bind_address)
-
-    async def start(self):
-        """Start gRPC server."""
-        loop = asyncio.get_event_loop()
-        for s in (signal.SIGHUP, signal.SIGTERM, signal.SIGINT):
-            loop.add_signal_handler(s, lambda sig_num=s: asyncio.create_task(self.shutdown(sig_num)))
-        await self.server.start()
-        self.logger.info(f'Listening on {self.bind_address}.')
-
-    async def join(self):
-        await self.server.wait_for_termination()
-
-    async def shutdown(self, s=signal.SIGINT):
-        """Stop gRPC server."""
-        loop = asyncio.get_event_loop()
-        self.logger.info(f'Receive exit signal {s.name}')
-        await self.server.stop(1)
-
-        current_task = asyncio.current_task(loop=loop)
-        tasks = list()
-        for task in asyncio.all_tasks(loop=loop):
-            if task is not current_task:
-                if not task.cancelled():
-                    task.cancel()
-                tasks.append(task)
-
-        await asyncio.gather(*tasks, return_exceptions=True)
-        loop.stop()
-        self.logger.info('gRPC server stopped.')
-
-
-class ControlServicer(grpc_service_pb2_grpc.GRPCControlServiceServicer):
-
-    def __init__(self, host, config: GRPCServerConfig):
+    def __init__(self, host, config: GRPCServerConfig, serial_channel: SerialAioChannel):
         self.host = host
         self.port = config.port
-        self._logger = Logger('Backend gRPC server')
+        self.serial_channel = serial_channel
+        self._logger = Logger('Backend gRPC server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
 
-    def Forward(self, request, context):
-        return MoveResponse(status=True)
-
-    def Backward(self, request, context):
-        return MoveResponse(status=True)
-
-    def Left(self, request, context):
-        return MoveResponse(status=True)
-
-    def Right(self, request, context):
-        return MoveResponse(status=True)
-
-    def TurnClockwise(self, request, context):
-        return TurnResponse(status=True)
-
-    def TurnAntiClockwise(self, request, context):
-        return TurnResponse(status=True)
-
-
-class DataServicer(grpc_service_pb2_grpc.GRPCDataServiceServicer):
-    def __init__(self, host, config: GRPCServerConfig):
-        self.host = host
-        self.port = config.port
-        self._logger = Logger('Backend gRPC server')
-
-    async def GetMetrics(self, request, context):
-        id = request.id
-        response = MetricResponse()
-        response.values[id] = 0.
+    async def Echo(self, request, context):
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.Echo(request)
         return response
 
-    def GetPosition(self, request, context):
-        return PositionResponse(status=True)
+    async def Forward(self, request, context):
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.Forward(request)
+        return response
+
+    async def TurnLeft(self, request, context):
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.TurnLeft(request)
+        return response
+
+    async def TurnRight(self, request, context):
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.TurnRight(request)
+        return response
+
+    async def Calibrate(self, request, context):
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.Calibration(request)
+        return response
 
 
 class BackendRPCServer(GRPCAioServer):
-    def __init__(self, host: str, config: GRPCServerConfig):
+    def __init__(self, host: str, config: GRPCServerConfig, **deps):
         super().__init__(
             servicers={
-                ControlServicer: grpc_service_pb2_grpc.add_GRPCControlServiceServicer_to_server,
-                DataServicer: grpc_service_pb2_grpc.add_GRPCDataServiceServicer_to_server,
+                ControlServicer: grpc_service_pb2_grpc.add_GRPCServiceServicer_to_server,
             },
             thread_concurrency=config.thread_num,
             port=config.port,
             kwargs={
                 'host': host,
                 'config': config,
+                **deps,
             }
         )
 
@@ -171,6 +84,16 @@ async def runner():
     await server.join()
 
 
+@BackendRPCServer.register_hook('before_server_start')
+async def before_server_start(loop):
+    await serial_channel.start(loop=loop)
+
+
+@BackendRPCServer.register_hook('after_server_stop')
+def after_server_stop(loop):
+    serial_channel.close()
+
+
 if __name__ == '__main__':
     args_ = get_args()
 
@@ -186,7 +109,9 @@ if __name__ == '__main__':
 
     print(f'Using configuration:\n{config}')
 
-    server = BackendRPCServer(host=host_, config=config)
+    serial_channel = SerialAioChannel('/dev/cu.usbmodem1411401')
+    server = BackendRPCServer(host=host_, config=config, serial_channel=serial_channel)
+
     loop = asyncio.get_event_loop()
 
     loop.create_task(runner())
