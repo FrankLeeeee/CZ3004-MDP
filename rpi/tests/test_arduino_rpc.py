@@ -6,7 +6,7 @@ from server.serial_comm import SerialAioChannel
 
 
 async def test_arduino_rpc():
-    async with SerialAioChannel('/dev/cu.usbmodem1411401') as channel:
+    async with SerialAioChannel('/dev/cu.usbserial-141140') as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = EchoRequest(message=b'a')
         response = await stub.Echo(request)
