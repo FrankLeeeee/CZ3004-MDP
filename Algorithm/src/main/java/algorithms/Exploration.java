@@ -1,7 +1,6 @@
 package algorithms;
 
-import communication.GrpcControlClient;
-import communication.GrpcDataClient;
+import communication.GrpcClient;
 import config.MapConst;
 import config.RobotConst;
 import grpc.GrpcService;
@@ -29,8 +28,7 @@ public class Exploration {
 	public static boolean overwritten = false;
 	public boolean expEnded = false;
 	private static int RFCount = 0;
-	private GrpcControlClient controlClient;
-	private GrpcDataClient dataClient;
+	private GrpcClient client;
 
 	private static Logger logger = Logger.getLogger(Exploration.class);
 
@@ -41,8 +39,7 @@ public class Exploration {
 		this.robot = robot;
 		this.coverageLimit = coverageLimit;
 		this.timeLimit = timeLimit;
-		this.controlClient = GrpcControlClient.getInstance();
-		this.dataClient = GrpcDataClient.getInstance();
+		this.client = GrpcClient.getInstance();
 	}
 
 	// Constructor for simulation run
@@ -52,8 +49,7 @@ public class Exploration {
 		this.robot = robot;
 		this.coverageLimit = coverageLimit;
 		this.timeLimit = timeLimit;
-		this.controlClient = GrpcControlClient.getInstance();
-		this.dataClient = GrpcDataClient.getInstance();
+		this.client = GrpcClient.getInstance();
 	}
 
 	public Map getExploredMap() {
@@ -112,7 +108,7 @@ public class Exploration {
 
 			while (true) {
 				// waiting for android to send the start exploration message
-				boolean response = controlClient.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
+				boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
 				assert response : "gRPC server claims that the robot is not started";
 				logger.info("Rpi signals to start exploration after initial calibration.");
 				break;
@@ -552,7 +548,7 @@ public class Exploration {
 
 	private void finalCalibration() {
 		if (this.expEnded)
-			controlClient.stopRobot(GrpcService.RobotStatus.Mode.EXPLORATION);
+			client.stopRobot(GrpcService.RobotStatus.Mode.EXPLORATION);
 
 		turnRobot(RobotConst.DIRECTION.WEST);
 		this.robot.move(RobotConst.MOVE.CALIBRATE, false, this.exploredMap);

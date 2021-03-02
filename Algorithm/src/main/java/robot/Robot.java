@@ -1,12 +1,12 @@
 package robot;
 
-import communication.GrpcControlClient;
-import communication.GrpcDataClient;
+import communication.GrpcClient;
 import communication.MapDescriptor;
 import config.MapConst;
 import config.RobotConst;
 import map.Map;
 import org.apache.log4j.Logger;
+import simulator.Simulator;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,8 +24,7 @@ public class Robot {
 	private int col;
 	private RobotConst.DIRECTION dir;
 	private int speed;
-	private GrpcDataClient dataClient;
-	private GrpcControlClient controlClient;
+	private GrpcClient client;
 	private boolean hasReachedGoal;
 	private boolean hasReturnedStart = false;
 
@@ -46,8 +45,7 @@ public class Robot {
 		this.SRRight = new Sensor("SRR", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
 		this.LRLeft = new Sensor("LRL", RobotConst.SENSOR_LR_LOW, RobotConst.SENSOR_LR_HIGH, this.row, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
 
-		this.dataClient = GrpcDataClient.getInstance();
-		this.controlClient = GrpcControlClient.getInstance();
+		this.client = GrpcClient.getInstance();
 	}
 
 	public Sensor getSRFrontLeft() {
@@ -182,15 +180,17 @@ public class Robot {
 
 	private void sendMove(RobotConst.MOVE m, boolean sendMoveToAndroidFlag, Map exploredMap) {
 		if (m.equals(RobotConst.MOVE.CALIBRATE)) {
-			Boolean response = controlClient.calibrate();
+			Boolean response = client.calibrate();
 			assert response : "Calibration returns status 0";
 		} else {
-			Boolean response = controlClient.moveRobot(m, 1);
-			assert response : "Movement returns status 0";
+			this.updateSensorsDirections();
+			java.util.Map<Integer, Double> response = client.moveRobot(m, 1);
+			assert response.size() == 6 : "Not all sensor data are obtained";
+			processSensorValue(response, exploredMap);
 		}
 
 		if (sendMoveToAndroidFlag) {
-			sendDataToAndroid(exploredMap);
+			sendDataToAndroid("DATA", exploredMap);
 		}
 	}
 
@@ -199,8 +199,10 @@ public class Robot {
 		if (numSteps == 1) {
 			move(RobotConst.MOVE.FORWARD, exploredMap);
 		} else {
-			Boolean response = controlClient.moveRobot(RobotConst.MOVE.FORWARD, numSteps);
-			assert response : "Forward by multiple steps returns 0";
+			this.updateSensorsDirections();
+			java.util.Map<Integer, Double> response = client.moveRobot(RobotConst.MOVE.FORWARD, 1);
+			assert response.size() == 6 : "Not all sensor data are obtained";
+			processSensorValue(response, exploredMap);
 
 			switch (this.dir) {
 				case NORTH:
@@ -218,7 +220,13 @@ public class Robot {
 			}
 
 			logger.info(this.getRow() + ", " + this.getCol() + " " + this.getDir());
-			sendDataToAndroid(exploredMap);
+
+			if (Simulator.task == "EXP") {
+				sendDataToAndroid("DATA", exploredMap);
+			} else {
+				sendDataToAndroid("ROBOTPOSITION", exploredMap);
+			}
+
 		}
 	}
 
@@ -269,31 +277,50 @@ public class Robot {
 	}
 
 	public void sense(Map exploredMap) {
+		java.util.Map<Integer, Double> response = client.getMetrics();
+		processSensorValue(response, exploredMap);
+		sendDataToAndroid("GRID", exploredMap);
+	}
+
+	public void processSensorValue(java.util.Map<Integer, Double> values, Map exploredMap) {
 		int[] sensorInt = new int[6]; // store the sensor data from the real sensors
-		java.util.Map<Integer, Double> response = dataClient.getMetrics();
 
 		// SRFL:SRFC:SRFR:SRL:SRR:LRL
-		for (int i = 0; i <= response.size(); i++) {
-			sensorInt[i] = response.get(new Integer(i)).intValue();
+		for (int i = 0; i <= values.size(); i++) {
+			sensorInt[i] = values.get(new Integer(i)).intValue();
 		}
-
 		SRFrontLeft.sense(exploredMap, sensorInt[0]);
 		SRFrontCenter.sense(exploredMap, sensorInt[1]);
 		SRFrontRight.sense(exploredMap, sensorInt[2]);
 		SRLeft.sense(exploredMap, sensorInt[3]);
 		SRRight.sense(exploredMap, sensorInt[4]);
 		LRLeft.sense(exploredMap, sensorInt[5]);
-
-		sendDataToAndroid(exploredMap);
 	}
 
-	public void sendDataToAndroid(Map exploredMap) {
+	public void sendDataToAndroid(String cmd, Map exploredMap) {
+		String message;
 		String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
-		String mapDescrptorString = mapDescriptors[0] + mapDescriptors[1];
-//		mapDescrptorString = new BigInteger(mapDescrptorString, 16).toString(2);
+
+		switch (cmd) {
+			case "GRID":
+				message = cmd + ":,,," + mapDescriptors[0] + "," + mapDescriptors[1];
+				break;
+
+			case "DATA":
+				message = cmd + ":" + this.col + "," + this.row + "," + this.dir + "," + mapDescriptors[0] + "," + mapDescriptors[1];
+				break;
+
+			case "ROBOTPOSITION":
+				message = cmd + ":" + this.col + "," + this.row + "," + this.dir + ",,";
+				break;
+
+			default:
+				message = cmd + ":,,,,";
+				break;
+		}
 
 		// TODO: fix the map string
-		boolean response = dataClient.setMap("010");
+		boolean response = client.setMap(message);
 		assert response : "Sending explored map to Android returns 0";
 	}
 }

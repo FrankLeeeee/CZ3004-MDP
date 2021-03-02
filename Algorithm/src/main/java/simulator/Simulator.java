@@ -2,8 +2,7 @@ package simulator;
 
 import algorithms.Exploration;
 import algorithms.FastestPath;
-import communication.GrpcControlClient;
-import communication.GrpcDataClient;
+import communication.GrpcClient;
 import communication.MapDescriptor;
 import config.GrpcConst;
 import config.MapConst;
@@ -56,7 +55,8 @@ public class Simulator {
 	public static Logger logger = Logger.getLogger(Simulator.class);
 
 	private static final boolean realRun = false;
-	private static final String task = "EXP";
+	public static final String task = "FP";
+	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/map_MD_1";
 
 
 	public static void main(String[] args) throws InterruptedException {
@@ -74,45 +74,44 @@ public class Simulator {
 			logger.info("Initializing gRPC clients");
 
 			// create gRPC client instances
-			GrpcDataClient dataClient = GrpcDataClient.getInstance();
-			GrpcControlClient controlClient = GrpcControlClient.getInstance();
+			GrpcClient client = GrpcClient.getInstance();
 
-
-			while (!dataClient.isConnected()) {
+			while (!client.isConnected()) {
 				try {
-					dataClient.connect(GrpcConst.DATA_CLIENT_HOST, GrpcConst.DATA_CLIENT_PORT);
+					client.connect(GrpcConst.CLIENT_HOST, GrpcConst.CLIENT_PORT);
 				} catch (Exception e) {
 					logger.error("data client encountered connection error, retrying after 5 seconds...");
 					TimeUnit.SECONDS.sleep(5);
 				}
 			}
 
-			while (!controlClient.isConnected()) {
-				try {
-					controlClient.connect(GrpcConst.CONTROL_CLIENT_HOST, GrpcConst.CONTROL_CLIENT_PORT);
-				} catch (Exception e) {
-					logger.error("Control client encountered connection error, retrying after 5 seconds...");
-					TimeUnit.SECONDS.sleep(5);
-				}
-			}
-
-			assert controlClient.isConnected() && dataClient.isConnected();
+			assert client.isConnected();
 			logger.info("gRPC connection is set up.");
 
-			(new Simulator.Explore()).execute();
+			if (task == "EXP") {
+				(new Simulator.Explore()).execute();
+			} else if (task == "FP") {
+				MapDescriptor.readMap(exploredMap, mapPathForFP);
+				(new Simulator.Fastest()).execute();
+			}
 
 		} else {
 			// run virtual testing
 			logger.info("Run virtual testing");
 			actualMap = new Map(robot);
-			actualMap.setAllCellsUnexplored();
-			mapPanel.add(actualMap, ACT_MAP);
-		}
+			MapDescriptor.readMap(actualMap, mapPathForFP);
 
-		// sample map display
-		// map panel needs to have two cards for it to show
-		mapPanel.add(exploredMap, EXP_MAP);
-		logger.info("Simulator started");
+			if (task == "EXP") {
+				mapPanel.add(exploredMap, EXP_MAP);
+				mapPanel.add(actualMap, ACT_MAP);
+				(new Simulator.Explore()).execute();
+			} else if (task == "FP") {
+				MapDescriptor.readMap(exploredMap, mapPathForFP);
+				mapPanel.add(exploredMap, EXP_MAP);
+				mapPanel.add(actualMap, ACT_MAP);
+				(new Simulator.Fastest()).execute();
+			}
+		}
 	}
 
 
@@ -301,8 +300,8 @@ public class Simulator {
 				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit, actualMap);
 			else {
 				// check if android sets to start exploration
-				GrpcControlClient controlClient = GrpcControlClient.getInstance();
-				boolean response = controlClient.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
+				GrpcClient client = GrpcClient.getInstance();
+				boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
 				assert response : "Waiting for the robot to start returns 0";
 				logger.info("Android signals to start");
 
@@ -317,7 +316,7 @@ public class Simulator {
 			MapDescriptor.writeFile(mapDescriptors);
 
 			if (realRun) {
-				robot.sendDataToAndroid(exploredMap);
+				robot.sendDataToAndroid("DATA", exploredMap);
 				// no need to run fastest path as it
 				// is an independent task now
 //				(new Fastest(exploration)).execute();
@@ -363,8 +362,7 @@ public class Simulator {
 			FastestPath fastestPathWayPoint, fastestPathGoal;
 			ArrayList<RobotConst.MOVE> movesWayPoint, movesGoal;
 
-			GrpcDataClient dataClient = GrpcDataClient.getInstance();
-			GrpcControlClient controlClient = GrpcControlClient.getInstance();
+			GrpcClient client = GrpcClient.getInstance();
 
 			// fastest path from start zone to way point
 			fastestPathWayPoint = !realRun ? new FastestPath(exploredMap, robot, actualMap)
@@ -374,21 +372,21 @@ public class Simulator {
 				String msg;
 				logger.info("Waiting for Way Point command....");
 				while (true) {
-					GrpcService.Position pos = dataClient.getWayPoint();
+					GrpcService.Position pos = client.getWayPoint();
 					wayPointC = pos.getX();
 					wayPointR = pos.getY();
 					break;
 				}
 				logger.info("Waiting for FP_START command....");
 				while (true) {
-					boolean response = controlClient.waitForRobotStart(GrpcService.RobotStatus.Mode.FASTEST_PATH);
+					boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.FASTEST_PATH);
 					assert response : "Waiting to start FP returns 0";
 					break;
 				}
 
 				logger.info("Waiting for sensors data before starting Fastest Path....");
 				while (true) {
-					dataClient.getMetrics();
+					client.getMetrics();
 					break;
 				}
 			}
