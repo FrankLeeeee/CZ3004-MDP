@@ -15,6 +15,7 @@ public class IDblock {
 	}
 
 	public String getID() { return id; }
+
 	public Position getPosition() {
 		return position;
 	}

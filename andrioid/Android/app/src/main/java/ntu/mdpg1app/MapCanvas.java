@@ -2,9 +2,13 @@ package ntu.mdpg1app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -12,6 +16,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ntu.mdpg1app.model.IDblock;
 import ntu.mdpg1app.model.Map;
@@ -47,8 +52,28 @@ public class MapCanvas extends View implements View.OnTouchListener {
     String toastText;
     private static Toast mCurrentToast;
 
-
     private GestureDetector  mDetector;
+
+    private static final HashMap<String, Integer> IDHash = new HashMap<String, Integer>(){{
+        put("1", R.mipmap.up_arrow);
+        put("2", R.mipmap.down_arrow);
+        put("3", R.mipmap.right_arrow);
+        put("4", R.mipmap.left_arrow);
+        put("5", R.mipmap.go);
+        put("6", R.mipmap.number_six);
+        put("7", R.mipmap.number_seven);
+        put("8", R.mipmap.number_eight);
+        put("9", R.mipmap.number_nine);
+        put("10", R.mipmap.number_zero);
+        put("11", R.mipmap.alphabet_v);
+        put("12", R.mipmap.alphabet_w);
+        put("13", R.mipmap.alphabet_x);
+        put("14", R.mipmap.alphabet_y);
+        put("15", R.mipmap.alphabet_z);
+
+    }
+
+    };
 
     public MapCanvas(Context context) {
         super(context);
@@ -60,6 +85,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
         unexploredArea.setColor(Color.parseColor("#F2E86D"));   //#0696D7
         waypoint.setColor(Color.parseColor("#1B998B"));
         startEndPoint.setColor(Color.parseColor("#ffae62"));
+
         numberedObstacle.setColor(Color.parseColor("#F8F4F9"));
         numberedObstacle.setTypeface(Typeface.DEFAULT_BOLD);
         numberedObstacle.setLetterSpacing(-0.15f);
@@ -168,7 +194,8 @@ public class MapCanvas extends View implements View.OnTouchListener {
                   float posY = (paddingY+(19-y)*cellHeight);
                   if(obstacles[y][x]==1){
                       //draw obstacles
-                      canvas.drawRect(posX, posY, posX+cellWidth, posY+cellHeight, obstacle);
+                      Rect r = new Rect((int)posX, (int)posY, (int)(posX+cellWidth), (int)(posY+cellHeight));
+                      canvas.drawRect(r, obstacle);
                   }else{
                       if((y==0&&x==0)||(y==0&&x==1)||(y==0&&x==2)||   (y==1&&x==0)||  (y==1&&x==1)||   (y==1&&x==2)|| (y==2&&x==0)||(y==2&&x==1)|| (y==2&&x==2)||
   (y==19&&x==14)||   (y==19&&x==13)||   (y==19&&x==12)||    (y==18&&x==14)||   (y==18&&x==13)||     (y==18&&x==12)|| (y==17&&x==14)||    (y==17&&x==13)||  (y==17&&x==12)){
@@ -198,10 +225,16 @@ public class MapCanvas extends View implements View.OnTouchListener {
         ArrayList<IDblock> numberedBlocks = Map.getInstance().getNumberedBlocks();
         for(IDblock block:numberedBlocks)
         {
-            float posX = paddingX + (block.getPosition().getPosX()+0.5f) * cellWidth;
-            float posY = paddingY + (20-block.getPosition().getPosY()) * cellHeight;
+            float posX = (paddingX+block.getPosition().getPosX()*cellWidth);
+            float posY = (paddingY+(19-block.getPosition().getPosY())*cellHeight);
+//            float posX = paddingX + (block.getPosition().getPosX()+0.5f) * cellWidth;
+//            float posY = paddingY + (20-block.getPosition().getPosY()) * cellHeight;
+//
             if(obstacles[block.getPosition().getPosY()][block.getPosition().getPosX()]==1) {
-                canvas.drawText(block.getID(), posX, posY, numberedObstacle);
+                Rect r = new Rect((int)posX, (int)posY, (int)(posX+cellWidth), (int)(posY+cellHeight));
+//                canvas.drawText(block.getID(), posX, posY, numberedObstacle);
+                Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), IDHash.get(block.getID()));
+                canvas.drawBitmap(bitmap, null, r, numberedObstacle);
             }
         }
     }

@@ -192,20 +192,25 @@ public class Robot {
     }
 
     public void setDirection(String direction) {
+        direction = direction.toUpperCase();
         switch (direction) {
             case "NORTH":
+            case "N":
             case "0":
                 this.direction = 0;
                 break;
             case "SOUTH":
+            case "S":
             case "180":
                 this.direction = 180;
                 break;
             case "EAST":
+            case "E":
             case "90":
                 this.direction = 90;
                 break;
             case "WEST":
+            case "W":
             case "270":
                 this.direction = 270;
                 break;

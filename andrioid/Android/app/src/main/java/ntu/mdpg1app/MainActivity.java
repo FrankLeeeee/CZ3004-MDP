@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 //                loadGrid();
 
                 try {
-                    String instructionValue = new JSONObject().put("angle", 270).toString();
+                    String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnLeft\\" + instructionValue + ";";
                     outgoingMessage(instruction);
                     loadGrid();
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
         btn_terminate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String instruction = "Terminate\\;";
+                String instruction = "Terminate\\{};";
                 outgoingMessage(instruction);
 //                outgoingMessage("X", 0);
                 updateStatus(STATUS_TERMINATE_DESC);
@@ -170,8 +170,8 @@ public class MainActivity extends AppCompatActivity {
         btn_explr.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    String instructionValue = new JSONObject().put("EXPLORATION", 0).toString();
-                    String instruction = "Explore\\" + instructionValue + ";";
+                    String instructionValue = new JSONObject().put("MODE", 0).toString();
+                    String instruction = "SetRobotStatus\\" + instructionValue + ";";
                     outgoingMessage(instruction);
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -194,8 +194,8 @@ public class MainActivity extends AppCompatActivity {
 
                 }else{
                     try {
-                        String instructionValue = new JSONObject().put("FASTEST_PATH", 1).toString();
-                        String instruction = "FastestPath\\" + instructionValue + ";";
+                        String instructionValue = new JSONObject().put("MODE", 1).toString();
+                        String instruction = "SetRobotStatus\\" + instructionValue + ";";
                         outgoingMessage(instruction);
                     }catch(JSONException e) {
                         e.printStackTrace();
@@ -206,6 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
         btn_config1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
@@ -444,8 +445,8 @@ public class MainActivity extends AppCompatActivity {
                 message = readMsg.split("-");
             }
 
-            //Updating of obstacles on the map
-            if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
+
+            if (message[0].equals("GRID")) { //receive mapDescriptor from Algo for fastest path
                 message[1] = message[1].substring(2, message[1].length()-1);
                 Log.e( "TESTE", "msg[1] = " + message[1]);
                 Map.getInstance().setMapJson(message[1]);
@@ -454,14 +455,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            else if (message[0].equals("DATA")) { //receive full data string (P1, P2, robot pos) from Algo
+            else if (message[0].equals("DATA")) { //receive full data string (xCoor, yCoor, robotDirection, P1, P2) from Algo for exploration task
                 String data[] = message[1].split(",");
 
-                Map.getInstance().setMap(data[0], "", data[1]);
+                Map.getInstance().setMap(data[3], "", data[4]);
 
-                r.setPosX(Float.parseFloat(data[2]));
-                r.setPosY(Float.parseFloat(data[3]));
-                r.setDirection(data[4]);
+                r.setPosX(Float.parseFloat(data[0]));
+                r.setPosY(Float.parseFloat(data[1]));
+                r.setDirection(data[2]);
 
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();
@@ -478,15 +479,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("TESTE", "DATA[2] = " + data[2]);
 
 
-                String[] blockID = new String[]{"0", "6", "7", "8", "9", "V", "W", "X", "Y", "Z", "GC", "WA", "BA", "YA", "RA"};
-                //GC = Green Circle
-                //WA = White Arrow
-                //BA = Blue Arrow
-                //YA = Yellow Arrow
-                //RA = Red Arrow
-
-
-                if(Arrays.asList(blockID).contains(data[0].toUpperCase())) {
+                if(Integer.parseInt(data[0]) <= 15 && Integer.parseInt(data[0]) >= 1) {
 
                     IDblock input = new IDblock(data[0].toUpperCase(), Integer.parseInt(data[1]), Integer.parseInt(data[2]));
                     Log.e("TESTE", input.getID());
@@ -498,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             //Updating of robot's position on the map
-            else if (message[0].equals("ROBOTPOSITION")) { //receive robot position
+            else if (message[0].equals("ROBOTPOSITION")) { //receive robot position when robot moves
                 message[1] = message[1].substring(2, message[1].length()-1);
                 Log.e("TESTE", "message[1] = " + message[1]);
                 String posAndDirect[] = message[1].split(",");
@@ -571,10 +564,6 @@ public class MainActivity extends AppCompatActivity {
         return fragment.sendMsg(sendMsg);
     }
 
-//    public boolean outgoingMessage(JSONObject sendMsg){
-//        String stringMsg = sendMsg.toString();
-//        return fragment.sendMsg("@t" + stringMsg + "!");
-//    }
     //on the coordinate tapped
     //set waypoint, if menuitem is checked
     //set robot, if menuitem is checked
@@ -583,16 +572,19 @@ public class MainActivity extends AppCompatActivity {
             Robot r = Robot.getInstance();
             r.setPosX(posX);
             r.setPosY(posY);
-            r.setDirection("NORTH");
-            outgoingMessage("START:"+(int)posX+","+(int)posY, 0);
+            r.setDirection("N");
+            outgoingMessage("SetStartPoint\\{" + (int)posX + "," + (int)posY + "};");
 
+//            outgoingMessage("START:"+(int)posX+","+(int)posY, 0);
             //Make a prompt here to confirm
             menu_set_robot_position.setChecked(false);
         }
         if(menu_set_waypoint.isChecked()){
             Position p = new Position(posX,posY);
             WayPoint.getInstance().setPosition(p);
-            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
+            outgoingMessage("SetWayPoint\\{" + (int)posX + "," + (int)posY + "};");
+
+//            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
             //Make a prompt here to confirm
             menu_set_waypoint.setChecked(false);
         }

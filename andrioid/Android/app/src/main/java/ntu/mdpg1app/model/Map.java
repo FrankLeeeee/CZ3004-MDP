@@ -38,7 +38,7 @@ public class Map {
 	public void addNumberedBlocks(IDblock block) {
 		for (IDblock nb:numberedBlocks) {
 			//override me
-			if(nb.getPosition().equals(block.getPosition())){
+			if(nb.getPosition().equals(block.getPosition())){	//check if position already in numberedBlocks array
 				numberedBlocks.remove(nb);
 				break;
 			}
