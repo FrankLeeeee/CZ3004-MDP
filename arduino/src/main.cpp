@@ -104,8 +104,7 @@ void readInput()
       state = 5;
       break;
     case 'e':
-      getSensorReading();
-      // default: getSensorReading();
+      printSensorReading();
       break;
     case 'f':
       encodeMessage();
@@ -113,13 +112,15 @@ void readInput()
     case 'g':
       //receiveMessage(rpi_receive1);
       break;
+    case 'r':
+      wallCalibrate();
     }
   }
-  // else{
-  //   getSensorReading();
-  // }
+  else
+  {
+    getSensorReading();
+  }
 }
-
 
 //char readInput(){
 //  if(Serial.available()>0){

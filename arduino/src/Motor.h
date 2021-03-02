@@ -11,11 +11,14 @@ void moveF();
 void moveF(double dist);
 void moveB();
 void moveB(double dist);
-void turnL();
+//void turnL();
 void turnL(double angle);
-void turnR();
+//void turnR();
 void turnR(double angle);
 void brake();
 void setTickLoop();
+void wallCalibrate();
+void CW_Calibrate();
+void CCW_Calibrate();
 
 #endif
