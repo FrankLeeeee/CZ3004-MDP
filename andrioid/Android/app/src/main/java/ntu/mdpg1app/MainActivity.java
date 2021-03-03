@@ -209,11 +209,73 @@ public class MainActivity extends AppCompatActivity {
 
         btn_config1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
-                String retrievedText = prefs.getString("string1", null);
-                if (retrievedText != null) {
-                    outgoingMessage(retrievedText);
+//                SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
+//                String retrievedText = prefs.getString("string1", null);
+//                if (retrievedText != null) {
+//                    outgoingMessage(retrievedText);
+//                }
+
+                //testing
+                Test();
+            }
+
+            private void Test() {
+                //send forward message
+                try {
+                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String instruction = "Forward\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    loadGrid();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+
+                //send turn left message
+                try {
+                    String instructionValue = new JSONObject().put("angle", 90).toString();
+                    String instruction = "TurnLeft\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    loadGrid();
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+                //send turn right message
+                try {
+                    String instructionValue = new JSONObject().put("angle", 90).toString();
+                    String instruction = "TurnRight\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    loadGrid();
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+                //send explore message
+                try {
+                    String instructionValue = new JSONObject().put("MODE", 0).toString();
+                    String instruction = "SetRobotStatus\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+                //send fastest path message
+                try {
+                    String instructionValue = new JSONObject().put("MODE", 1).toString();
+                    String instruction = "SetRobotStatus\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                }catch(JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //send terminate message
+                outgoingMessage("Terminate\\{};");
+
+                //send set waypoint message
+                outgoingMessage("SetWayPoint\\{" + 10 + "," + 10 + "};");   //(10, 10)
+
+                //send set startpoint message
+                outgoingMessage("SetStartPoint\\{" + 0 + "," + 0 + "};");   //(0, 0)
             }
         });
         btn_config2.setOnClickListener(new View.OnClickListener() {
