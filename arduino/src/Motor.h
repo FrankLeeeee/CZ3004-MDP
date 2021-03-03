@@ -22,5 +22,6 @@ void CW_Calibrate();
 void CCW_Calibrate();
 void avoidObstacle90();
 void avoidObstacleDiag();
+bool emergencyStop();
 
 #endif

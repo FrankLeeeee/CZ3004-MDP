@@ -261,7 +261,6 @@ void moveB(double dist)
         oldTickL += curTickL;
         delay(delayms);
     }
-    setTickLoop();
     md.setBrakes(400, 400);
 }
 
@@ -537,7 +536,7 @@ void avoidObstacleDiag()
     moveFstopWall(10);
 }
 
-boolean emergencyStop()
+bool emergencyStop()
 {
     md.setBrakes(400, 400);
     return true;
