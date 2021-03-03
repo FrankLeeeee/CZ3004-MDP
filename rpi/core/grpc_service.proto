@@ -15,7 +15,7 @@ service GRPCService {
 
   rpc WaitForRobotStart(RobotStatus) returns (Status) {}
 
-  rpc StopRobot(RobotStatus) returns (Status) {}
+  rpc StopRobot(EmptyRequest) returns (Status) {}
 
   rpc GetMetrics(EmptyRequest) returns (MetricResponse) {}
 

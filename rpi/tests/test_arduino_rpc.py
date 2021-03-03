@@ -3,7 +3,7 @@ import asyncio
 import pytest
 
 from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
-from core.message_pb2 import EchoRequest, MoveRequest, TurnRequest, MetricRequest, EmptyRequest
+from core.message_pb2 import EchoRequest, MoveRequest, TurnRequest, EmptyRequest
 from config import config
 from server.serial_channel import SerialAioChannel
 
@@ -48,7 +48,7 @@ async def test_arduino_rpc_turn_right():
 async def test_arduino_rpc_get_metrics():
     async with SerialAioChannel(config.serial_url) as channel:
         stub = ArduinoRPCServiceStub(channel)
-        request = MetricRequest()
+        request = EmptyRequest()
         response = await stub.GetMetrics(request)
         print(response)
 
@@ -72,4 +72,4 @@ async def test_arduino_rpc_terminate():
 
 
 if __name__ == '__main__':
-    asyncio.run(test_arduino_rpc_forward())
+    asyncio.run(test_arduino_rpc_get_metrics())
