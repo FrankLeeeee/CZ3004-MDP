@@ -172,12 +172,12 @@ void moveF(double dist)
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
+        // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
+        // Serial.print(curTickR);
+        // Serial.print(" ");
+        // Serial.println(curTickL);
         PID1.Compute();
         PID2.Compute();
         md.setSpeeds(speedR * motorfactor, speedL);
@@ -185,9 +185,9 @@ void moveF(double dist)
         oldTickL += curTickL;
         getSensorReading();
         delay(delayms);
-        unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-        Serial.print("Time taken (ms): ");
-        Serial.println(pepe2);
+        // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+        // Serial.print("Time taken (ms): ");
+        // Serial.println(pepe2);
     }
     //    setTickLoop();
     md.setBrakes(400, 400);
@@ -296,9 +296,9 @@ void turnL(double angle)
     {
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
+        // Serial.print(curTickR);
+        // Serial.print(" ");
+        // Serial.println(curTickL);
         PID1.Compute();
         PID2.Compute();
         md.setSpeeds(speedR * motorfactor, -speedL);
@@ -355,9 +355,9 @@ void turnR(double angle)
     {
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
+        // Serial.print(curTickR);
+        // Serial.print(" ");
+        // Serial.println(curTickL);
         PID1.Compute();
         PID2.Compute();
         md.setSpeeds(-speedR * motorfactor, speedL);
