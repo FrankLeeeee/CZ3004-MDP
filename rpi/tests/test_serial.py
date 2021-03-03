@@ -7,6 +7,7 @@ Date: 2/26/2021
 """
 import asyncio
 
+from config import config
 from server.serial_comm import SerialAioChannel, SerialProtocol
 
 
@@ -17,7 +18,7 @@ def _data_received_simple(self, data):
 
 async def main():
     SerialProtocol.data_received = _data_received_simple
-    transport = SerialAioChannel(url='/dev/cu.usbmodem1411401')
+    transport = SerialAioChannel(url=config.serial_url)
     send_char = b'A'
     await transport.start()
     send_task = asyncio.ensure_future(transport.write_channel(send_char))
