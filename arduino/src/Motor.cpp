@@ -3,6 +3,7 @@
 #include "PID_v1.h"
 #include "Motor.h"
 #include "Sensor.h"
+#include "Comms.h"
 
 //===== Motors =====
 DualVNH5019MotorShield md;
@@ -158,6 +159,8 @@ void moveFstopWall(double distToStop)
     md.setBrakes(400, 400);
 }
 
+int emergencyDistance = 10; //in cm
+
 void moveF(double dist)
 {
     dist = blocksTo_cm(dist);
@@ -176,7 +179,7 @@ void moveF(double dist)
     PIDInit();
     brakes = false;
 
-    while (targetTick > TickR && targetTick > TickL)
+    while (targetTick > TickR && targetTick > TickL && brakes == false)
     {
         // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
         curTickR = TickR - oldTickR;
@@ -191,6 +194,10 @@ void moveF(double dist)
         oldTickL += curTickL;
         getSensorReading();
         delay(delayms);
+        if ((getDist2(get_curFiltered2()) < emergencyDistance) || (getDist1(get_curFiltered1()) < emergencyDistance) || (getDist4(get_curFiltered4()) < emergencyDistance))
+        {
+            brakes = emergencyStop();
+        }
         // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
         // Serial.print("Time taken (ms): ");
         // Serial.println(pepe2);
@@ -576,4 +583,10 @@ void avoidObstacleDiag()
     turnR(45);
     delay(100);
     moveFstopWall(10);
+}
+
+boolean emergencyStop()
+{
+    md.setBrakes(400, 400);
+    return true;
 }

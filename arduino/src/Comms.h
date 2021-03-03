@@ -18,13 +18,5 @@ int echo_response_serializer(char message, bool status, uint8_t *response);
 int metric_response_serializer(float *value_ptr, int value_len, bool status, uint8_t *response);
 int status_serializer(bool status, uint8_t *response);
 
-double getAvg1();
-double getAvg2();
-double getAvg3();
-double getAvg4();
-double getAvg5();
-double getAvg6();
-
-
 
 #endif

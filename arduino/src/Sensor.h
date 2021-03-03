@@ -16,5 +16,11 @@ double getDist3(double x);
 double getDist4(double x);
 double getDist5(double x);
 double getDist6(double x);
+double getAvg1();
+double getAvg2();
+double getAvg3();
+double getAvg4();
+double getAvg5();
+double getAvg6();
 
 #endif

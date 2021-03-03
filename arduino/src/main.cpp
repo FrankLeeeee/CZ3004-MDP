@@ -23,13 +23,6 @@ void loop()
 }
 
 //===== Inputs =====
-int state = 0;
-// 0 - idle
-// 1 - Forward
-// 2 - Backward
-// 3 - Left
-// 4 - Right
-// 5 - Braking
 
 void readInput()
 {
@@ -39,26 +32,21 @@ void readInput()
     switch (inByte)
     {
     case 'w':
-      state = 1;
       moveF(10);
       break;
     case 's':
-      state = 2;
       moveB(10);
       break;
     case 'a':
       delay(0);
-      state = 3;
       turnL(90);
       break;
     case 'd':
       delay(0);
-      state = 4;
       turnR(90);
       break;
     case 'b':
       brake();
-      state = 5;
       break;
     case 'e':
       //printSensorReading();
@@ -119,22 +107,3 @@ void testFunction()
     delay(500);
   }
 }
-
-//char readInput(){
-//  if(Serial.available()>0){
-//    int inByte = Serial.read();
-//    return inByte;
-//  }
-//}
-//
-//void setState(){
-//  state = readInput();
-//      switch(state){
-//      case 'w': moveF();
-//      case 's': moveB();
-//      case 'a': turnL();
-//      case 'd': turnR();
-//      case 'b': brake();
-//     // default: brake();
-//      }
-//}
