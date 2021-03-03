@@ -16,23 +16,20 @@
 #define MESSAGE_SEPARATOR ';'
 #define ARGUMENT_SEPARATOR ','
 
-
 void parseMessage();
 void readInput();
 
-
-
 // Handlers
 int echoHandler(int arguement, byte *response);
-int forwardHandler(int arguement, byte *response);
-int turnLeftHandler(int arguement, byte *response);
-int turnRightHandler(int arguement, byte *response);
+int forwardHandler(int arguement, int argument2, byte *response);
+int turnLeftHandler(int arguement, int argument2, int argument3, byte *response);
+int turnRightHandler(int arguement, int argument2, int argument3, byte *response);
 int getMetricsHandler(int arguement, byte *response);
 int calibrationHandler(int argument, byte *response);
 int terminateHandler(int argument, byte *response);
 
 // Serializers
-int echo_response_serializer(char message, bool status, byte* response);
+int echo_response_serializer(char message, bool status, byte *response);
 int metric_response_serializer(float *value_ptr, int value_len, bool status, byte *response);
 int status_serializer(bool status, byte *response);
 
@@ -85,8 +82,18 @@ void parseMessage()
   int msg_len = 0;
   char command = message.charAt(0);
   int argument = 0;
+  int argument2 = 0;
+  int argument3 = 0;
   if (message.length() > 1)
   {
+    if (message.length() > 2)
+    {
+      argument2 = (int)message.charAt(2);
+    }
+    if (message.length() > 3)
+    {
+      argument3 = (int)message.charAt(3);
+    }
     argument = (int)message.charAt(1);
   }
 
@@ -98,17 +105,17 @@ void parseMessage()
 
   case '2':
     //add forward function
-    msg_len = forwardHandler(argument, msg);
+    msg_len = forwardHandler(argument, argument2, msg);
     break;
 
-  case LEFT:
+  case '3':
     //add left function
-    msg_len = turnLeftHandler(argument, msg);
+    msg_len = turnLeftHandler(argument, argument2, argument3, msg);
     break;
 
-  case RIGHT:
+  case '4':
     //right function
-    msg_len = turnRightHandler(argument, msg);
+    msg_len = turnRightHandler(argument, argument2, argument3, msg);
     break;
 
   case GETMETRICS:
@@ -136,25 +143,86 @@ int echoHandler(int argument, byte *response)
   return echo_response_serializer((char)argument, status, response);
 }
 
-int forwardHandler(int argument, byte *response)
+int forwardHandler(int argument, int argument2, byte *response)
 {
+
   bool status = true;
+  Serial.println("here");
+  if (argument2 != 0)
+  {
+    argument = argument - 48;
+    argument = argument * 10;
+    argument2 = argument2 - 48;
+    argument += argument2;
+  }
+  else
+  {
+    argument = argument - 48;
+  }
+  Serial.println(argument);
+  moveF(argument);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
 
-int turnLeftHandler(int argument, byte *response)
+int turnLeftHandler(int argument, int argument2, int argument3, byte *response)
 {
   bool status = true;
+  if (argument3 != 0)
+  {
+    argument = argument - 48;
+    argument = argument * 100;
+    argument2 = argument2 - 48;
+    argument2 = argument2 * 10;
+    argument3 = argument3 - 48;
+    argument += argument2;
+    argument += argument3;
+  }
+  else if (argument2 != 0)
+  {
+    argument = argument - 48;
+    argument = argument * 10;
+    argument2 = argument2 - 48;
+    argument += argument2;
+  }
+  else
+  {
+    argument = argument - 48;
+  }
+  Serial.println(argument);
+  turnL(argument);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
 
-int turnRightHandler(int argument, byte *response)
+int turnRightHandler(int argument, int argument2, int argument3, byte *response)
 {
   bool status = true;
+  if (argument3 != 0)
+  {
+    argument = argument - 48;
+    argument = argument * 100;
+    argument2 = argument2 - 48;
+    argument2 = argument2 * 10;
+    argument3 = argument3 - 48;
+    argument += argument2;
+    argument += argument3;
+  }
+  else if (argument2 != 0)
+  {
+    argument = argument - 48;
+    argument = argument * 10;
+    argument2 = argument2 - 48;
+    argument += argument2;
+  }
+  else
+  {
+    argument = argument - 48;
+  }
+  Serial.println(argument);
+  turnR(argument);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
