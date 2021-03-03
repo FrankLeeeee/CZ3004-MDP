@@ -390,54 +390,6 @@ void brake()
     brakes = true;
 }
 
-void setTickLoop()
-{
-    // PIDInit();
-    // while (targetTick > TickR && targetTick > TickL)
-    // {
-    //     curTickR = TickR - oldTickR;
-    //     curTickL = TickL - oldTickL;
-    //     Serial.print(curTickR);
-    //     Serial.print(" ");
-    //     Serial.println(curTickL);
-    //     PID1.Compute();
-    //     PID2.Compute();
-    //     switch (state)
-    //     {
-    //     case 1:
-    //         md.setSpeeds(speedR * motorfactor, speedL);
-    //         break;
-    //         // case 2: md.setSpeeds(-speedR*motorfactor, -speedL);
-    //         // break;
-    //         // case 3: md.setSpeeds(speedR*motorfactor, -speedL);
-    //         // break;
-    //         // case 4: md.setSpeeds(-speedR*motorfactor, speedL);
-    //         // break;
-    //     }
-    //     oldTickR += curTickR;
-    //     oldTickL += curTickL;
-    //     switch (state)
-    //     {
-    //     case 1:
-    //         if (targetTick - TickR < 100)
-    //             md.setSpeeds(100, 100);
-    //         break;
-    //         // case 2: if(targetTick-TickR < 100)
-    //         // md.setSpeeds(-100,-100);
-    //         // break;
-    //         // case 3: if(targetTick-TickR < 100)
-    //         // md.setSpeeds(100,-100);
-    //         // break;
-    //         // case 4: if(targetTick-TickR < 100)
-    //         // md.setSpeeds(-100,100);
-    //         // break;
-    //     }
-    //     //getSensorReading();
-    //     delay(delayms);
-    // }
-    return;
-}
-
 double calibrationTolerence = 0.1;
 // double calibrationTolerence = 0.6;
 // double calibrationTolerence = 0.75;

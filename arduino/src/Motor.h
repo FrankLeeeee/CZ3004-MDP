@@ -17,7 +17,6 @@ void turnL(double angle);
 //void turnR();
 void turnR(double angle);
 void brake();
-void setTickLoop();
 void wallCalibrate();
 void CW_Calibrate();
 void CCW_Calibrate();
