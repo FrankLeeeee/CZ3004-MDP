@@ -262,7 +262,7 @@ double getDist6(double x)
     return 204.0816327 / (0.0181 * x + 0.0008);
 }
 
-double alpha = 0.01; // Smoothing Factor
+double alpha = 0.1; // Smoothing Factor
 double filter(double volt, double oldVal)
 {
     return (alpha * volt) + (1 - alpha) * oldVal;

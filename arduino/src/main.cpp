@@ -2,7 +2,6 @@
 #include "Sensor.h"
 #include "Arduino.h"
 #include "Comms.h"
-#include <ArduinoJson.h>
 #define MESSAGE_SEPARATOR ';'
 #define ECHO 0x01
 #define FORWARD 0x02
@@ -17,6 +16,7 @@
 void readInput();
 int echoHandler(int argument, byte* response_ptr);
 void parseMessage();
+void testFunction();
 double getAvg1();
 double getAvg2();
 double getAvg3();
@@ -377,11 +377,49 @@ void readInput()
       break;
     case 'r':
       wallCalibrate();
+      break;
+    case 'p':
+      delay(3000);
+      avoidObstacle90();
+      break;
+    case 'o':
+      delay(3000);
+      avoidObstacleDiag();
+      break;
+    case 't':
+      delay(3000);
+      testFunction();
+      break;
+    default:
+      getSensorReading();
     }
   }
   else
   {
     getSensorReading();
+  }
+}
+
+void testFunction()
+{
+  // while(1){
+  //   turnL(90);
+  //   delay(500);
+  // }
+  while (1)
+  {
+    moveF(50);
+    delay(500);
+    turnL(90);
+    delay(500);
+    turnL(90);
+    delay(500);
+    moveF(50);
+    delay(500);
+    turnR(90);
+    delay(500);
+    turnR(90);
+    delay(500);
   }
 }
 

@@ -7,7 +7,7 @@ void countTickL();
 void PIDInit();
 double calcTickFromDist(double dist);
 double getTicksFromAngle(double angle);
-void moveF();
+void moveFstopWall();
 void moveF(double dist);
 void moveB();
 void moveB(double dist);
@@ -20,5 +20,7 @@ void setTickLoop();
 void wallCalibrate();
 void CW_Calibrate();
 void CCW_Calibrate();
+void avoidObstacle90();
+void avoidObstacleDiag();
 
 #endif
