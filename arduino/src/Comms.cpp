@@ -8,7 +8,7 @@
 #include "Sensor.h"
 #include "Motor.h"
 
-#define MESSAGE_SEPARATOR ';'
+#define RESPONSE_MSG_LEN 40
 #define ECHO 0x01
 #define FORWARD 0x02
 #define LEFT 0x03
@@ -18,12 +18,14 @@
 #define TERMINATE 0x07
 
 #define PARSE_MSG_BUFFER_SIZE 64
-#define MESSAGE_SEPARATOR ';'
-#define ARGUMENT_SEPARATOR ','
 
 // resend = 0x00 echo = 0x01 forward = 0x02 left = 0x03 right = 0x04 getmetrics =0x05 getcalibration = 0x06 terminate = 0x07
 
 String message;
+const char c_separator = ';';
+const char c_separator_sequence[] = {';', ';', ';', ';', ';'};
+const uint8_t sequence_length = 5;
+uint8_t counter = 0;
 
 void loopSeq()
 {
@@ -31,30 +33,30 @@ void loopSeq()
   while (Serial.available() > 0)
   {
     temp = Serial.read();
+    message.concat((char)temp);
 
-    // send the message to queue
-    if (temp == (uint8_t)MESSAGE_SEPARATOR)
+    if (temp == c_separator)
+      counter++;
+
+    if (counter == sequence_length)
     { // find the end of message
+      counter = 0;
+      message.remove(message.length() - sequence_length, sequence_length);
       parseMessage();
       message = String("");
     }
-    else
-      message.concat((char)temp);
   }
 }
 
 void parseMessage()
 {
-  uint8_t msg[PARSE_MSG_BUFFER_SIZE];
-  int msg_len = 0;
   char command = message.charAt(0);
   int argument = 0;
+  uint8_t msg[RESPONSE_MSG_LEN];
+  int msg_len = 0;
 
   if (message.length() > 1)
-  {
-
     argument = (int)message.charAt(1);
-  }
 
   switch (command)
   {
@@ -92,16 +94,18 @@ void parseMessage()
     msg_len = terminateHandler(argument, msg);
 
     break;
+  default:
+    break;
   }
-  Serial.write(msg, msg_len);
+  memcpy(msg + msg_len, c_separator_sequence, sequence_length);
+  Serial.write(msg, msg_len + sequence_length);
 }
-
-int echoHandler(int argument, uint8_t *response)
+int echoHandler(int argument, uint8_t *const response)
 {
   bool status = true;
+
   return echo_response_serializer((char)argument, status, response);
 }
-
 int forwardHandler(int argument, uint8_t *response)
 {
 
@@ -158,17 +162,15 @@ int terminateHandler(int argument, uint8_t *response)
 int status_serializer(bool status, uint8_t *response)
 {
   *response = (uint8_t)status;
-  *(response + 1) = MESSAGE_SEPARATOR;
-  return 2;
+  return 1;
 }
 
 int echo_response_serializer(char message, bool status, uint8_t *response)
 {
   *response = (uint8_t)(message + 1);
-  *(response + 1) = ARGUMENT_SEPARATOR;
-  *(response + 2) = (uint8_t)status;
-  *(response + 3) = MESSAGE_SEPARATOR;
-  return 4;
+  //*(response + 1) = ARGUMENT_SEPARATOR;
+  *(response + 1) = (uint8_t)status;
+  return 2;
 }
 
 int metric_response_serializer(float *value_ptr, int value_len, bool status, uint8_t *response)
@@ -179,9 +181,8 @@ int metric_response_serializer(float *value_ptr, int value_len, bool status, uin
   for (auto i = 0; i < value_len; i++)
     memcpy(response + i * float_len, (uint8_t *)(value_ptr + i), float_len);
 
-  *(response + data_values_size++) = ARGUMENT_SEPARATOR;
+  //*(response + data_values_size++) = ARGUMENT_SEPARATOR;
   *(response + data_values_size++) = (uint8_t)status;
-  *(response + data_values_size++) = MESSAGE_SEPARATOR;
 
   return data_values_size;
 }
