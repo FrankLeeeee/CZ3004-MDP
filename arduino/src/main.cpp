@@ -61,7 +61,10 @@ void readInput()
       state = 5;
       break;
     case 'e':
-      printSensorReading();
+      //printSensorReading();
+      Serial.print(getAvg5());
+      Serial.print(" ");
+      Serial.println(getAvg6());
       break;
     case 'f':
       //encodeMessage();

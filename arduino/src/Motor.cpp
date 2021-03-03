@@ -76,6 +76,11 @@ double getTicksFromAngle(double angle)
     return ((dist_between_wheels / 6) * 1124.5) * (angle / 360);
 }
 
+double blocksTo_cm(double blocks)
+{
+    return blocks * 10;
+}
+
 //===== Movement =====
 void moveFstopWall(double distToStop)
 {
@@ -155,6 +160,7 @@ void moveFstopWall(double distToStop)
 
 void moveF(double dist)
 {
+    dist = blocksTo_cm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
     speedL = 350;
@@ -193,35 +199,36 @@ void moveF(double dist)
     md.setBrakes(400, 400);
 }
 
-void moveB()
-{
-    speedL = 350;
-    speedR = speedL * motorfactor;
-    md.setSpeeds(-speedR, -speedL);
-    delay(delayms);
-    oldTickR = (double)TickR;
-    oldTickL = (double)TickL;
-    PIDInit();
-    brakes = false;
+// void moveB()
+// {
+//     speedL = 350;
+//     speedR = speedL * motorfactor;
+//     md.setSpeeds(-speedR, -speedL);
+//     delay(delayms);
+//     oldTickR = (double)TickR;
+//     oldTickL = (double)TickL;
+//     PIDInit();
+//     brakes = false;
 
-    while (!brakes)
-    {
-        curTickR = TickR - oldTickR;
-        curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
-        PID1.Compute();
-        PID2.Compute();
-        md.setSpeeds(-speedR * motorfactor, -speedL);
-        oldTickR += curTickR;
-        oldTickL += curTickL;
-        delay(delayms);
-    }
-}
+//     while (!brakes)
+//     {
+//         curTickR = TickR - oldTickR;
+//         curTickL = TickL - oldTickL;
+//         Serial.print(curTickR);
+//         Serial.print(" ");
+//         Serial.println(curTickL);
+//         PID1.Compute();
+//         PID2.Compute();
+//         md.setSpeeds(-speedR * motorfactor, -speedL);
+//         oldTickR += curTickR;
+//         oldTickL += curTickL;
+//         delay(delayms);
+//     }
+// }
 
 void moveB(double dist)
 {
+    dist = blocksTo_cm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
     speedL = 350;

@@ -189,11 +189,12 @@ int metric_response_serializer(float *value_ptr, int value_len, bool status, uin
   return data_values_size;
 }
 
+int sampleSize = 10;
 double getAvg1()
 {
 
   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-  int readSample = 10;
+  int readSample = sampleSize;
   double sensorReadings[readSample];
 
   for (int i = 0; i < readSample; i++)
@@ -220,7 +221,7 @@ double getAvg2()
 {
 
   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-  int readSample = 10;
+  int readSample = sampleSize;
   double sensorReadings[readSample];
 
   for (int i = 0; i < readSample; i++)
@@ -247,7 +248,7 @@ double getAvg3()
 {
 
   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-  int readSample = 10;
+  int readSample = sampleSize;
   double sensorReadings[readSample];
 
   for (int i = 0; i < readSample; i++)
@@ -274,7 +275,7 @@ double getAvg4()
 {
 
   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-  int readSample = 10;
+  int readSample = sampleSize;
   double sensorReadings[readSample];
 
   for (int i = 0; i < readSample; i++)
@@ -301,7 +302,7 @@ double getAvg5()
 {
 
   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-  int readSample = 10;
+  int readSample = sampleSize;
   double sensorReadings[readSample];
 
   for (int i = 0; i < readSample; i++)
@@ -328,7 +329,7 @@ double getAvg6()
 {
 
   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-  int readSample = 10;
+  int readSample = sampleSize;
   double sensorReadings[readSample];
 
   for (int i = 0; i < readSample; i++)
