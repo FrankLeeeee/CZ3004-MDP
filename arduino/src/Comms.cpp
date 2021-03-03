@@ -31,6 +31,7 @@ void loopSeq()
   char temp;
   while (Serial.available() > 0)
   {
+    getSensorReading();
     temp = Serial.read();
 
     // send the message to queue
