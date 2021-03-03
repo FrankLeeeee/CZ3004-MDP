@@ -20,9 +20,9 @@ void readInput();
 
 // Handlers
 int echoHandler(int arguement, byte *response);
-int forwardHandler(int arguement, int argument2, byte *response);
-int turnLeftHandler(int arguement, int argument2, int argument3, byte *response);
-int turnRightHandler(int arguement, int argument2, int argument3, byte *response);
+int forwardHandler(int arguement, byte *response);
+int turnLeftHandler(int arguement, byte *response);
+int turnRightHandler(int arguement, byte *response);
 int getMetricsHandler(int arguement, byte *response);
 int calibrationHandler(int argument, byte *response);
 int terminateHandler(int argument, byte *response);
@@ -81,40 +81,32 @@ void parseMessage()
   int msg_len = 0;
   char command = message.charAt(0);
   int argument = 0;
-  int argument2 = 0;
-  int argument3 = 0;
+
   if (message.length() > 1)
   {
-    if (message.length() > 2)
-    {
-      argument2 = (int)message.charAt(2);
-    }
-    if (message.length() > 3)
-    {
-      argument3 = (int)message.charAt(3);
-    }
+   
     argument = (int)message.charAt(1);
   }
 
   switch (command)
   {
-  case '1':
+  case ECHO:
     msg_len = echoHandler(argument, msg);
     break;
 
-  case '2':
+  case FORWARD:
     //add forward function
-    msg_len = forwardHandler(argument, argument2, msg);
+    msg_len = forwardHandler(argument, msg);
     break;
 
-  case '3':
+  case LEFT:
     //add left function
-    msg_len = turnLeftHandler(argument, argument2, argument3, msg);
+    msg_len = turnLeftHandler(argument, msg);
     break;
 
-  case '4':
+  case RIGHT:
     //right function
-    msg_len = turnRightHandler(argument, argument2, argument3, msg);
+    msg_len = turnRightHandler(argument, msg);
     break;
 
   case GETMETRICS:
@@ -142,85 +134,31 @@ int echoHandler(int argument, byte *response)
   return echo_response_serializer((char)argument, status, response);
 }
 
-int forwardHandler(int argument, int argument2, byte *response)
+int forwardHandler(int argument, byte *response)
 {
 
   bool status = true;
-  Serial.println("here");
-  if (argument2 != 0)
-  {
-    argument = argument - 48;
-    argument = argument * 10;
-    argument2 = argument2 - 48;
-    argument += argument2;
-  }
-  else
-  {
-    argument = argument - 48;
-  }
-  Serial.println(argument);
+  
   moveF(argument);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
 
-int turnLeftHandler(int argument, int argument2, int argument3, byte *response)
+int turnLeftHandler(int argument,byte *response)
 {
   bool status = true;
-  if (argument3 != 0)
-  {
-    argument = argument - 48;
-    argument = argument * 100;
-    argument2 = argument2 - 48;
-    argument2 = argument2 * 10;
-    argument3 = argument3 - 48;
-    argument += argument2;
-    argument += argument3;
-  }
-  else if (argument2 != 0)
-  {
-    argument = argument - 48;
-    argument = argument * 10;
-    argument2 = argument2 - 48;
-    argument += argument2;
-  }
-  else
-  {
-    argument = argument - 48;
-  }
-  Serial.println(argument);
+ 
   turnL(argument);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
 
-int turnRightHandler(int argument, int argument2, int argument3, byte *response)
+int turnRightHandler(int argument, byte *response)
 {
   bool status = true;
-  if (argument3 != 0)
-  {
-    argument = argument - 48;
-    argument = argument * 100;
-    argument2 = argument2 - 48;
-    argument2 = argument2 * 10;
-    argument3 = argument3 - 48;
-    argument += argument2;
-    argument += argument3;
-  }
-  else if (argument2 != 0)
-  {
-    argument = argument - 48;
-    argument = argument * 10;
-    argument2 = argument2 - 48;
-    argument += argument2;
-  }
-  else
-  {
-    argument = argument - 48;
-  }
-  Serial.println(argument);
+  
   turnR(argument);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
@@ -291,8 +229,7 @@ double getAvg1()
   {
     getSensorReading();
     sensorReadings[i] = get_curFiltered1();
-    Serial.print(sensorReadings[i]);
-    Serial.print(" ");
+    
   }
 
   double sumL = 0;
@@ -304,12 +241,10 @@ double getAvg1()
 
   double sensorAvg = sumL / readSample;
 
-  Serial.print("Avg: ");
-  Serial.println(sensorAvg);
+  
 
   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-  Serial.print("Time taken (ms): ");
-  Serial.println(pepe2);
+  
 
   return (sensorAvg);
 }
@@ -325,8 +260,7 @@ double getAvg2()
   {
     getSensorReading();
     sensorReadings[i] = get_curFiltered2();
-    Serial.print(sensorReadings[i]);
-    Serial.print(" ");
+    
   }
 
   double sumL = 0;
@@ -338,12 +272,9 @@ double getAvg2()
 
   double sensorAvg = sumL / readSample;
 
-  Serial.print("Avg: ");
-  Serial.println(sensorAvg);
 
   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-  Serial.print("Time taken (ms): ");
-  Serial.println(pepe2);
+ 
 
   return (sensorAvg);
 }
@@ -359,8 +290,7 @@ double getAvg3()
   {
     getSensorReading();
     sensorReadings[i] = get_curFiltered3();
-    Serial.print(sensorReadings[i]);
-    Serial.print(" ");
+    
   }
 
   double sumL = 0;
@@ -372,13 +302,10 @@ double getAvg3()
 
   double sensorAvg = sumL / readSample;
 
-  Serial.print("Avg: ");
-  Serial.println(sensorAvg);
+ 
 
   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-  Serial.print("Time taken (ms): ");
-  Serial.println(pepe2);
-
+  
   return (sensorAvg);
 }
 
@@ -393,8 +320,7 @@ double getAvg4()
   {
     getSensorReading();
     sensorReadings[i] = get_curFiltered4();
-    Serial.print(sensorReadings[i]);
-    Serial.print(" ");
+    
   }
 
   double sumL = 0;
@@ -406,13 +332,10 @@ double getAvg4()
 
   double sensorAvg = sumL / readSample;
 
-  Serial.print("Avg: ");
-  Serial.println(sensorAvg);
+  
 
   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-  Serial.print("Time taken (ms): ");
-  Serial.println(pepe2);
-
+ 
   return (sensorAvg);
 }
 
@@ -427,8 +350,7 @@ double getAvg5()
   {
     getSensorReading();
     sensorReadings[i] = get_curFiltered5();
-    Serial.print(sensorReadings[i]);
-    Serial.print(" ");
+    
   }
 
   double sumL = 0;
@@ -440,12 +362,10 @@ double getAvg5()
 
   double sensorAvg = sumL / readSample;
 
-  Serial.print("Avg: ");
-  Serial.println(sensorAvg);
+  
 
   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-  Serial.print("Time taken (ms): ");
-  Serial.println(pepe2);
+  
 
   return (sensorAvg);
 }
@@ -461,8 +381,7 @@ double getAvg6()
   {
     getSensorReading();
     sensorReadings[i] = get_curFiltered6();
-    Serial.print(sensorReadings[i]);
-    Serial.print(" ");
+    
   }
 
   double sumL = 0;
@@ -474,12 +393,10 @@ double getAvg6()
 
   double sensorAvg = sumL / readSample;
 
-  Serial.print("Avg: ");
-  Serial.println(sensorAvg);
+
 
   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-  Serial.print("Time taken (ms): ");
-  Serial.println(pepe2);
+
 
   return (sensorAvg);
 }
