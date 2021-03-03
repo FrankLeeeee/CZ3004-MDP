@@ -232,22 +232,22 @@ void turnL(double angle)
     delay(delayms);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
-    //  PIDInit();
+     PIDInit();
     brakes = false;
 
-    // while(targetTick > TickR && targetTick > TickL){
-    //   curTickR = TickR - oldTickR;
-    //   curTickL = TickL - oldTickL;
-    //   Serial.print(curTickR);Serial.print(" ");Serial.println(curTickL);
-    //   PID1.Compute();
-    //   PID2.Compute();
-    //   md.setSpeeds(speedR*motorfactor, -speedL);
-    //   oldTickR += curTickR;
-    //   oldTickL += curTickL;
-    //   if(targetTick-TickR < 100)
-    //     md.setSpeeds(100,-100);
-    //   delay(delayms);
-    // }
+    while(targetTick > TickR && targetTick > TickL){
+      curTickR = TickR - oldTickR;
+      curTickL = TickL - oldTickL;
+      Serial.print(curTickR);Serial.print(" ");Serial.println(curTickL);
+      PID1.Compute();
+      PID2.Compute();
+      md.setSpeeds(speedR*motorfactor, -speedL);
+      oldTickR += curTickR;
+      oldTickL += curTickL;
+      if(targetTick-TickR < 100)
+        md.setSpeeds(100,-100);
+      delay(delayms);
+    }
     setTickLoop();
     md.setBrakes(400, 400);
 }
@@ -289,22 +289,22 @@ void turnR(double angle)
     delay(delayms);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
-    //  PIDInit();
+     PIDInit();
     brakes = false;
 
-    // while(targetTick > TickR && targetTick > TickL){
-    //   curTickR = TickR - oldTickR;
-    //   curTickL = TickL - oldTickL;
-    //   Serial.print(curTickR);Serial.print(" ");Serial.println(curTickL);
-    //   PID1.Compute();
-    //   PID2.Compute();
-    //   md.setSpeeds(-speedR*motorfactor, speedL);
-    //   oldTickR += curTickR;
-    //   oldTickL += curTickL;
-    //   if(targetTick-TickR < 100)
-    //     md.setSpeeds(-100,100);
-    //   delay(delayms);
-    // }
+    while(targetTick > TickR && targetTick > TickL){
+      curTickR = TickR - oldTickR;
+      curTickL = TickL - oldTickL;
+      Serial.print(curTickR);Serial.print(" ");Serial.println(curTickL);
+      PID1.Compute();
+      PID2.Compute();
+      md.setSpeeds(-speedR*motorfactor, speedL);
+      oldTickR += curTickR;
+      oldTickL += curTickL;
+      if(targetTick-TickR < 100)
+        md.setSpeeds(-100,100);
+      delay(delayms);
+    }
     setTickLoop();
     md.setBrakes(400, 400);
 }
