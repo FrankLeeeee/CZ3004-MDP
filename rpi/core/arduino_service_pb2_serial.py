@@ -52,10 +52,12 @@ class ArduinoRPCServiceStub(object):
             def default_serializer(message):
                 assert isinstance(message, message_proto)
                 data = list()
-                for field in message.DESCRIPTOR.fields:
+                for field in message_proto.DESCRIPTOR.fields:
                     value = getattr(message, field.name)
                     if isinstance(value, bytes):
                         data.append(value)
+                    elif isinstance(value, int):
+                        data.append(struct.pack('<I', value))
                     else:
                         data.append(bytes(data))
                 return argument_separator.join(data)
