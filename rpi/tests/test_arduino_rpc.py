@@ -21,7 +21,7 @@ async def test_arduino_rpc_echo():
 async def test_arduino_rpc_forward():
     async with SerialAioChannel(config.serial_url) as channel:
         stub = ArduinoRPCServiceStub(channel)
-        request = MoveRequest(step=20)
+        request = MoveRequest(step=10)
         response = await stub.Forward(request)
         print(response)
 

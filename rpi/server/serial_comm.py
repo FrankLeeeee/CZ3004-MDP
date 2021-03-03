@@ -18,7 +18,7 @@ from typing import Optional, Callable
 import serial_asyncio
 from functools import partial
 
-from utils.constants import SEPARATOR
+from utils.constants import SERIAL_MESSAGE_SEPARATOR
 from utils.logger import Logger
 
 
@@ -44,8 +44,8 @@ class SerialProtocol(asyncio.Protocol):
         """
         self._logger.debug(f'Read {data}')
         self._buffer += data
-        if SEPARATOR in self._buffer:
-            lines = self._buffer.split(SEPARATOR)
+        if SERIAL_MESSAGE_SEPARATOR in self._buffer:
+            lines = self._buffer.split(SERIAL_MESSAGE_SEPARATOR)
             self._buffer = lines[-1]  # whatever was left over
             for line in lines[:-1]:
                 asyncio.ensure_future(self._queue.put(line))
@@ -98,10 +98,10 @@ class SerialAioChannel(object):
 
         async def _callable(request):
             request_data: bytes = request_serializer(request)
-            if SEPARATOR in request_data:
-                raise ValueError(f'Invalid character {SEPARATOR} found at char({request_data.index(SEPARATOR)})'
+            if SERIAL_MESSAGE_SEPARATOR in request_data:
+                raise ValueError(f'Invalid character {SERIAL_MESSAGE_SEPARATOR} found at char({request_data.index(SERIAL_MESSAGE_SEPARATOR)})'
                                  f'in request data: {request_data}')
-            await self.write_channel(method + request_data + SEPARATOR)
+            await self.write_channel(method + request_data + SERIAL_MESSAGE_SEPARATOR)
             response = await self.read_channel()
             return response_deserializer(response)
 

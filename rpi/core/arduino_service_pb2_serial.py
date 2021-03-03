@@ -13,36 +13,34 @@ class ArduinoRPCServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        argument_separator = b','
 
         def metric_response_deserializer(text: bytes) -> core_dot_message__pb2.MetricResponse:
-            args = text.split(argument_separator)
-            assert len(args) == 2
-            assert len(args[0]) == 24, 'Metric data should contain 24 bytes'
+            # 6 sensor data (float, 4 bytes) + status (bool, 1 byte)
+            assert len(text) == 4 * 6 + 1, 'Metric Response should contain 24 bytes'
 
             response = core_dot_message__pb2.MetricResponse()
-            for i in range(24 // 4):
-                response.values[i + 1] = struct.unpack('<f', args[0][i * 4: (i + 1) * 4])[0]
-            response.status = struct.unpack('?', args[-1])[0]
+            for i in range(6):
+                response.values[i + 1] = struct.unpack('<f', text[i * 4: (i + 1) * 4])[0]
+            response.status = struct.unpack('?', text[24:])[0]
 
             return response
 
         def status_deserializer(text: bytes) -> core_dot_message__pb2.Status:
-            args = text.split(argument_separator)
-            assert len(args) == 1
+            # status (bool, 1 byte)
+            assert len(text) == 1, 'Status Response should contain 1 byte'
 
             response = core_dot_message__pb2.Status()
-            response.status = struct.unpack('?', args[-1])[0]
+            response.status = struct.unpack('?', text[0:])[0]
 
             return response
 
         def echo_response_deserializer(text: bytes) -> core_dot_message__pb2.EchoResponse:
-            args = text.split(argument_separator)
-            assert len(args) == 2
+            # status (bool, 1 byte)
+            assert len(text) == 2, 'Echo Response should contain 2 bytes'
 
             response = core_dot_message__pb2.EchoResponse()
-            response.message = args[0]
-            response.status = struct.unpack('?', args[-1])[0]
+            response.message = text[:1]
+            response.status = struct.unpack('?', text[1:])[0]
 
             return response
 
@@ -51,16 +49,16 @@ class ArduinoRPCServiceStub(object):
 
             def default_serializer(message):
                 assert isinstance(message, message_proto)
-                data = list()
+                data = b''
                 for field in message_proto.DESCRIPTOR.fields:
                     value = getattr(message, field.name)
                     if isinstance(value, bytes):
-                        data.append(value)
+                        data += value
                     elif isinstance(value, int):
-                        data.append(struct.pack('<I', value))
+                        data += struct.pack('<I', value)
                     else:
-                        data.append(bytes(data))
-                return argument_separator.join(data)
+                        data += bytes(data)
+                return data
 
             return default_serializer
 
