@@ -13,72 +13,88 @@ class ArduinoRPCServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        argument_separator = b','
 
-        def deserializer_factory(message):
-            def _deserializer(text: bytes):
-                args = text.split(b',')
-                assert len(args) >= 1
-                response = message(status=struct.unpack('?', args[-1])[0])
+        def metric_response_deserializer(text: bytes) -> core_dot_message__pb2.MetricResponse:
+            args = text.split(argument_separator)
+            assert len(args) == 2
+            assert len(args[0]) == 24, 'Metric data should contain 24 bytes'
 
-                if message == core_dot_message__pb2.MetricResponse:
-                    assert len(args) == 2
-                    assert len(args[0]) == 24, 'Metric data should contain 24 bytes'
+            response = core_dot_message__pb2.MetricResponse()
+            for i in range(24 // 4):
+                response.values[i + 1] = struct.unpack('<f', args[0][i * 4: (i + 1) * 4])[0]
+            response.status = struct.unpack('?', args[-1])[0]
 
-                    for i in range(24 // 4):
-                        response.value[i + 1] = struct.pack('f', args[0])
-                    return response
-                elif message == core_dot_message__pb2.EchoResponse:
-                    assert len(args) == 2
-                    response.message = args[0]
-                    return response
-                else:
-                    assert len(args) == 1
-                    return response
-            return _deserializer
+            return response
 
-        def default_serializer(message):
-            data = list()
-            for field in message.DESCRIPTOR.fields:
-                value = getattr(message, field.name)
-                if isinstance(value, bytes):
-                    data.append(value)
-                else:
-                    data.append(bytes(data))
-            return b','.join(data)
+        def status_deserializer(text: bytes) -> core_dot_message__pb2.Status:
+            args = text.split(argument_separator)
+            assert len(args) == 1
+
+            response = core_dot_message__pb2.Status()
+            response.status = struct.unpack('?', args[-1])[0]
+
+            return response
+
+        def echo_response_deserializer(text: bytes) -> core_dot_message__pb2.EchoResponse:
+            args = text.split(argument_separator)
+            assert len(args) == 2
+
+            response = core_dot_message__pb2.EchoResponse()
+            response.message = args[0]
+            response.status = struct.unpack('?', args[-1])[0]
+
+            return response
+
+        def default_serializer_gen(message_proto):
+            """Generate default serializer with message protobuf type check."""
+
+            def default_serializer(message):
+                assert isinstance(message, message_proto)
+                data = list()
+                for field in message.DESCRIPTOR.fields:
+                    value = getattr(message, field.name)
+                    if isinstance(value, bytes):
+                        data.append(value)
+                    else:
+                        data.append(bytes(data))
+                return argument_separator.join(data)
+
+            return default_serializer
 
         # request_serializer, response_deserializer
         self.Echo = channel.unary_unary(
             b'\x01',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.EchoResponse),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.EchoRequest),
+            response_deserializer=echo_response_deserializer,
         )
         self.Forward = channel.unary_unary(
             b'\x02',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.MetricResponse),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.MoveRequest),
+            response_deserializer=metric_response_deserializer,
         )
         self.TurnLeft = channel.unary_unary(
             b'\x03',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.MetricResponse),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.TurnRequest),
+            response_deserializer=metric_response_deserializer,
         )
         self.TurnRight = channel.unary_unary(
             b'\x04',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.MetricResponse),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.TurnRequest),
+            response_deserializer=metric_response_deserializer,
         )
         self.GetMetrics = channel.unary_unary(
             b'\x05',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.MetricResponse),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.MetricRequest),
+            response_deserializer=metric_response_deserializer,
         )
         self.Calibration = channel.unary_unary(
             b'\x06',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.Status),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.EmptyRequest),
+            response_deserializer=status_deserializer,
         )
         self.Terminate = channel.unary_unary(
             b'\x07',
-            request_serializer=default_serializer,
-            response_deserializer=deserializer_factory(core_dot_message__pb2.Status),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.EmptyRequest),
+            response_deserializer=status_deserializer,
         )

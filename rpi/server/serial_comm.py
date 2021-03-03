@@ -51,7 +51,7 @@ class SerialProtocol(asyncio.Protocol):
                 asyncio.ensure_future(self._queue.put(line))
 
     def connection_lost(self, exc):
-        self._logger.error(f'Connection lost, reason: {exc}')
+        self._logger.info(f'Connection lost, reason: {exc}')
 
 
 class SerialAioChannel(object):
@@ -65,11 +65,12 @@ class SerialAioChannel(object):
         self._queue: Optional[asyncio.Queue] = None
         self._channel_lock = asyncio.Lock(loop=loop)
         self._logger = Logger('Serial Server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
-        self.protocol_cls = partial(SerialProtocol, self._queue, self._logger)
+        self.protocol_cls = None
 
     async def start(self, loop=None):
         self._loop = loop or asyncio.get_event_loop()
         self._queue = asyncio.Queue(loop=loop)
+        self.protocol_cls = partial(SerialProtocol, self._queue, self._logger)
         self.transport, self.protocol = await serial_asyncio.create_serial_connection(
             self._loop, self.protocol_cls, self.url, baudrate=self.baudrate
         )
