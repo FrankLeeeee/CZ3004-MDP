@@ -11,7 +11,7 @@ import asyncio
 
 import yaml
 
-from config import ServerConfig
+from config import ServerConfig, config
 from core import grpc_service_pb2_grpc
 from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from core.grpc_aio_server import GRPCAioServer
@@ -86,9 +86,6 @@ async def after_server_stop(loop):  # noqa
 
 
 if __name__ == '__main__':
-    with open(PROJECT_ROOT_PATH / 'server/config.yml') as f:
-        config = yaml.safe_load(f)
-    config = ServerConfig.parse_obj(config)
 
     host_ = '0.0.0.0'
 
