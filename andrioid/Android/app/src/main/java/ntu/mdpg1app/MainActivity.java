@@ -553,6 +553,7 @@ public class MainActivity extends AppCompatActivity {
         //return fragment.sendMsg("@t" + sendMsg + "!");
         return fragment.sendMsg(sendMsg);
     }
+
     public boolean outgoingMessage(String sendMsg, int destination) {
         //add delimiters
         // 0=algo/tcp, 1=ardu/serial
@@ -603,9 +604,19 @@ public class MainActivity extends AppCompatActivity {
         //check if robot is out of bounds
         if(!Robot.getInstance().rotateToNorth()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                outgoingMessage("W", 1);
+                try {
+                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String instruction = "Forward\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    //getack
+                    Robot.getInstance().moveForward(10);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //outgoingMessage("W", 1);
                 //getack
-                Robot.getInstance().moveForward(10);
+//                Robot.getInstance().moveForward(10);
             }
         }
         else{
@@ -620,9 +631,19 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         if(!Robot.getInstance().rotateToWest()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                outgoingMessage("W", 1);
+                try {
+                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String instruction = "Forward\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    //getack
+                    Robot.getInstance().moveForward(10);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //outgoingMessage("W", 1);
                 //getack
-                Robot.getInstance().moveForward(10);
+//                Robot.getInstance().moveForward(10);
             }
         }
         else{
@@ -638,9 +659,19 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeRight() {
         if(!Robot.getInstance().rotateToEast()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                outgoingMessage("W", 1);
+                try {
+                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String instruction = "Forward\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    //getack
+                    Robot.getInstance().moveForward(10);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //outgoingMessage("W", 1);
                 //getack
-                Robot.getInstance().moveForward(10);
+//                Robot.getInstance().moveForward(10);
             }
         }
         else{
@@ -655,10 +686,19 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeBottom() {
         if(!Robot.getInstance().rotateToSouth()){
             if(!Robot.getInstance().isOutOfBounds()) {
+                try {
+                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String instruction = "Forward\\" + instructionValue + ";";
+                    outgoingMessage(instruction);
+                    //getack
+                    Robot.getInstance().moveForward(10);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
-                outgoingMessage("W", 1);
+                //outgoingMessage("W", 1);
                 //getack
-                Robot.getInstance().moveForward(10);
+//                Robot.getInstance().moveForward(10);
             }
         }
         else{
