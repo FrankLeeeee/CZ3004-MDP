@@ -9,72 +9,94 @@ Date: 2/16/2021
 Bluetooth communication for interfacing with the tablet.
 """
 import asyncio
-from concurrent.futures.thread import ThreadPoolExecutor
+from typing import Optional, Callable
+from uuid import uuid4
 
 import bluetooth
 
-from core.constant import CommandCode
+from utils.logger import Logger
 
 BD_ADDRESS = 'B8:27:EB:E6:BF:AA'
-PORT = 4
 BUFFER_SIZE = 1024
 
 uuid = '94f39d29-7d6d-437d-973b-fba39e49d4ee'
 
 
-class BluetoothServer(object):
+class BluetoothAioServer(object):
 
-    def __init__(self):
-        self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        self.server_sock.bind(("", PORT))
-        self.server_sock.listen(1)
+    def __init__(self, bd_address=None, port=4, uuid=None, proto=bluetooth.RFCOMM):
+        self.bd_address = bd_address or '' # bluetooth.read_local_bdaddr()[0]
+        self.port = port
+        self.uuid = uuid or str(uuid4())
+        self.proto = proto
+
+        self._loop: Optional[asyncio.AbstractEventLoop] = None
+        self._queue: Optional[asyncio.Queue] = None
+        self._channel_lock = asyncio.Lock(loop=self._loop)
+        self._server_sock: Optional[bluetooth.BluetoothSocket] = None
+        self._client_sock: Optional[bluetooth.BluetoothSocket] = None
+        self._logger = Logger('Bluetooth Channel', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
+
+    async def start(self, loop=None):
+        self._loop = loop or asyncio.get_event_loop()
+        self._queue = asyncio.Queue(loop=loop)
+
+        self._server_sock = bluetooth.BluetoothSocket(self.proto)
+        self._server_sock.bind((self.bd_address, self.port))
+        await self._loop.run_in_executor(None, self._server_sock.listen, 1)
 
         bluetooth.advertise_service(
-            self.server_sock, 'SampleServer', service_id=uuid,
-            service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
+            self._server_sock, 'Bluetooth Channel', service_id=self.uuid,
+            service_classes=[self.uuid, bluetooth.SERIAL_PORT_CLASS],
             profiles=[bluetooth.SERIAL_PORT_PROFILE],
             # protocols=[bluetooth.OBEX_UUID]
         )
 
-        self.client_socks = list()
+        self._logger.info(f'Listening on device {self.bd_address} at port {self.port}. UUID={self.uuid}')
 
-        self._executor = ThreadPoolExecutor(max_workers=4)
-        self._loop = asyncio.get_event_loop()
-
-    async def accept(self, timeout: float = None):
-        future = self._loop.run_in_executor(self._executor, self.server_sock.accept)
+    async def accept(self, timeout: Optional[int] = None):
+        future = self._loop.run_in_executor(None, self._server_sock.accept)
         client_sock, client_info = await asyncio.wait_for(future, timeout=timeout, loop=self._loop)
-        self.client_socks.append(client_sock)
-        return client_sock, client_info
+        self._client_sock = client_sock
 
-    async def start(self):
-        # always receive
+        # start the data receive task
+        self._loop.create_task(self._data_receive_task())
 
-        # parse header
+        self._logger.info(f'Accepting from {client_info}')
 
-        # parse data
+    async def _data_receive_task(self):
+        try:
+            while True:
+                data = self._client_sock.recv(BUFFER_SIZE)
+                self._logger.debug(f'Receive: {data}')
+                await self._queue.put(data)
+        except OSError:
+            self._logger.info('Connection lost.')
 
-        # setup a session
-        # find handler, execute
+    async def read_channel(self):
+        return await self._queue.get()
+
+    async def write_channel(self, data: bytes):
         pass
 
-    async def disconnect(self, client_sock):
-        return await self._loop.run_in_executor(self._executor, client_sock.close)
+    def stop(self):
+        self._client_sock.close()
+        self._server_sock.close()
 
-    async def receive(self, buffer: int = BUFFER_SIZE, timeout: float = None):
-        future = self._loop.run_in_executor(self._executor, self.client_socks[0].recv, buffer)
-        data = await asyncio.wait_for(future, timeout=timeout, loop=self._loop)
-        return data
+    def unary_unary(self, method: bytes, request_serializer: Callable, response_deserializer: Callable):
+        """Creates a UnaryUnaryMultiCallable for a unary-unary method."""
 
-    async def close(self):
-        await asyncio.gather(self.disconnect(client_sock) for client_sock in self.client_socks)
-        await self._loop.run_in_executor(self._executor, self.server_sock.close)
+        async def _callable(request):
+            request_data: bytes = request_serializer(request)
+            if SERIAL_MESSAGE_SEPARATOR in request_data:
+                raise ValueError(
+                    f'Invalid character {SERIAL_MESSAGE_SEPARATOR} found at char({request_data.index(SERIAL_MESSAGE_SEPARATOR)})'
+                    f'in request data: {request_data}')
+            await self.write_channel(method + request_data + SERIAL_MESSAGE_SEPARATOR)
+            response = await self.read_channel()
+            return response_deserializer(response)
 
-
-def add_BluetoothControlServicer_to_server(servicer, server):
-    rpc_method_handler = {
-        CommandCode.HeartBeat: (servicer.HeartBeat, request_deserializer, response_serializer)
-    }
+        return _callable
 
 
 class BluetoothControlServicer(object):
@@ -84,27 +106,13 @@ class BluetoothControlServicer(object):
 
 
 async def test():
-    server = BluetoothServer()
+    server = BluetoothAioServer()
+    await server.start()
+    await server.accept()
 
-    print('Waiting for connection on RFCOMM channel', PORT)
-    _, client_info = await server.accept()
-
-    print('Accepted connection from', client_info)
-
-    try:
-        while True:
-            data = await server.receive(1024)
-            if not data:
-                break
-            print('Received', data)
-    except OSError:
-        pass
-
-    print('Disconnected.')
-
-    await server.close()
-    print('All done.')
+    server.stop()
 
 
 if __name__ == '__main__':
+    print(bluetooth.read_local_bdaddr()[0])
     asyncio.run(test())
