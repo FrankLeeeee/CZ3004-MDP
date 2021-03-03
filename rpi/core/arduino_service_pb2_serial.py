@@ -85,7 +85,7 @@ class ArduinoRPCServiceStub(object):
         )
         self.GetMetrics = channel.unary_unary(
             b'\x05',
-            request_serializer=default_serializer_gen(core_dot_message__pb2.MetricRequest),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.EmptyRequest),
             response_deserializer=metric_response_deserializer,
         )
         self.Calibration = channel.unary_unary(
