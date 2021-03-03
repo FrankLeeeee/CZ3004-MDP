@@ -29,9 +29,11 @@ uint8_t counter = 0;
 
 void loopSeq()
 {
+  getSensorReading();
   char temp;
   while (Serial.available() > 0)
   {
+    getSensorReading();
     temp = Serial.read();
     message.concat((char)temp);
 

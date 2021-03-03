@@ -5,10 +5,6 @@
 
 void readInput();
 
-
-
-
-
 //==========================
 //===== Main Functions =====
 //==========================
@@ -22,11 +18,9 @@ void setup()
 
 void loop()
 {
-  //getSensorReading();
   loopSeq();
+  //readInput();
 }
-
-
 
 //===== Inputs =====
 int state = 0;
