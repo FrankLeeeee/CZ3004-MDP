@@ -25,9 +25,6 @@ message TurnRequest {
   uint32 angle = 1;
 }
 
-message CalibrateRequest {
-}
-
 message RobotStatus {
   enum Mode {
     EXPLORATION = 0;
