@@ -42,7 +42,7 @@ class SerialProtocol(asyncio.Protocol):
     def data_received(self, data):
         """Store characters until a newline is received.
         """
-        self._logger.debug(data)
+        self._logger.debug(f'Read {data}')
         self._buffer += data
         if SEPARATOR in self._buffer:
             lines = self._buffer.split(SEPARATOR)
@@ -82,7 +82,7 @@ class SerialAioChannel(object):
         return await self._queue.get()
 
     async def write_channel(self, data: bytes):
-        self._logger.debug(data)
+        self._logger.debug(f'Write {data}')
         # self.transport.write not working for windows (nt) FIXME: pyserial-asyncio v0.5
         async with self._channel_lock:
             if os.name == "nt":
