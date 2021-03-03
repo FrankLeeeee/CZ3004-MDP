@@ -27,6 +27,7 @@ String message;
 
 void loopSeq()
 {
+  getSensorReading();
   char temp;
   while (Serial.available() > 0)
   {
