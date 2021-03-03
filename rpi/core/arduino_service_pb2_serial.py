@@ -1,7 +1,7 @@
 import struct
 
 import core.message_pb2 as core_dot_message__pb2
-from server.serial_comm import SerialAioChannel
+from server.serial_channel import SerialAioChannel
 
 
 class ArduinoRPCServiceStub(object):

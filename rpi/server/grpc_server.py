@@ -9,14 +9,12 @@ gRPC server for interfacing with the PC.
 """
 import asyncio
 
-import yaml
-
 from config import ServerConfig, config
 from core import grpc_service_pb2_grpc
 from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from core.grpc_aio_server import GRPCAioServer
-from server.serial_comm import SerialAioChannel
-from utils.constants import PROJECT_ROOT_PATH
+from core.message_pb2 import MetricResponse
+from server.serial_channel import SerialAioChannel
 from utils.logger import Logger
 
 
@@ -34,11 +32,17 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         return response
 
     async def Forward(self, request, context):
+        if request.step > 255:
+            self._logger.error(f'Invalid request: {request}, step should be less than or equal to 255.')
+            return MetricResponse(status=False)
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
         response = await serial_client.Forward(request)
         return response
 
     async def TurnLeft(self, request, context):
+        if request.angle > 180:
+            self._logger.error(f'Invalid request: {request}, angle should be less than or equal to 180.')
+            return MetricResponse(status=False)
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
         response = await serial_client.TurnLeft(request)
         return response
@@ -51,6 +55,17 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
     async def Calibrate(self, request, context):
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
         response = await serial_client.Calibration(request)
+        return response
+
+    async def GetMetrics(self, request, context):
+        print(request)
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.GetMetrics(request)
+        return response
+
+    async def StopRobot(self, request, context):
+        serial_client = ArduinoRPCServiceStub(self.serial_channel)
+        response = await serial_client.Terminate(request)
         return response
 
 
@@ -86,7 +101,6 @@ async def after_server_stop(loop):  # noqa
 
 
 if __name__ == '__main__':
-
     host_ = '0.0.0.0'
 
     print(f'Using configuration:\n{config}')
