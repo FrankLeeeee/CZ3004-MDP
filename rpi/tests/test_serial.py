@@ -8,7 +8,7 @@ Date: 2/26/2021
 import asyncio
 
 from config import config
-from server.serial_comm import SerialAioChannel, SerialProtocol
+from server.serial_channel import SerialAioChannel, SerialProtocol
 
 
 def _data_received_simple(self, data):

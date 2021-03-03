@@ -7,9 +7,9 @@ service GRPCService {
 
   rpc Forward(MoveRequest) returns (MetricResponse) {}
 
-  rpc TurnLeft(MoveRequest) returns (MetricResponse) {}
+  rpc TurnLeft(TurnRequest) returns (MetricResponse) {}
 
-  rpc TurnRight(MoveRequest) returns (MetricResponse) {}
+  rpc TurnRight(TurnRequest) returns (MetricResponse) {}
 
   rpc Calibrate(EmptyRequest) returns (Status) {}
 
@@ -17,7 +17,7 @@ service GRPCService {
 
   rpc StopRobot(RobotStatus) returns (Status) {}
 
-  rpc GetMetrics(MetricRequest) returns (MetricResponse) {}
+  rpc GetMetrics(EmptyRequest) returns (MetricResponse) {}
 
   rpc SetPosition(Position) returns (Position) {}
 
