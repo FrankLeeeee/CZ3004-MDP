@@ -14,18 +14,16 @@ from uuid import uuid4
 
 import bluetooth
 
+from utils.constants import BT_MESSAGE_SEPARATOR
 from utils.logger import Logger
 
-BD_ADDRESS = 'B8:27:EB:E6:BF:AA'
 BUFFER_SIZE = 1024
-
-uuid = '94f39d29-7d6d-437d-973b-fba39e49d4ee'
 
 
 class BluetoothAioServer(object):
 
-    def __init__(self, bd_address=None, port=4, uuid=None, proto=bluetooth.RFCOMM):
-        self.bd_address = bd_address or '' # bluetooth.read_local_bdaddr()[0]
+    def __init__(self, bd_address=None, port=7, uuid=None, proto=bluetooth.RFCOMM):
+        self.bd_address = bd_address or bluetooth.read_local_bdaddr()[0]
         self.port = port
         self.uuid = uuid or str(uuid4())
         self.proto = proto
@@ -77,7 +75,7 @@ class BluetoothAioServer(object):
         return await self._queue.get()
 
     async def write_channel(self, data: bytes):
-        pass
+        await self._loop.run_in_executor(None, self._client_sock.send(data))
 
     def stop(self):
         self._client_sock.close()
@@ -88,15 +86,27 @@ class BluetoothAioServer(object):
 
         async def _callable(request):
             request_data: bytes = request_serializer(request)
-            if SERIAL_MESSAGE_SEPARATOR in request_data:
+            if BT_MESSAGE_SEPARATOR in request_data:
                 raise ValueError(
-                    f'Invalid character {SERIAL_MESSAGE_SEPARATOR} found at char({request_data.index(SERIAL_MESSAGE_SEPARATOR)})'
+                    f'Invalid character {BT_MESSAGE_SEPARATOR} found at '
+                    f'char({request_data.index(BT_MESSAGE_SEPARATOR)})'
                     f'in request data: {request_data}')
-            await self.write_channel(method + request_data + SERIAL_MESSAGE_SEPARATOR)
+            await self.write_channel(method + request_data + BT_MESSAGE_SEPARATOR)
             response = await self.read_channel()
             return response_deserializer(response)
 
         return _callable
+
+
+def unary_unary_rpc_method_handler(behavior,
+                                   request_deserializer=None,
+                                   response_serializer=None):
+    def _handler(request_data: bytes):
+        request = request_deserializer(request_data)
+        response = behavior(request)
+        return response_serializer(response)
+
+    return _handler
 
 
 class BluetoothControlServicer(object):
@@ -110,9 +120,9 @@ async def test():
     await server.start()
     await server.accept()
 
+    await server.read_channel()
     server.stop()
 
 
 if __name__ == '__main__':
-    print(bluetooth.read_local_bdaddr()[0])
     asyncio.run(test())
