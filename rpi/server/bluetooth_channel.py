@@ -9,11 +9,13 @@ Date: 2/16/2021
 Bluetooth communication for interfacing with the tablet.
 """
 import asyncio
-from typing import Optional, Callable
+from typing import Optional
 from uuid import uuid4
 
 import bluetooth
 
+from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
+from core.message_pb2 import EchoResponse, Position
 from utils.constants import BT_MESSAGE_SEPARATOR
 from utils.logger import Logger
 
@@ -31,6 +33,9 @@ class BluetoothAioServer(object):
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._queue: Optional[asyncio.Queue] = None
         self._channel_lock = asyncio.Lock(loop=self._loop)
+        self._handler = list()
+        self._buffer = b''
+
         self._server_sock: Optional[bluetooth.BluetoothSocket] = None
         self._client_sock: Optional[bluetooth.BluetoothSocket] = None
         self._logger = Logger('Bluetooth Channel', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
@@ -59,6 +64,7 @@ class BluetoothAioServer(object):
 
         # start the data receive task
         self._loop.create_task(self._data_receive_task())
+        self._loop.create_task(self._runner())
 
         self._logger.info(f'Accepting from {client_info}')
 
@@ -67,61 +73,51 @@ class BluetoothAioServer(object):
             while True:
                 data = self._client_sock.recv(BUFFER_SIZE)
                 self._logger.debug(f'Receive: {data}')
-                await self._queue.put(data)
+                self._buffer += data
+                if BT_MESSAGE_SEPARATOR in self._buffer:
+                    lines = self._buffer.split(BT_MESSAGE_SEPARATOR)
+                    self._buffer = lines[-1]  # whatever was left over
+                    for line in lines[:-1]:
+                        data: str = line.decode()
+                        method, request = data.split('\\')
+                        await self._queue.put((method, request))
         except OSError:
             self._logger.info('Connection lost.')
 
-    async def read_channel(self):
-        return await self._queue.get()
-
-    async def write_channel(self, data: bytes):
-        await self._loop.run_in_executor(None, self._client_sock.send(data))
+    async def _runner(self):
+        method, request = await self._queue.get()
+        response = await self._handler[method](request)
+        response = response.encode()
+        with self._channel_lock:
+            await self._loop.run_in_executor(None, self._client_sock.send(response))
 
     def stop(self):
         self._client_sock.close()
         self._server_sock.close()
 
-    def unary_unary(self, method: bytes, request_serializer: Callable, response_deserializer: Callable):
-        """Creates a UnaryUnaryMultiCallable for a unary-unary method."""
-
-        async def _callable(request):
-            request_data: bytes = request_serializer(request)
-            if BT_MESSAGE_SEPARATOR in request_data:
-                raise ValueError(
-                    f'Invalid character {BT_MESSAGE_SEPARATOR} found at '
-                    f'char({request_data.index(BT_MESSAGE_SEPARATOR)})'
-                    f'in request data: {request_data}')
-            await self.write_channel(method + request_data + BT_MESSAGE_SEPARATOR)
-            response = await self.read_channel()
-            return response_deserializer(response)
-
-        return _callable
-
-
-def unary_unary_rpc_method_handler(behavior,
-                                   request_deserializer=None,
-                                   response_serializer=None):
-    def _handler(request_data: bytes):
-        request = request_deserializer(request_data)
-        response = behavior(request)
-        return response_serializer(response)
-
-    return _handler
+    def add_generic_rpc_handlers(self, handlers):
+        self._handler = handlers
 
 
 class BluetoothControlServicer(object):
 
-    async def HeartBeat(self, request: bytes):
-        return request
+    async def Echo(self, request):
+        return EchoResponse(request.message)
+
+    async def Forward(self, request):
+        return Position(request)
 
 
 async def test():
+    servicer = BluetoothControlServicer()
     server = BluetoothAioServer()
+    add_bt_rpc_servicer_to_server(servicer, server)
+
     await server.start()
     await server.accept()
 
-    await server.read_channel()
-    server.stop()
+    while True:
+        pass
 
 
 if __name__ == '__main__':
