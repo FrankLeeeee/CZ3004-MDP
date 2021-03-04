@@ -1,6 +1,7 @@
 #ifndef Sensor_H
 #define Sensor_H
 
+int distToBlocks(double dist);
 void getSensorReading();
 double get_curFiltered1();
 double get_curFiltered2();
@@ -22,5 +23,7 @@ double getAvg3();
 double getAvg4();
 double getAvg5();
 double getAvg6();
+int getBlocksSR(double dist);
+int getBlocksLR(double dist);
 
 #endif

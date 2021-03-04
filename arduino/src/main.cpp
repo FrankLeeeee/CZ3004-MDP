@@ -32,27 +32,28 @@ void readInput()
     switch (inByte)
     {
     case 'w':
-      moveF(10);
+      moveF(2);
       break;
     case 's':
-      moveB(10);
+      moveB(1);
       break;
     case 'a':
-      delay(0);
       turnL(90);
       break;
     case 'd':
-      delay(0);
       turnR(90);
       break;
     case 'b':
       brake();
       break;
     case 'e':
-      //printSensorReading();
-      Serial.print(getAvg5());
+      //  printSensorReading();
+      //Serial.println(getAvg3());
+      Serial.print(getDist1(getAvg1()));
       Serial.print(" ");
-      Serial.println(getAvg6());
+      Serial.print(getDist2(getAvg2()));
+      Serial.print(" ");
+      Serial.println(getDist4(getAvg4()));
       break;
     case 'f':
       //encodeMessage();

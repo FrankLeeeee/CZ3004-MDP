@@ -19,6 +19,13 @@ double curFiltered1, curFiltered2, curFiltered3, curFiltered4, curFiltered5, cur
 double oldFiltered1 = -1, oldFiltered2 = -1, oldFiltered3 = -1, oldFiltered4 = -1, oldFiltered5 = -1, oldFiltered6 = -1;
 double V1, V2, V3, V4, V5, V6;
 
+//=====Conversion Functions=====
+
+int distToBlocks(double dist)
+{
+    return (int)((dist + 5) / 10);
+}
+
 //===== Sensors =====
 
 void getSensorReading()
@@ -104,32 +111,39 @@ void printSensorReading()
     Serial.print("Sensor 1: ");
     Serial.print(curFiltered1);
     Serial.print("  ");
-    Serial.println(getDist1(curFiltered1));
+    Serial.print(getDist1(curFiltered1));
     Serial.print("  ");
+    Serial.println(getBlocksSR(getDist1(curFiltered1)));
     Serial.print("Sensor 2: ");
     Serial.print(curFiltered2);
     Serial.print("  ");
-    Serial.println(getDist2(curFiltered2));
+    Serial.print(getDist2(curFiltered2));
     Serial.print("  ");
+    Serial.println(getBlocksSR(getDist2(curFiltered2)));
     Serial.print("Sensor 3 ");
     Serial.print(curFiltered3);
     Serial.print("  ");
-    Serial.println(getDist3(curFiltered3));
+    Serial.print(getDist3(curFiltered3));
     Serial.print("  ");
+    Serial.println(getBlocksSR(getDist3(curFiltered3)));
     Serial.print("Sensor 4 ");
     Serial.print(curFiltered4);
     Serial.print("  ");
-    Serial.println(getDist4(curFiltered4));
+    Serial.print(getDist4(curFiltered4));
     Serial.print("  ");
+    Serial.println(getBlocksSR(getDist4(curFiltered4)));
     Serial.print("Sensor 5 ");
     Serial.print(curFiltered5);
     Serial.print("  ");
-    Serial.println(getDist5(curFiltered5));
+    Serial.print(getDist5(curFiltered5));
     Serial.print("  ");
+    Serial.println(getBlocksSR(getDist5(curFiltered5)));
     Serial.print("Sensor 6 ");
     Serial.print(curFiltered6);
     Serial.print("  ");
-    Serial.println(getDist6(curFiltered6));
+    Serial.print(getDist6(curFiltered6));
+    Serial.print("  ");
+    Serial.println(getBlocksLR(getDist6(curFiltered6)));
 
     // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
     // Serial.print("Time taken (ms): ");
@@ -143,7 +157,8 @@ double getDist1(double x)
     // return -13.696 * pow(x, 5) + 101.4 * pow(x, 4) - 296.49 * pow(x, 3) + 438.4 * pow(x, 2) - 348.66 * x + 144.17;
     //return 204.0816327 / (0.0418 * x + 0.00007);
     //return 1 / (0.0002 * x - 0.0052);
-    return 1 / (pow(0.0000005 * x, 2) + 0.00005 * x + 0.0081);
+    return 1 / (0.0000005 * pow(x, 2) + 0.00005 * x + 0.0081);
+    //   return 1 / (0.0002 * x - 0.0003);
 }
 
 // Sensor 2
@@ -159,7 +174,8 @@ double getDist3(double x)
 {
     // return 25.863 * pow(x, -1.268);
     //return 204.0816327 / (0.0483 * x - 0.0082);
-    return 1 / (pow(0.0000003 * x, 2) + 0.0001 * x + 0.0001);
+    return 1 / (0.0000004 * pow(x, 2) + 0.0001 * x + 0.0014);
+    //return 1 / (0.0002 * x - 0.0063);
 }
 
 double getDist4(double x)
@@ -167,14 +183,16 @@ double getDist4(double x)
     // return -20.988 * pow(x, 5) + 143.17 * pow(x, 4) - 383.55 * pow(x, 3) + 520.2 * pow(x, 2) - 382.96 * x + 148.66;
     //return 204.0816327 / (0.0429 * x - 0.00008);
     //return 1 / (0.0002 * x - 0.0035);
-    return 1 / (pow(0.0000005 * x, 2) + 0.00006 * x + 0.0062);
+    return 1 / (0.0000005 * pow(x, 2) + 0.00006 * x + 0.0062);
+    // return 1 / (0.0002 * x - 0.0037);
 }
 // 3 & 5
 double getDist5(double x)
 {
     // return 26.353 * pow(x, -1.056);
     //return 204.0816327 / (0.0413 * x - 0.0027);
-    return 1 / (pow(0.0000003 * x, 2) + 0.0001 * x + 0.006);
+    // return 1 / (0.0000003 * pow(x, 2) + 0.0001 * x + 0.006);
+    return 1 / (0.0002 * x - 0.0016);
 }
 
 // Long distance sensor
@@ -183,7 +201,7 @@ double getDist6(double x)
     //return -17.686 * pow(x, 5) + 143.29 * pow(x, 4) - 454.79 * pow(x, 3) + 718.36 * pow(x, 2) - 600.2 * x + 265.99;
     // return 3.9597*pow(x,6) - 50.124*pow(x,5) + 247.27*pow(x,4) - 620.04*pow(x,3) + 854.23*pow(x,2) - 654.48*x + 274.19;
     //return 204.0816327 / (0.0181 * x + 0.0008);
-    return 1 / (pow(0.00000009 * x, 2) + 0.00002 * x + 0.0085);
+    return 1 / (0.00000009 * pow(x, 2) + 0.00002 * x + 0.0085);
 }
 
 double alpha = 0.1; // Smoothing Factor
@@ -192,7 +210,7 @@ double filter(double volt, double oldVal)
     return (alpha * volt) + (1 - alpha) * oldVal;
 }
 
-int sampleSize = 10;
+int sampleSize = 300;
 double getAvg1()
 {
     // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
@@ -347,4 +365,23 @@ double getAvg6()
     // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
 
     return (sensorAvg);
+}
+
+int getBlocksSR(double dist)
+{
+    int blocks = distToBlocks(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+    return blocks;
+}
+int getBlocksLR(double dist)
+{
+    int blocks = distToBlocks(dist);
+    if (blocks > 8 || blocks < 0)
+    {
+        return 0;
+    }
+    return blocks;
 }

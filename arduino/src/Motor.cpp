@@ -77,7 +77,7 @@ double getTicksFromAngle(double angle)
     return ((dist_between_wheels / 6) * 1124.5) * (angle / 360);
 }
 
-double blocksTo_cm(double blocks)
+double blocksToCm(double blocks)
 {
     return blocks * 10;
 }
@@ -163,7 +163,7 @@ int emergencyDistance = 10; //in cm
 
 void moveF(double dist)
 {
-    dist = blocksTo_cm(dist);
+    dist = blocksToCm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
     speedL = 350;
@@ -192,9 +192,9 @@ void moveF(double dist)
         md.setSpeeds(speedR * motorfactor, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
-        getSensorReading();
+        // getSensorReading();
         delay(delayms);
-        if ((getDist2(get_curFiltered2()) < emergencyDistance) || (getDist1(get_curFiltered1()) < emergencyDistance) || (getDist4(get_curFiltered4()) < emergencyDistance))
+        if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) || ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) || ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
         {
             brakes = emergencyStop();
         }
@@ -202,7 +202,6 @@ void moveF(double dist)
         // Serial.print("Time taken (ms): ");
         // Serial.println(pepe2);
     }
-    //    setTickLoop();
     md.setBrakes(400, 400);
 }
 
@@ -235,7 +234,7 @@ void moveF(double dist)
 
 void moveB(double dist)
 {
-    dist = blocksTo_cm(dist);
+    dist = blocksToCm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
     speedL = 350;
@@ -392,6 +391,7 @@ void brake()
 double calibrationTolerence = 0.1;
 // double calibrationTolerence = 0.6;
 // double calibrationTolerence = 0.75;
+double sensorDiff = 0.6;
 
 void wallCalibrate()
 {
@@ -421,7 +421,7 @@ void wallCalibrate()
     Serial.println(sensorL);
     Serial.println(sensorR);
 
-    double diff = sensorL - sensorR;
+    double diff = sensorL - sensorR; //Sensor L = sensor 1, Sensor R = sensor 4
     Serial.println(diff);
 
     if ((diff > -(calibrationTolerence)) && (diff < calibrationTolerence))

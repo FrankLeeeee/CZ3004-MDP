@@ -7,7 +7,7 @@ void countTickL();
 void PIDInit();
 double calcTickFromDist(double dist);
 double getTicksFromAngle(double angle);
-double blocksTo_cm(double blocks);
+double blocksToCm(double blocks);
 void moveFstopWall();
 void moveF(double dist);
 // void moveB();
