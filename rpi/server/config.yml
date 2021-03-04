@@ -1,2 +1,2 @@
-serial_url: '/dev/cu.usbmodem1411401'
+serial_url: '/dev/ttyAMA0'
 baudrate: 115200
