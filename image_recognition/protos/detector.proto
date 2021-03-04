@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "detectorProto";
+option objc_class_prefix = "RTG";
+
+
+service detector{
+    
+    rpc Detect_image(Camera_packet) returns (Pc_packet){}
+
+}
+
+//message packet for sending from rpi to server pc
+message Camera_packet{
+    Coordinate coordinates = 1;
+    Image image = 2;
+}
+
+message Coordinate{
+    int32 x_coordinates = 1;
+    int32 y_coordinates = 2;
+}
+
+message Image {
+    bytes image = 1;
+}
+
+//message packet for sending from server pc to rpi
+message Pc_packet{
+    Coordinate coordinates = 1;
+    Image image = 2;
+    string class_id = 3;
+}
