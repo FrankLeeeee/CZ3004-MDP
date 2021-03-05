@@ -47,7 +47,9 @@ double motorfactor = 0.99775;
 boolean brakes = false;
 double circumference = PI * 6;
 double distance_cm;                //distance in cm that the robot need to move
-double dist_between_wheels = 17.3; // in cm
+double dist_between_wheels = 17.25; // in cm
+
+//dist_between_wheels = 17.315, 6.18V, motorfactor = 0.9975;
 
 //===== PID =====
 //10, 1, 0.25
@@ -311,12 +313,12 @@ void turnL(double angle)
         // Serial.print(curTickR);
         // Serial.print(" ");
         // Serial.println(curTickL);
-        PID1.Compute();
-        PID2.Compute();
+        // PID1.Compute();
+        // PID2.Compute();
         md.setSpeeds(speedR * motorfactor, -speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
-        if (targetTick - TickR < 150)
+        if (targetTick - TickR < 100)
             md.setSpeeds(100 * motorfactor, -100);
         delay(delayms);
     }
@@ -370,12 +372,12 @@ void turnR(double angle)
         // Serial.print(curTickR);
         // Serial.print(" ");
         // Serial.println(curTickL);
-        PID1.Compute();
-        PID2.Compute();
+        // PID1.Compute();
+        // PID2.Compute();
         md.setSpeeds(-speedR * motorfactor, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
-        if (targetTick - TickR < 150)
+        if (targetTick - TickR < 100)
             md.setSpeeds(-100 * motorfactor, 100);
         delay(delayms);
     }

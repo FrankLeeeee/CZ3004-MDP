@@ -4,6 +4,7 @@
 #include "Comms.h"
 
 void readInput();
+void testFunction();
 
 //==========================
 //===== Main Functions =====
@@ -18,8 +19,8 @@ void setup()
 
 void loop()
 {
-  loopSeq();
-  //readInput();
+  //loopSeq();
+  readInput();
 }
 
 //===== Inputs =====
@@ -73,8 +74,9 @@ void readInput()
       avoidObstacleDiag();
       break;
     case 't':
+      Serial.print("test");
       delay(3000);
-      //testFunction();
+      testFunction();
       break;
     default:
       getSensorReading();
@@ -88,23 +90,12 @@ void readInput()
 
 void testFunction()
 {
-  // while(1){
-  //   turnL(90);
-  //   delay(500);
-  // }
   while (1)
   {
-    moveF(50);
-    delay(500);
-    turnL(90);
-    delay(500);
-    turnL(90);
-    delay(500);
-    moveF(50);
-    delay(500);
+    moveF(5);
+    delay(100);
     turnR(90);
-    delay(500);
+    delay(100);
     turnR(90);
-    delay(500);
   }
 }
