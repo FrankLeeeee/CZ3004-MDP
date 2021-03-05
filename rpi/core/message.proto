@@ -25,7 +25,7 @@ message TurnRequest {
   uint32 angle = 1;
 }
 
-message RobotStatus {
+message RobotMode {
   enum Mode {
     EXPLORATION = 0;
     FASTEST_PATH = 1;
@@ -53,18 +53,43 @@ message Position {
 }
 
 message MapDescription {
-  string description = 1;
-}
-
-enum InfoMode {
-  Grid = 0;
-  Data = 1;
-  ALL = 2;
+  string p1 = 1;  // Explored map description
+  string p2 = 2;  // Obstacle map description
 }
 
 message RobotInfo {
-  InfoMode mode = 1;
   Position pos = 2;
-  string p1 = 3;
-  string p2 = 4;
+  MapDescription map = 3;
+  repeated ImagePosition images = 4;
+  RobotMode robot_status = 5;
+}
+
+enum RobotStatus {
+  STOP = 0;
+  FORWARD = 1;
+  TURN_LEFT = 2;
+  TURN_RIGHT = 3;
+}
+
+message ImagePosition {
+  enum ImageID {
+    WHITE_UP = 0;
+    BLUE_DOWN = 1;
+    YELLOW_RIGHT = 2;
+    RED_LEFT = 3;
+    GREEN_CIRCLE = 4;
+    BLUE_SIX = 5;
+    GREEN_SEVEN = 6;
+    RED_EIGHT = 7;
+    WHITE_NINE = 8;
+    YELLOW_ZERO = 9;
+    RED_V = 10;
+    GREEN_W = 11;
+    WHITE_X = 12;
+    BLUE_Y = 13;
+    YELLOW_Z = 14;
+  }
+  uint32 x = 1;
+  uint32 y = 2;
+  ImageID id = 3;
 }
