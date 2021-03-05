@@ -19,8 +19,8 @@ void setup()
 
 void loop()
 {
-  //loopSeq();
-  readInput();
+  loopSeq();
+  // readInput();
 }
 
 //===== Inputs =====
@@ -92,10 +92,17 @@ void testFunction()
 {
   while (1)
   {
-    moveF(5);
-    delay(100);
+    moveF(10);
+    delay(150);
     turnR(90);
-    delay(100);
+    delay(150);
     turnR(90);
+    delay(150);
+    moveF(10);
+    delay(150);
+    turnR(90);
+    delay(150);
+    turnR(90);
+    delay(150);
   }
 }

@@ -42,12 +42,15 @@ void countTickL()
 
 //===== Parameters =====
 int delayms = 20;
-// double motorfactor = 0.99775;
-double motorfactor = 0.99775;
+double motorfactorL = 1.013; //6.2V 1.013
+double motorfactorR = 0.99025; //6.14V 0.993   6.13V 0.95   
+double motorfactor = 0.997; // 0.99775
+// double motorfactor = 0.998;
+// double motorfactor = 1;
 boolean brakes = false;
 double circumference = PI * 6;
 double distance_cm;                //distance in cm that the robot need to move
-double dist_between_wheels = 17.25; // in cm
+double dist_between_wheels = 17.315; // in cm
 
 //dist_between_wheels = 17.315, 6.18V, motorfactor = 0.9975;
 
@@ -71,7 +74,7 @@ void PIDInit()
 
 double calcTickFromDist(double dist)
 {
-    return ((0.95 * dist) * 1124.5) / circumference;
+    return ((1 * dist) * 1124.5) / circumference;
 }
 
 double getTicksFromAngle(double angle)
@@ -108,7 +111,7 @@ void moveFstopWall(double distToStop)
         Serial.println(curTickL);
         PID1.Compute();
         PID2.Compute();
-        md.setSpeeds(speedR * motorfactor, speedL);
+        md.setSpeeds(speedR, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
         getSensorReading();
@@ -174,7 +177,7 @@ void moveF(double dist)
     //   md.setSpeeds(i*motorfactor,i);
     //   delay(10);
     // }
-    md.setSpeeds(speedR * motorfactor, speedL);
+    md.setSpeeds(speedR, speedL);
     delay(delayms);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
@@ -191,7 +194,7 @@ void moveF(double dist)
         // Serial.println(curTickL);
         PID1.Compute();
         PID2.Compute();
-        md.setSpeeds(speedR * motorfactor, speedL);
+        md.setSpeeds(speedR, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
         // getSensorReading();
@@ -241,7 +244,7 @@ void moveB(double dist)
     targetTick = calcTickFromDist(dist);
     speedL = 350;
     speedR = speedL * motorfactor;
-    md.setSpeeds(-speedR * motorfactor, -speedL);
+    md.setSpeeds(-speedR, -speedL);
     delay(delayms);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
@@ -298,8 +301,8 @@ void turnL(double angle)
     targetTick = getTicksFromAngle(angle);
     //6600 - 720deg;
     speedL = 250;
-    speedR = speedL * motorfactor;
-    md.setSpeeds(speedR * motorfactor, -speedL);
+    speedR = speedL * motorfactorL;
+    md.setSpeeds(speedR, -speedL);
     delay(delayms);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
@@ -315,11 +318,11 @@ void turnL(double angle)
         // Serial.println(curTickL);
         // PID1.Compute();
         // PID2.Compute();
-        md.setSpeeds(speedR * motorfactor, -speedL);
+        md.setSpeeds(speedR, -speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
         if (targetTick - TickR < 100)
-            md.setSpeeds(100 * motorfactor, -100);
+            md.setSpeeds(100 * motorfactorL, -100);
         delay(delayms);
     }
     md.setBrakes(400, 400);
@@ -357,8 +360,8 @@ void turnR(double angle)
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = getTicksFromAngle(angle);
     speedL = 250;
-    speedR = speedL * motorfactor;
-    md.setSpeeds(-speedR * motorfactor, speedL);
+    speedR = speedL * motorfactorR;
+    md.setSpeeds(-speedR, speedL);
     delay(delayms);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
@@ -374,11 +377,11 @@ void turnR(double angle)
         // Serial.println(curTickL);
         // PID1.Compute();
         // PID2.Compute();
-        md.setSpeeds(-speedR * motorfactor, speedL);
+        md.setSpeeds(-speedR, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
         if (targetTick - TickR < 100)
-            md.setSpeeds(-100 * motorfactor, 100);
+            md.setSpeeds(-100 * motorfactorR, 100);
         delay(delayms);
     }
     md.setBrakes(400, 400);
