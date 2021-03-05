@@ -40,11 +40,31 @@ message MetricResponse {
 }
 
 message Position {
-  // Period for getting position info. This field is only for `StreamGetMetrics`.
+  enum Direction {
+    NORTH = 0;
+    EAST = 1;
+    SOUTH = 2;
+    WEST = 3;
+  }
+
   uint32 x = 1;
   uint32 y = 2;
+  Direction dir = 3;
 }
 
 message MapDescription {
-  bytes description = 1;
+  string description = 1;
+}
+
+enum InfoMode {
+  Grid = 0;
+  Data = 1;
+  ALL = 2;
+}
+
+message RobotInfo {
+  InfoMode mode = 1;
+  Position pos = 2;
+  string p1 = 3;
+  string p2 = 4;
 }
