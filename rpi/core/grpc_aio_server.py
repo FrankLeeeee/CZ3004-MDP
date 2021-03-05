@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import signal
 from collections import defaultdict
 from concurrent import futures
@@ -64,13 +65,23 @@ class GRPCAioServer(object):
             event: str,
     ):
         """Works as a decorator."""
-        def _decorator(hook: Callable[[asyncio.events.AbstractEventLoop], Any]):
+        def _decorator(hook: Callable[[asyncio.AbstractEventLoop], Any]):
             event_names = ['before_server_start', 'after_server_start', 'before_server_stop', 'after_server_stop']
             assert event in event_names, f'No such event name, expected one of {event_names}, ' \
                                          f'got {event}'
             cls._hooks[event].append(hook)
 
         return _decorator
+
+    async def _exec_hook(self, hook: Callable[[asyncio.AbstractEventLoop], Any]):
+        loop = asyncio.get_event_loop()
+        try:
+            if inspect.iscoroutinefunction(hook):
+                await hook(loop)
+            else:
+                hook(loop)
+        except Exception as exc:
+            self.logger.error(f'When executing {hook}, got Exception: {exc}')
 
     async def start(self):
         """Start gRPC server."""
@@ -80,13 +91,13 @@ class GRPCAioServer(object):
 
         # run before sever start hooks
         for hook in self._hooks['before_server_start']:
-            await hook(loop)
+            await self._exec_hook(hook)
 
         await self.server.start()
 
         # run after sever start hooks
         for hook in self._hooks['after_server_start']:
-            await hook(loop)
+            await self._exec_hook(hook)
 
         self.logger.info(f'Listening on {self.bind_address}.')
 
@@ -99,7 +110,7 @@ class GRPCAioServer(object):
 
         # run before sever stop hooks
         for hook in self._hooks['before_server_stop']:
-            await hook(loop)
+            await self._exec_hook(hook)
 
         self.logger.info(f'Receive exit signal {s.name}')
         await self.server.stop(1)
@@ -116,7 +127,7 @@ class GRPCAioServer(object):
 
         # run after sever stop hooks
         for hook in self._hooks['after_server_stop']:
-            await hook(loop)
+            await self._exec_hook(hook)
 
         loop.stop()
         self.logger.info('gRPC server stopped.')
