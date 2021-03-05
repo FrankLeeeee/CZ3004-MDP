@@ -11,7 +11,7 @@ from pathlib import Path
 import aiofiles
 from fastapi import FastAPI, File
 
-from dataset.common import Label, ImageEncodeFormat
+from core.common import Label, ImageEncodeFormat
 
 app = FastAPI()
 

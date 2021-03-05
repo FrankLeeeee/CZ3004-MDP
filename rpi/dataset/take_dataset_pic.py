@@ -12,7 +12,7 @@ import requests
 import typer
 import picamera
 
-from dataset.common import Label, ImageEncodeFormat
+from core.common import Label, ImageEncodeFormat
 
 SERVER_URL = 'http://155.69.146.35:8000'
 URL = 'http://155.69.146.35:8000/upload/'
