@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
@@ -489,123 +491,252 @@ public class MainActivity extends AppCompatActivity {
         //update map
         final Robot r = Robot.getInstance();
 
-        if(readMsg.length()>0){
+        if(readMsg.length()>0) {
             menu_show_bluetooth_chat.setChecked(true);
             fragment.showChat(true);
 
-            String msg = readMsg.substring(1,readMsg.length()-1); // remove curly brackets for commands
-            Log.e( "TESTE", "msg = " + msg);
+            JSONObject jsonMsg, robotPos, mapInfo;
+            JSONArray images;
+            String dir, p1, p2, xCoor, yCoor, robotStatus,imageID, imageX, imageY;
+            System.out.println(readMsg);
+            try {
+                jsonMsg = new JSONObject(readMsg);
 
-            String message[];
+                robotPos = new JSONObject(jsonMsg.get("pos").toString());
+                dir = robotPos.get("dir").toString();
+                xCoor = robotPos.get("x").toString();
+                yCoor = robotPos.get("y").toString();
 
-            // - delimiter for imgReg, : delimiter for everything else
-            if(readMsg.contains(":")) {
-                message = msg.split(":");
-                message[0] = message[0].substring(1, message[0].length()-2).toUpperCase(); // removes inverted commas for commands
-                Log.e( "TESTE", "msg[0] = " + message[0]);
-            }else{
-                message = readMsg.split("-");
+                mapInfo = new JSONObject(jsonMsg.get("map").toString());
+                p1 = mapInfo.get("p1").toString();
+                p2 = mapInfo.get("p2").toString();
+
+                images = jsonMsg.getJSONArray("images");
+
+                robotStatus = jsonMsg.get("robot_status").toString();
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+                Log.e("TESTE", "Cannot turn string msg to json");
+                return;
             }
 
-
-            if (message[0].equals("GRID")) { //receive mapDescriptor from Algo for fastest path
-                message[1] = message[1].substring(2, message[1].length()-1);
-                Log.e( "TESTE", "msg[1] = " + message[1]);
-                Map.getInstance().setMapJson(message[1]);
+            /**
+             * RPI send map descriptor
+             * formerly GRID command
+             */
+            if(p2.length()>0){
+                Map.getInstance().setMapJson(p2);
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();
                 }
             }
 
-            else if (message[0].equals("DATA")) { //receive full data string (xCoor, yCoor, robotDirection, P1, P2) from Algo for exploration task
-                String data[] = message[1].split(",");
-
-                Map.getInstance().setMap(data[3], "", data[4]);
-
-                r.setPosX(Float.parseFloat(data[0]));
-                r.setPosY(Float.parseFloat(data[1]));
-                r.setDirection(data[2]);
+            /**
+             * RPI send robot position
+             * formerly ROBOTPOSITION command
+             */
+            if(dir.length()>0 && xCoor.length()>0 && yCoor.length()>0){
+                r.setPosX(Float.parseFloat(xCoor));
+                r.setPosY(Float.parseFloat(yCoor));
+                r.setDirection(dir);
 
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();
                 }
             }
 
+            /**
+             * RPI send map descriptor + robot position
+             * formerly DATA command
+             */
+            if(p1.length()!=0 && p2.length()!=0 && dir.length()!=0 && xCoor.length()!=0 && yCoor.length()!=0){
+                //map descriptor and robot position values are not empty
 
-            //Updating of numbered blocks on obstacles on the map
-            else if (message[0].equals("BLOCK")) { //receive numbered block
-                Log.e("TESTE", "BLOCK[1] = " + message[1]);
-                String data[] = message[1].split(","); //x, y, id
-                Log.e("TESTE", "DATA[0] = " + data[0]);
-                Log.e("TESTE", "DATA[1] = " + data[1]);
-                Log.e("TESTE", "DATA[2] = " + data[2]);
+                Map.getInstance().setMap(p1, "", p2);
 
+                r.setPosX(Float.parseFloat(xCoor));
+                r.setPosY(Float.parseFloat(yCoor));
+                r.setDirection(dir);
 
-                if(Integer.parseInt(data[0]) <= 15 && Integer.parseInt(data[0]) >= 1) {
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
+                }
+            }
 
-                    IDblock input = new IDblock(data[0].toUpperCase(), Integer.parseInt(data[1]), Integer.parseInt(data[2]));
-                    Log.e("TESTE", input.getID());
-                    Map.getInstance().addNumberedBlocks(input);
-                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                        loadGrid();
+            /**
+             * RPI send image ID
+             * formerly BLOCK command
+             */
+            if(images.length() > 0){
+
+                for (int i=0; i<images.length(); i++) {
+                    JSONObject tempImg;
+                    try {
+                        tempImg = images.getJSONObject(i);
+                        imageID = Integer.toString((Integer.parseInt(tempImg.get("id").toString())+1)); //convert to integer, add 1, convert to string
+                        imageX = tempImg.get("x").toString();
+                        imageY = tempImg.get("y").toString();
+
+                        IDblock input = new IDblock(imageID, Integer.parseInt(imageX), Integer.parseInt(imageY));
+                        Map.getInstance().addNumberedBlocks(input);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
-            }
-
-            //Updating of robot's position on the map
-            else if (message[0].equals("ROBOTPOSITION")) { //receive robot position when robot moves
-                message[1] = message[1].substring(2, message[1].length()-1);
-                Log.e("TESTE", "message[1] = " + message[1]);
-                String posAndDirect[] = message[1].split(",");
-                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
-                r.setPosY(Float.parseFloat(posAndDirect[1])+1);
-                r.setDirection(posAndDirect[2].substring(1));
-
-//                for checklist
-//                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
-//                r.setPosY(((Float.parseFloat(posAndDirect[1])+1) - 19) * -1);
-//                Log.e("TESTE", "direction = " + posAndDirect[2]);
-//                r.setDirection(posAndDirect[2].substring(1));
 
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();
                 }
+
             }
 
-            //Updating of robot's status
-            else if(message[0].equals("STATUS")){
+            /**
+             * RPI send robot status
+             * formerly STATUS command
+             */
+            if(robotStatus.length() != 0){
+                switch (robotStatus){
+                    case "0":
+                        updateStatus("Stop");
+                        break;
+                    case "1":
+                        updateStatus("Forward");
+                        break;
+                    case "2":
+                        updateStatus("Turn Left");
+                        break;
+                    case "3":
+                        updateStatus("Turn Right");
+                        break;
+                }
+            }
 
-//                for checklist
-//                updateStatus(message[1]);
+//            {
+//                "Position": {
+//                    "dir":"0",
+//                    "x":"x",
+//                    "y":"y"
+//                },
+//                "Map": {
+//                    "p1":"00102012",
+//                    "p2":"190"
+//                }
+            //  imgID[1, 2, 4, 5, 6, 7]
+//             }
 
-                if (message[1].equals("F")) {
-                    updateStatus("Moving Forward");
-                }
-                if (message[1].equals("TR")) {
-                    updateStatus("Turning Right");
-                }
-                if (message[1].equals("TL")) {
-                    updateStatus("Turning Left");
-                }
-                if (message[1].equals("FP")) {
-                    updateStatus("Fastest Path");
-                }
-                if (message[1].equals("EX")) {
-                    updateStatus("Exploration");
-                }
-                if (message[1].equals("DONE")) {
-                    updateStatus("Done!");
-                }
-            }
-            else if(message[0].trim().equals("Y")){ //harmonize with algo
-                updateStatus("Moving");
-            }
-            else if(message[0].trim().equals("F")){ //harmonize with algo
-                updateStatus("Done!");
-            }
-            else {
-                updateStatus("Invalid Message");
-            }
+//            String msg = readMsg.substring(1,readMsg.length()-1); // remove curly brackets for commands
+//            Log.e( "TESTE", "msg = " + msg);
+//
+//            String message[];
+//
+//            // - delimiter for imgReg, : delimiter for everything else
+//            if(readMsg.contains(":")) {
+//                message = msg.split(":");
+//                message[0] = message[0].substring(1, message[0].length()-2).toUpperCase(); // removes inverted commas for commands
+//                Log.e( "TESTE", "msg[0] = " + message[0]);
+//            }else{
+//                message = readMsg.split("-");
+//            }
+//
+//            if (message[0].equals("GRID")) { //receive mapDescriptor from Algo for fastest path
+//                message[1] = message[1].substring(2, message[1].length()-1);
+//                Log.e( "TESTE", "msg[1] = " + message[1]);
+//                Map.getInstance().setMapJson(message[1]);
+//                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+//                    loadGrid();
+//                }
+//            }
+//
+//            else if (message[0].equals("DATA")) { //receive full data string (xCoor, yCoor, robotDirection, P1, P2) from Algo for exploration task
+//                String data[] = message[1].split(",");
+//
+//                Map.getInstance().setMap(data[3], "", data[4]);
+//
+//                r.setPosX(Float.parseFloat(data[0]));
+//                r.setPosY(Float.parseFloat(data[1]));
+//                r.setDirection(data[2]);
+//
+//                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+//                    loadGrid();
+//                }
+//            }
+//
+//
+//            //Updating of numbered blocks on obstacles on the map
+//            else if (message[0].equals("BLOCK")) { //receive numbered block
+//                Log.e("TESTE", "BLOCK[1] = " + message[1]);
+//                String data[] = message[1].split(","); //x, y, id
+//                Log.e("TESTE", "DATA[0] = " + data[0]);
+//                Log.e("TESTE", "DATA[1] = " + data[1]);
+//                Log.e("TESTE", "DATA[2] = " + data[2]);
+//
+//
+//                if(Integer.parseInt(data[0]) <= 15 && Integer.parseInt(data[0]) >= 1) {
+//
+//                    IDblock input = new IDblock(data[0].toUpperCase(), Integer.parseInt(data[1]), Integer.parseInt(data[2]));
+//                    Log.e("TESTE", input.getID());
+//                    Map.getInstance().addNumberedBlocks(input);
+//                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+//                        loadGrid();
+//                    }
+//                }
+//            }
+//
+//            //Updating of robot's position on the map
+//            else if (message[0].equals("ROBOTPOSITION")) { //receive robot position when robot moves
+//                message[1] = message[1].substring(2, message[1].length()-1);
+//                Log.e("TESTE", "message[1] = " + message[1]);
+//                String posAndDirect[] = message[1].split(",");
+//                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
+//                r.setPosY(Float.parseFloat(posAndDirect[1])+1);
+//                r.setDirection(posAndDirect[2].substring(1));
+//
+////                for checklist
+////                r.setPosX(Float.parseFloat(posAndDirect[0])+1);
+////                r.setPosY(((Float.parseFloat(posAndDirect[1])+1) - 19) * -1);
+////                Log.e("TESTE", "direction = " + posAndDirect[2]);
+////                r.setDirection(posAndDirect[2].substring(1));
+//
+//                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+//                    loadGrid();
+//                }
+//            }
+//
+//            //Updating of robot's status
+//            else if(message[0].equals("STATUS")){
+//
+////                for checklist
+////                updateStatus(message[1]);
+//
+//                if (message[1].equals("F")) {
+//                    updateStatus("Moving Forward");
+//                }
+//                if (message[1].equals("TR")) {
+//                    updateStatus("Turning Right");
+//                }
+//                if (message[1].equals("TL")) {
+//                    updateStatus("Turning Left");
+//                }
+//                if (message[1].equals("FP")) {
+//                    updateStatus("Fastest Path");
+//                }
+//                if (message[1].equals("EX")) {
+//                    updateStatus("Exploration");
+//                }
+//                if (message[1].equals("DONE")) {
+//                    updateStatus("Done!");
+//                }
+//            }
+//            else if(message[0].trim().equals("Y")){ //harmonize with algo
+//                updateStatus("Moving");
+//            }
+//            else if(message[0].trim().equals("F")){ //harmonize with algo
+//                updateStatus("Done!");
+//            }
+//            else {
+//                updateStatus("Invalid Message");
+//            }
         }
     }
 
@@ -636,7 +767,7 @@ public class MainActivity extends AppCompatActivity {
             r.setPosX(posX);
             r.setPosY(posY);
             r.setDirection("N");
-            outgoingMessage("SetStartPoint\\{" + (int)posX + "," + (int)posY + "};");
+            outgoingMessage("SetStartPoint\\{" + (int)posX + "," + (int)posY + "0};");
 
 //            outgoingMessage("START:"+(int)posX+","+(int)posY, 0);
             //Make a prompt here to confirm
@@ -796,5 +927,26 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
     }
+
+    Handler handler = new Handler();
+    Runnable runnable;
+    int delay = 1000;
+
+//    @Override
+//    protected void onResume() {
+//        handler.postDelayed(runnable = new Runnable() {
+//            public void run() {
+//                handler.postDelayed(runnable, delay);
+//                outgoingMessage("test message");
+//            }
+//        }, delay);
+//        super.onResume();
+//    }
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        handler.removeCallbacks(runnable); //stop handler when activity not visible super.onPause();
+//    }
+
 
 }

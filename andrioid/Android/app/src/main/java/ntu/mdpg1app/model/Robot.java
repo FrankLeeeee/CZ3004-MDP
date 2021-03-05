@@ -201,17 +201,17 @@ public class Robot {
                 break;
             case "SOUTH":
             case "S":
-            case "180":
+            case "2":
                 this.direction = 180;
                 break;
             case "EAST":
             case "E":
-            case "90":
+            case "1":
                 this.direction = 90;
                 break;
             case "WEST":
             case "W":
-            case "270":
+            case "3":
                 this.direction = 270;
                 break;
         }

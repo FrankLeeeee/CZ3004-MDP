@@ -298,6 +298,7 @@ public class BluetoothChatFragment extends Fragment {
                 if (null != view) {
                     TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
                     String message = textView.getText().toString();
+                    message = "Echo\\{\"message\": \"" + message + "\"};";
                     sendMessage(message);
                 }
             }

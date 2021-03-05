@@ -38,7 +38,7 @@ public class Map {
 	public void addNumberedBlocks(IDblock block) {
 		for (IDblock nb:numberedBlocks) {
 			//override me
-			if(nb.getPosition().equals(block.getPosition())){	//check if position already in numberedBlocks array
+			if(nb.getPosition().equals(block.getPosition())){	//check if position already has a image
 				numberedBlocks.remove(nb);
 				break;
 			}
