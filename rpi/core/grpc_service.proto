@@ -13,13 +13,13 @@ service GRPCService {
 
   rpc Calibrate(EmptyRequest) returns (Status) {}
 
-  rpc WaitForRobotStart(RobotStatus) returns (Status) {}
+  rpc WaitForRobotStart(RobotMode) returns (Status) {}
 
   rpc StopRobot(EmptyRequest) returns (Status) {}
 
   rpc GetMetrics(EmptyRequest) returns (MetricResponse) {}
 
-  rpc SetPosition(Position) returns (Position) {}
+  rpc SetPosition(Position) returns (Status) {}
 
   rpc SetMap(MapDescription) returns (Status) {}
 
