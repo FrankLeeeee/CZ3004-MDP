@@ -9,13 +9,18 @@ Date: 2/16/2021
 Bluetooth communication for interfacing with the tablet.
 """
 import asyncio
+import inspect
 from typing import Optional
 from uuid import uuid4
 
 import bluetooth
 
-from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
-from core.message_pb2 import EchoResponse, Position
+from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server, BtRPCServiceServicer
+from core.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
+    EchoRequest, RobotStatus
+from core.robot_context import RobotContext
+from server.serial_channel import SerialAioChannel
 from utils.constants import BT_MESSAGE_SEPARATOR
 from utils.logger import Logger
 
@@ -25,7 +30,8 @@ BUFFER_SIZE = 1024
 class BluetoothAioServer(object):
 
     def __init__(self, bd_address=None, port=7, uuid=None, proto=bluetooth.RFCOMM):
-        self.bd_address = bd_address or bluetooth.read_local_bdaddr()[0]
+        print(bluetooth.read_local_bdaddr())
+        self.bd_address = bd_address or 'B8:27:EB:E6:BF:AA'
         self.port = port
         self.uuid = uuid or str(uuid4())
         self.proto = proto
@@ -71,7 +77,7 @@ class BluetoothAioServer(object):
     async def _data_receive_task(self):
         try:
             while True:
-                data = self._client_sock.recv(BUFFER_SIZE)
+                data = await self._loop.run_in_executor(None, self._client_sock.recv, BUFFER_SIZE)
                 self._logger.debug(f'Receive: {data}')
                 self._buffer += data
                 if BT_MESSAGE_SEPARATOR in self._buffer:
@@ -86,10 +92,20 @@ class BluetoothAioServer(object):
 
     async def _runner(self):
         method, request = await self._queue.get()
-        response = await self._handler[method](request)
+        try:
+            handler = self._handler[method]
+            self._logger.info(handler)
+            self._logger.info(inspect.iscoroutinefunction(handler))
+            if inspect.iscoroutinefunction(handler):
+                response = await handler(request)
+            else:
+                response = handler(request)
+        except Exception as exc:
+            response = str(exc)
         response = response.encode()
-        with self._channel_lock:
-            await self._loop.run_in_executor(None, self._client_sock.send(response))
+        async with self._channel_lock:
+            self._logger.debug(response)
+            await self._loop.run_in_executor(None, self._client_sock.send, response)
 
     def stop(self):
         self._client_sock.close()
@@ -99,25 +115,56 @@ class BluetoothAioServer(object):
         self._handler = handlers
 
 
-class BluetoothControlServicer(object):
+class BluetoothControlServicer(BtRPCServiceServicer):
 
-    async def Echo(self, request):
-        return EchoResponse(request.message)
+    def __init__(self, uart_serial_channel: SerialAioChannel, context: RobotContext):
+        self.uart_serial_channel = uart_serial_channel
+        self.context = context
 
-    async def Forward(self, request):
-        return Position(request)
+    async def Echo(self, request: EchoRequest) -> EchoResponse:
+        return EchoResponse(request.message, status=True)
+
+    async def Forward(self, request: MoveRequest) -> RobotInfo:
+        client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        self.context.robot_status = RobotStatus.FORWARD
+        # response = await client.Forward(request)
+        self.context.robot_status = RobotStatus.STOP
+        return self.context.get_robot_info()
+
+    def TurnLeft(self, request: TurnRequest) -> RobotInfo:
+        client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        self.context.robot_status = RobotStatus.TURN_LEFT
+        # response = await client.TurnLeft(request)
+        self.context.robot_status = RobotStatus.STOP
+        return self.context.get_robot_info()
+
+    def TurnRight(self, request: TurnRequest) -> RobotInfo:
+        client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        self.context.robot_status = RobotStatus.TURN_RIGHT
+        # response = await client.TurnRight(request)
+        self.context.robot_status = RobotStatus.STOP
+        return self.context.get_robot_info()
+
+    def GetRobotInfo(self, request: EmptyRequest) -> RobotInfo:
+        return self.context.get_robot_info()
+
+    def SetPosition(self, request: Position) -> Status:
+        self.context.position = request
+        return self.context.get_robot_info()
 
 
 async def test():
-    servicer = BluetoothControlServicer()
+    loop = asyncio.get_event_loop()
+    context = RobotContext(loop)
+    # uart_channel = SerialAioChannel(url='/dev/cu.usbmodem1411401')
+    servicer = BluetoothControlServicer(uart_serial_channel=object(), context=context)
     server = BluetoothAioServer()
     add_bt_rpc_servicer_to_server(servicer, server)
 
     await server.start()
     await server.accept()
 
-    while True:
-        pass
+    await asyncio.sleep(600)
 
 
 if __name__ == '__main__':
