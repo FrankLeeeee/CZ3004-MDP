@@ -2,12 +2,14 @@ package ntu.mdpg1app;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,10 +26,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ntu.mdpg1app.bluetooth.BluetoothChatFragment;
 import ntu.mdpg1app.model.HexBin;
@@ -62,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
     Button btn_fastest;
     Button btn_config1;
     Button btn_config2;
+
+    Timer myTimer;
 
     String status = "Idle";
 
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         String instructionValue = new JSONObject().put("step", 1).toString();
                         String instruction = "Forward\\" + instructionValue + ";";
-                        outgoingMessage(instruction);
+                        outgoingMessage(instruction, false);
                         loadGrid();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -136,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnLeft\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     loadGrid();
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -152,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnRight\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     loadGrid();
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -163,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
         btn_terminate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String instruction = "Terminate\\{};";
-                outgoingMessage(instruction);
+                outgoingMessage(instruction, false);
 //                outgoingMessage("X", 0);
                 updateStatus(STATUS_TERMINATE_DESC);
             }
@@ -174,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("MODE", 0).toString();
                     String instruction = "SetRobotStatus\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                 } catch(JSONException e){
                     e.printStackTrace();
                 }
@@ -198,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         String instructionValue = new JSONObject().put("MODE", 1).toString();
                         String instruction = "SetRobotStatus\\" + instructionValue + ";";
-                        outgoingMessage(instruction);
+                        outgoingMessage(instruction, false);
                     }catch(JSONException e) {
                         e.printStackTrace();
                     }
@@ -226,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("step", 1).toString();
                     String instruction = "Forward\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     loadGrid();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -236,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnLeft\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     loadGrid();
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -246,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnRight\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     loadGrid();
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -256,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("MODE", 0).toString();
                     String instruction = "SetRobotStatus\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                 } catch(JSONException e){
                     e.printStackTrace();
                 }
@@ -265,19 +272,19 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String instructionValue = new JSONObject().put("MODE", 1).toString();
                     String instruction = "SetRobotStatus\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                 }catch(JSONException e) {
                     e.printStackTrace();
                 }
 
                 //send terminate message
-                outgoingMessage("Terminate\\{};");
+                outgoingMessage("Terminate\\{};", false);
 
                 //send set waypoint message
-                outgoingMessage("SetWayPoint\\{" + 10 + "," + 10 + "};");   //(10, 10)
+                outgoingMessage("SetWayPoint\\{" + 10 + "," + 10 + "};", false);   //(10, 10)
 
                 //send set startpoint message
-                outgoingMessage("SetStartPoint\\{" + 0 + "," + 0 + "};");   //(0, 0)
+                outgoingMessage("SetStartPoint\\{" + 0 + "," + 0 + "};", false);   //(0, 0)
             }
         });
         btn_config2.setOnClickListener(new View.OnClickListener() {
@@ -285,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
                 String retrievedText = prefs.getString("string2", null);
                 if (retrievedText != null) {
-                    outgoingMessage(retrievedText);
+                    outgoingMessage(retrievedText, false);
                 }
             }
         });
@@ -742,9 +749,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     //method to send out message to rpi thru bluetooth -kept for backward compatibility
-    public boolean outgoingMessage(String sendMsg) {
+    public boolean outgoingMessage(String sendMsg, boolean isQuery) {
         //return fragment.sendMsg("@t" + sendMsg + "!");
-        return fragment.sendMsg(sendMsg);
+        if(isQuery)
+            return fragment.sendMsg(sendMsg, true);
+        else
+            return fragment.sendMsg(sendMsg, false);
     }
 
     public boolean outgoingMessage(String sendMsg, int destination) {
@@ -755,7 +765,7 @@ public class MainActivity extends AppCompatActivity {
         }else if(destination == 1){
             sendMsg = "@s" + sendMsg + "|!";
         }
-        return fragment.sendMsg(sendMsg);
+        return fragment.sendMsg(sendMsg, false);
     }
 
     //on the coordinate tapped
@@ -767,16 +777,35 @@ public class MainActivity extends AppCompatActivity {
             r.setPosX(posX);
             r.setPosY(posY);
             r.setDirection("N");
-            outgoingMessage("SetStartPoint\\{" + (int)posX + "," + (int)posY + "0};");
+
+            JSONObject obj;
+
+            try {
+                obj = new JSONObject().put("x", posX);
+                obj = obj.put("y", posX);
+                obj = obj.put("dir", "N");
+
+                String jsonMsg = obj.toString();
+
+                String instruction = "SetStartPoint\\" + jsonMsg + ";";
+
+                outgoingMessage(instruction, false);
+
+                Log.d("Debug", "Set start message = " + instruction);
 
 //            outgoingMessage("START:"+(int)posX+","+(int)posY, 0);
-            //Make a prompt here to confirm
-            menu_set_robot_position.setChecked(false);
+                //Make a prompt here to confirm
+                menu_set_robot_position.setChecked(false);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
         }
         if(menu_set_waypoint.isChecked()){
             Position p = new Position(posX,posY);
             WayPoint.getInstance().setPosition(p);
-            outgoingMessage("SetWayPoint\\{" + (int)posX + "," + (int)posY + "};");
+            outgoingMessage("SetWayPoint\\{" + (int)posX + "," + (int)posY + "};", false);
 
 //            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
             //Make a prompt here to confirm
@@ -798,9 +827,11 @@ public class MainActivity extends AppCompatActivity {
         if(!Robot.getInstance().rotateToNorth()){
             if(!Robot.getInstance().isOutOfBounds()) {
                 try {
-                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String msgToBeEncoded = "1";
+                    String encodedMsg = Base64.encodeToString(msgToBeEncoded.getBytes(), Base64.NO_WRAP);
+                    String instructionValue = new JSONObject().put("step", encodedMsg).toString();
                     String instruction = "Forward\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     //getack
                     Robot.getInstance().moveForward(10);
                 } catch (JSONException e) {
@@ -825,9 +856,11 @@ public class MainActivity extends AppCompatActivity {
         if(!Robot.getInstance().rotateToWest()){
             if(!Robot.getInstance().isOutOfBounds()) {
                 try {
-                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String msgToBeEncoded = "1";
+                    String encodedMsg = Base64.encodeToString(msgToBeEncoded.getBytes(), Base64.NO_WRAP);
+                    String instructionValue = new JSONObject().put("step", encodedMsg).toString();
                     String instruction = "Forward\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     //getack
                     Robot.getInstance().moveForward(10);
                 } catch (JSONException e) {
@@ -853,9 +886,11 @@ public class MainActivity extends AppCompatActivity {
         if(!Robot.getInstance().rotateToEast()){
             if(!Robot.getInstance().isOutOfBounds()) {
                 try {
-                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String msgToBeEncoded = "1";
+                    String encodedMsg = Base64.encodeToString(msgToBeEncoded.getBytes(), Base64.NO_WRAP);
+                    String instructionValue = new JSONObject().put("step", encodedMsg).toString();
                     String instruction = "Forward\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     //getack
                     Robot.getInstance().moveForward(10);
                 } catch (JSONException e) {
@@ -880,9 +915,11 @@ public class MainActivity extends AppCompatActivity {
         if(!Robot.getInstance().rotateToSouth()){
             if(!Robot.getInstance().isOutOfBounds()) {
                 try {
-                    String instructionValue = new JSONObject().put("step", 1).toString();
+                    String msgToBeEncoded = "1";
+                    String encodedMsg = Base64.encodeToString(msgToBeEncoded.getBytes(), Base64.NO_WRAP);
+                    String instructionValue = new JSONObject().put("step", encodedMsg).toString();
                     String instruction = "Forward\\" + instructionValue + ";";
-                    outgoingMessage(instruction);
+                    outgoingMessage(instruction, false);
                     //getack
                     Robot.getInstance().moveForward(10);
                 } catch (JSONException e) {
@@ -927,26 +964,6 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
     }
-
-    Handler handler = new Handler();
-    Runnable runnable;
-    int delay = 1000;
-
-//    @Override
-//    protected void onResume() {
-//        handler.postDelayed(runnable = new Runnable() {
-//            public void run() {
-//                handler.postDelayed(runnable, delay);
-//                outgoingMessage("test message");
-//            }
-//        }, delay);
-//        super.onResume();
-//    }
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        handler.removeCallbacks(runnable); //stop handler when activity not visible super.onPause();
-//    }
 
 
 }

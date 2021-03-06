@@ -34,6 +34,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,6 +52,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.common.logger.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import ntu.mdpg1app.MainActivity;
 import ntu.mdpg1app.R;
@@ -298,8 +302,15 @@ public class BluetoothChatFragment extends Fragment {
                 if (null != view) {
                     TextView textView = (TextView) view.findViewById(R.id.edit_text_out);
                     String message = textView.getText().toString();
-                    message = "Echo\\{\"message\": \"" + message + "\"};";
-                    sendMessage(message);
+                    String encodedMsg = Base64.encodeToString(message.getBytes(), Base64.NO_WRAP);
+                    String jsonMsg;
+                    try {
+                        jsonMsg = new JSONObject().put("message", encodedMsg).toString();
+                        sendMessage("Echo\\" + jsonMsg + ";", false);
+                        Log.d("Debug", "Echo message = " + "Echo\\" + jsonMsg + ";");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -324,8 +335,11 @@ public class BluetoothChatFragment extends Fragment {
         }
     }
 
-    public boolean sendMsg(String message){
-        return sendMessage(message);
+    public boolean sendMsg(String message, boolean isQuery){
+        if (isQuery)
+            return sendMessage(message, true);
+        else
+            return sendMessage(message, false);
     }
 
     /**
@@ -333,14 +347,13 @@ public class BluetoothChatFragment extends Fragment {
      *
      * @param message A string of text to send.
      */
-    protected boolean sendMessage(String message) {
+    protected boolean sendMessage(String message, boolean isQuery) {
+
         // Check that we're actually connected before trying anything
         if (mChatService.getState() != BluetoothChatService.STATE_CONNECTED) {
             Toast.makeText(getActivity(), R.string.not_connected, Toast.LENGTH_SHORT).show();
             return false;
         }
-
-
 
         // Check that there's actually something to send
         if (message.length() > 0) {
@@ -348,9 +361,17 @@ public class BluetoothChatFragment extends Fragment {
             byte[] send = message.getBytes();
             mChatService.write(send);
 
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-            mOutEditText.setText(mOutStringBuffer);
+            //Check if message is a query to RPI
+            if(isQuery){
+                // Reset out string buffer to zero but don't clear the edit text field
+                mOutStringBuffer.setLength(0);
+            }
+
+            else {
+                // Reset out string buffer to zero and clear the edit text field
+                mOutStringBuffer.setLength(0);
+                mOutEditText.setText(mOutStringBuffer);
+            }
         }
         return true;
     }
@@ -364,7 +385,7 @@ public class BluetoothChatFragment extends Fragment {
             // If the action is a key-up event on the return key, send the message
             if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
                 String message = view.getText().toString();
-                sendMessage(message);
+                sendMessage(message, false);
             }
             return true;
         }
@@ -525,6 +546,10 @@ public class BluetoothChatFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    public int getChatServiceState(){
+        return this.mChatService.getState();
     }
 
 }
