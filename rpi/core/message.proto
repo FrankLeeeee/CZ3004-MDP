@@ -6,7 +6,7 @@ message EchoRequest {
 }
 
 message EchoResponse {
-  bytes message = 1;
+  bytes message = 1;  // bytes -> base64 encoded
   bool status = 2;
 }
 
@@ -58,10 +58,10 @@ message MapDescription {
 }
 
 message RobotInfo {
-  Position pos = 2;
-  MapDescription map = 3;
-  repeated ImagePosition images = 4;
-  RobotMode robot_status = 5;
+  Position pos = 1;
+  MapDescription map = 2;
+  repeated ImagePosition images = 3;
+  RobotStatus robot_status = 4;
 }
 
 enum RobotStatus {
