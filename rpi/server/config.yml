@@ -1,2 +1,2 @@
-serial_url: '/dev/ttyAMA0'
+serial_url: '/dev/ttyACM0'
 baudrate: 115200

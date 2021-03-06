@@ -15,7 +15,7 @@ from uuid import uuid4
 
 import bluetooth
 
-from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from config import config
 from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server, BtRPCServiceServicer
 from core.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
     EchoRequest, RobotStatus
@@ -30,8 +30,7 @@ BUFFER_SIZE = 1024
 class BluetoothAioServer(object):
 
     def __init__(self, bd_address=None, port=7, uuid=None, proto=bluetooth.RFCOMM):
-        print(bluetooth.read_local_bdaddr())
-        self.bd_address = bd_address or 'B8:27:EB:E6:BF:AA'
+        self.bd_address = bd_address or bluetooth.read_local_bdaddr()[0]
         self.port = port
         self.uuid = uuid or str(uuid4())
         self.proto = proto
@@ -39,7 +38,7 @@ class BluetoothAioServer(object):
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._queue: Optional[asyncio.Queue] = None
         self._channel_lock = asyncio.Lock(loop=self._loop)
-        self._handler = list()
+        self._handler = dict()
         self._buffer = b''
 
         self._server_sock: Optional[bluetooth.BluetoothSocket] = None
@@ -86,33 +85,33 @@ class BluetoothAioServer(object):
                     for line in lines[:-1]:
                         data: str = line.decode()
                         method, request = data.split('\\')
-                        await self._queue.put((method, request))
+                        await self._queue.put((method, request.encode()))
         except OSError:
             self._logger.info('Connection lost.')
 
     async def _runner(self):
-        method, request = await self._queue.get()
-        try:
-            handler = self._handler[method]
-            self._logger.info(handler)
-            self._logger.info(inspect.iscoroutinefunction(handler))
-            if inspect.iscoroutinefunction(handler):
-                response = await handler(request)
-            else:
-                response = handler(request)
-        except Exception as exc:
-            response = str(exc)
-        response = response.encode()
-        async with self._channel_lock:
-            self._logger.debug(response)
-            await self._loop.run_in_executor(None, self._client_sock.send, response)
+        while True:
+            method, request = await self._queue.get()
+            try:
+                handler = self._handler[method]
+                if inspect.iscoroutinefunction(handler):
+                    response = await handler(request)
+                else:
+                    response = handler(request)
+            except Exception as exc:
+                response = str(exc)
+                self._logger.error(f'Exception when executing RPC call {method} with {request}')
+            response = response.encode()
+            async with self._channel_lock:
+                self._logger.debug(response)
+                await self._loop.run_in_executor(None, self._client_sock.send, response)
 
     def stop(self):
         self._client_sock.close()
         self._server_sock.close()
 
     def add_generic_rpc_handlers(self, handlers):
-        self._handler = handlers
+        self._handler.update(handlers)
 
 
 class BluetoothControlServicer(BtRPCServiceServicer):
@@ -156,7 +155,7 @@ class BluetoothControlServicer(BtRPCServiceServicer):
 async def test():
     loop = asyncio.get_event_loop()
     context = RobotContext(loop)
-    # uart_channel = SerialAioChannel(url='/dev/cu.usbmodem1411401')
+    uart_channel = SerialAioChannel(url=config.serial_url)
     servicer = BluetoothControlServicer(uart_serial_channel=object(), context=context)
     server = BluetoothAioServer()
     add_bt_rpc_servicer_to_server(servicer, server)
