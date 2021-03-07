@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
     Button btn_config1;
     Button btn_config2;
 
-    Timer myTimer;
-
     String status = "Idle";
 
     @Override
@@ -105,6 +103,25 @@ public class MainActivity extends AppCompatActivity {
 
         //initialize the grid
         loadGrid();
+
+        //Query RPI to get robot info
+        queryMessage();
+    }
+
+    public void queryMessage(){
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(fragment != null) {
+                    if(fragment.getChatService() != null){
+                        if(fragment.getChatServiceState() == 3){
+                            Log.d("Debug", "getChatServiceState = STATE_CONNECTED");
+                            outgoingMessage("GetRobotInfo\\{}", true);
+                        }
+                    }
+                }
+            }
+        }, 0, 1000);
     }
 
     //method to update the label textview

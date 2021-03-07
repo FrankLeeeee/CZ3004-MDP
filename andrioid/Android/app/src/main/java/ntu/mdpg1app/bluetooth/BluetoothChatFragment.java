@@ -549,7 +549,11 @@ public class BluetoothChatFragment extends Fragment {
     }
 
     public int getChatServiceState(){
-        return this.mChatService.getState();
+        return mChatService.getState();
+    }
+
+    public BluetoothChatService getChatService(){
+        return this.mChatService;
     }
 
 }
