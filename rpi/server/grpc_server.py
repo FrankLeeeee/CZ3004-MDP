@@ -16,8 +16,9 @@ from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
 from core.grpc_aio_server import GRPCAioServer
 from core.message_pb2 import MetricResponse, RobotStatus, Status
 from core.robot_context import RobotContext
-from server.bluetooth_channel import BluetoothControlServicer, BluetoothAioServer
-from server.serial_channel import SerialAioChannel
+from core.serial.channel import SerialAioChannel
+from core.serial.server import SerialAioServer
+from server.bluetooth_channel import BluetoothControlServicer
 from utils.logger import Logger
 
 
@@ -116,18 +117,13 @@ async def runner():
 @BackendRPCServer.register_hook('before_server_start')
 async def before_server_start(loop):
     context.set_loop(loop)
-    await serial_channel.start(loop=loop)
+    await uart_channel.start(loop=loop)
     await bt_server.start()
-
-
-@BackendRPCServer.register_hook('after_server_start')
-async def after_server_start(loop):
-    await bt_server.accept()
 
 
 @BackendRPCServer.register_hook('after_server_stop')
 def after_server_stop(loop):  # noqa
-    serial_channel.close()
+    uart_channel.close()
     bt_server.stop()
 
 
@@ -137,12 +133,12 @@ if __name__ == '__main__':
     print(f'Using configuration:\n{config}')
 
     context = RobotContext()
-    serial_channel = SerialAioChannel(config.serial_url, baudrate=config.baudrate)
-    server = BackendRPCServer(host=host_, config=config, serial_channel=serial_channel, context=context)
+    uart_channel = SerialAioChannel(config.uart)
+    server = BackendRPCServer(host=host_, config=config, serial_channel=uart_channel, context=context)
 
     # bluetooth
-    bt_servicer = BluetoothControlServicer(serial_channel, context=context)
-    bt_server = BluetoothAioServer()
+    bt_servicer = BluetoothControlServicer(uart_channel, context=context)
+    bt_server = SerialAioServer(config.bluetooth)
     add_bt_rpc_servicer_to_server(bt_servicer, bt_server)
 
     loop = asyncio.get_event_loop()
