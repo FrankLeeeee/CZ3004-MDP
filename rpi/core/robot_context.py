@@ -1,11 +1,12 @@
 import asyncio
 
-from core.message_pb2 import Position, RobotStatus, MapDescription, RobotInfo, ImagePosition
+from core.message_pb2 import Position, RobotStatus, MapDescription, RobotInfo, ImagePosition, RobotMode
 
 
 class RobotContext(object):
     def __init__(self, loop):
-        self._pos = None
+        # for android robot info
+        self._pos = Position(x=1, y=1)
         self._pos_dirty = True
         self._map = MapDescription()
         self._map_dirty = True
@@ -15,67 +16,102 @@ class RobotContext(object):
         self._image_positions_dirty = True
         self._lock = asyncio.Lock(loop=loop)
 
-    @property
-    async def position(self):
+    async def get_position(self):
         async with self._lock:
-            if self._pos_dirty:
-                self._pos_dirty = False
-                return self._pos
-            return None
+            pos = Position()
+            pos.MergeFrom(self._pos)
+            return pos
 
-    @position.setter
-    async def position(self, pos: Position):
+    async def set_position(self, pos):
         async with self._lock:
             self._pos_dirty = True
-            self._pos = pos
+            self._pos.MergeFrom(pos)
 
-    @property
-    async def map(self):
+    async def set_forward(self, step: int):
+        """Update position x or y coordinate.
+        The coordinate and direction is illustrated as following:
+
+        y                                                North
+        ^                                                  ^
+        |                                           West < o > East
+        +---------+---------+   ~~~   +----------+         v
+        | (0, 19) | (1, 19) |   ...   | (14, 19) |       South
+        |---------+---------+   ~~~   +----------+
+        | (0, 18) | (1, 18) |   ...   | (14, 18) |
+        +---------+---------+   ~~~   +----------+
+        ~   ...   ~   ...   |   ...   .   ...    .
+        |---------+---------+   ~~~   +----------+
+        | (0, 0)  | (0, 1)  |   ...   | (14, 0)  |
+        +---------+---------+   ~~~   +----------+-> x
+
+        And the robot is 3 x 3 in size, so its reachable coordinates are from x -> [1, 13] and y -> [1, 18]
+        """
         async with self._lock:
-            if self._map_dirty:
-                self._pos_dirty = False
-                return self._pos
-            return None
+            self._pos_dirty = True
+            if self._pos.dir == Position.Direction.NORTH:
+                self._pos.y = min(self._pos.y + step, 19 - 1)
+            elif self._pos.dir == Position.Direction.SOUTH:
+                self._pos.y = max(int(self._pos.y) - step, 0 + 1)
+            elif self._pos.dir == Position.Direction.EAST:
+                self._pos.x = min(self._pos.x + step, 14 - 1)
+            else:
+                self._pos.x = max(int(self._pos.x - step), 0 + 1)
 
-    @map.setter
-    async def map(self, map_description: MapDescription):
+    async def set_turn(self, angle: int):
+        """Update position dir."""
+        async with self._lock:
+            self._pos_dirty = True
+            angle_discrete = angle // 90
+            self._pos.dir = (self._pos.dir + angle_discrete) % 4
+
+    async def get_map(self):
+        async with self._lock:
+            map_description = MapDescription()
+            map_description.MergeFrom(self._map)
+            return map_description
+
+    async def set_map(self, map_description: MapDescription):
         async with self._lock:
             self._map_dirty = True
             self._map = map_description
 
-    @property
-    async def robot_status(self):
+    async def get_robot_status(self):
         async with self._lock:
-            if self._robot_status_dirty:
-                self._robot_status_dirty = False
-                return self._robot_status
-            return None
+            return self._robot_status
 
-    @robot_status.setter
-    async def robot_status(self, robot_status_new: RobotStatus):
+    async def set_robot_status(self, robot_status_new: RobotStatus):
         async with self._lock:
             self._robot_status_dirty = True
             self._robot_status = robot_status_new
 
-    @property
-    async def image_positions(self):
+    async def get_image_positions(self):
         async with self._lock:
-            if self._image_positions_dirty:
-                self._image_positions_dirty = False
-                return self._image_positions
-            return None
+            image_position = list()
+            for image_position in self._image_positions:
+                new_image_position = ImagePosition()
+                new_image_position.MergeFrom(image_position)
+                image_position.append(new_image_position)
+            return image_position
 
-    @image_positions.setter
-    async def image_positions(self, image: ImagePosition):
+    async def set_image_positions(self, image: ImagePosition):
         async with self._lock:
             self._image_positions_dirty = True
             self._image_positions.append(image)
 
     async def get_robot_info(self) -> RobotInfo:
+        robot_info = RobotInfo()
+        if self._pos_dirty:
+            robot_info.pos.MergeFrom(await self.get_position())
+        if self._map_dirty:
+            robot_info.map.MergeFrom(await self.get_map())
+        if self._image_positions_dirty:
+            robot_info.images.extend(await self.get_image_positions())
+        if self._robot_status_dirty:
+            robot_info.robot_status = await self.get_robot_status()
         async with self._lock:
-            return RobotInfo(
-                pos=self.position,
-                map=self.map,
-                images=self.image_positions,
-                robot_status=self.robot_status
-            )
+            self._pos_dirty = False
+            self._map_dirty = False
+            self._image_positions_dirty = False
+            self._robot_status_dirty = False
+
+        return robot_info
