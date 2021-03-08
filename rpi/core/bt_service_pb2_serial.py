@@ -3,58 +3,58 @@ import json
 
 import google.protobuf.json_format
 
-import core.serial
+import core.serial.call
 from core import message_pb2 as core_dot_message__pb2
 
 
 def add_bt_rpc_servicer_to_server(servicer, channel):
     rpc_method_handlers = {
-        'Echo': core.serial.unary_unary_rpc_method_handler(
+        'Echo': core.serial.call.unary_unary_rpc_method_handler(
             servicer.Echo,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EchoRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.EchoResponse),
         ),
-        'Forward': core.serial.unary_unary_rpc_method_handler(
+        'Forward': core.serial.call.unary_unary_rpc_method_handler(
             servicer.Forward,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.MoveRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.RobotInfo),
         ),
-        'TurnLeft': core.serial.unary_unary_rpc_method_handler(
+        'TurnLeft': core.serial.call.unary_unary_rpc_method_handler(
             servicer.TurnLeft,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.TurnRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.RobotInfo),
         ),
-        'TurnRight': core.serial.unary_unary_rpc_method_handler(
+        'TurnRight': core.serial.call.unary_unary_rpc_method_handler(
             servicer.TurnRight,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.TurnRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.RobotInfo),
         ),
-        'GetRobotInfo': core.serial.unary_unary_rpc_method_handler(
+        'GetRobotInfo': core.serial.call.unary_unary_rpc_method_handler(
             servicer.GetRobotInfo,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.RobotInfo),
         ),
-        'SetPosition': core.serial.unary_unary_rpc_method_handler(
+        'SetPosition': core.serial.call.unary_unary_rpc_method_handler(
             servicer.SetPosition,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.Position),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
-        'SetWayPoint': core.serial.unary_unary_rpc_method_handler(
+        'SetWayPoint': core.serial.call.unary_unary_rpc_method_handler(
             servicer.SetWayPoint,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.Position),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
-        'RemoveWayPoint': core.serial.unary_unary_rpc_method_handler(
+        'RemoveWayPoint': core.serial.call.unary_unary_rpc_method_handler(
             servicer.RemoveWayPoint,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
-        'SetRobotMode': core.serial.unary_unary_rpc_method_handler(
+        'SetRobotMode': core.serial.call.unary_unary_rpc_method_handler(
             servicer.SetRobotMode,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.RobotMode),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
-        'Terminate': core.serial.unary_unary_rpc_method_handler(
+        'Terminate': core.serial.call.unary_unary_rpc_method_handler(
             servicer.Terminate,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),

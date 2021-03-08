@@ -1,8 +1,15 @@
 uart:
   url: '/dev/ttyACM0'
   baudrate: 115200
-  protocol: 'server.uart_rpc.SerialProtocol'
+  protocol: 'server.protocol.UartProtocol'
   logger:
     name: 'UART [RPC Client]'
     welcome: false
 bluetooth:
+  url: '/dev/rfcomm7'
+  protocol: 'server.protocol.BluetoothProtocol'
+  logger:
+    name: 'BT [RPC Server]'
+    welcom: false
+    severity_levels:
+      StreamHandler: 'DEBUG'

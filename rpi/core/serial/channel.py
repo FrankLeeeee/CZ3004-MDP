@@ -34,7 +34,7 @@ class SerialAioChannel(object):
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._queue: Optional[asyncio.Queue] = None
         self._channel_lock: Optional[asyncio.Lock] = None
-        self._logger = Logger(**config.logger.dict())
+        self._logger = Logger(**config.logger.dict(exclude_none=True))
         self.protocol_cls = config.protocol
 
     async def start(self, loop=None):

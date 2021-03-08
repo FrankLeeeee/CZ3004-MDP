@@ -8,6 +8,7 @@ Date: 2/25/2021
 Server configuration
 """
 import asyncio
+import logging
 from enum import Enum
 from pydoc import locate
 from typing import Optional
@@ -19,17 +20,29 @@ from utils.constants import PROJECT_ROOT_PATH
 
 
 class SeverityLevel(Enum):
-    NOTSET = 0
-    DEBUG = 10
-    INFO = 20
-    WARNING = 30
-    ERROR = 40
-    CRITICAL = 50
+    NOTSET = 'NOTSET'
+    DEBUG = 'DEBUG'
+    INFO = 'INFO'
+    WARNING = 'WARNING'
+    WARN = 'WARN'
+    ERROR = 'ERROR'
+    CRITICAL = 'CRITICAL'
+
+    @classmethod
+    def _missing_(cls, value):
+        for member in cls:
+            if str(member.name).lower() == str(value).lower():
+                # save to value -> member mapper
+                cls._value2member_map_[value] = member
+                return member
 
 
 class HandlerConfig(BaseModel):
     StreamHandler: Optional[SeverityLevel]
     FileHandler: Optional[SeverityLevel]
+
+    class Config:
+        use_enum_values = True
 
 
 class LoggerConfig(BaseModel):
