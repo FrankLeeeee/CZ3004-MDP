@@ -2,10 +2,8 @@ package ntu.mdpg1app;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -24,13 +22,8 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     MenuItem menu_show_bluetooth_chat;
     MenuItem menu_show_data_strings;
 
-
     TextView tv_status;
     Button btn_forward;
     Button btn_left;
@@ -68,7 +60,13 @@ public class MainActivity extends AppCompatActivity {
     Button btn_config1;
     Button btn_config2;
 
-    String status = "Idle";
+    String robot_status = "Idle";
+    String dir = "North";
+    String xCoor = "1";
+    String yCoor = "1";
+    String p1 = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    String p2 = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //initialize default status "idle"
-        updateStatus(status);
+        updateStatus(robot_status);
 
         //initialize listener for all the buttons
         setBtnListener();
@@ -105,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         loadGrid();
 
         //Query RPI to get robot info
-        queryMessage();
+//        queryMessage();
     }
 
     public void queryMessage(){
@@ -116,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     if(fragment.getChatService() != null){
                         if(fragment.getChatServiceState() == 3){
                             Log.d("Debug", "getChatServiceState = STATE_CONNECTED");
-                            outgoingMessage("GetRobotInfo\\{}", true);
+                            outgoingMessage("GetRobotInfo\\{};", true);
                         }
                     }
                 }
@@ -126,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     //method to update the label textview
     public void updateStatus(String status){
-        this.status = status;
+        this.robot_status = status;
         tv_status.setText(status);
     }
 
@@ -196,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         btn_explr.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    String instructionValue = new JSONObject().put("MODE", 0).toString();
+                    String instructionValue = new JSONObject().put("mode", 0).toString();
                     String instruction = "SetRobotStatus\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
                 } catch(JSONException e){
@@ -210,8 +208,8 @@ public class MainActivity extends AppCompatActivity {
         btn_fastest.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (WayPoint.wp.getPosition() == null) {
-                    status = "Setting WayPoint";
-                    updateStatus(status);
+                    robot_status = "Setting WayPoint";
+                    updateStatus(robot_status);
 
                     menu_set_robot_position.setChecked(false);
                     menu_set_waypoint.setChecked(true);
@@ -220,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }else{
                     try {
-                        String instructionValue = new JSONObject().put("MODE", 1).toString();
+                        String instructionValue = new JSONObject().put("mode", 1).toString();
                         String instruction = "SetRobotStatus\\" + instructionValue + ";";
                         outgoingMessage(instruction, false);
                     }catch(JSONException e) {
@@ -278,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //send explore message
                 try {
-                    String instructionValue = new JSONObject().put("MODE", 0).toString();
+                    String instructionValue = new JSONObject().put("mode", 0).toString();
                     String instruction = "SetRobotStatus\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
                 } catch(JSONException e){
@@ -287,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //send fastest path message
                 try {
-                    String instructionValue = new JSONObject().put("MODE", 1).toString();
+                    String instructionValue = new JSONObject().put("mode", 1).toString();
                     String instruction = "SetRobotStatus\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
                 }catch(JSONException e) {
@@ -520,29 +518,45 @@ public class MainActivity extends AppCompatActivity {
             fragment.showChat(true);
 
             JSONObject jsonMsg, robotPos, mapInfo;
-            JSONArray images;
-            String dir, p1, p2, xCoor, yCoor, robotStatus,imageID, imageX, imageY;
+            //JSONArray images;
+
             System.out.println(readMsg);
+
             try {
                 jsonMsg = new JSONObject(readMsg);
 
-                robotPos = new JSONObject(jsonMsg.get("pos").toString());
-                dir = robotPos.get("dir").toString();
-                xCoor = robotPos.get("x").toString();
-                yCoor = robotPos.get("y").toString();
+                if(jsonMsg.has("pos")) {
+                    robotPos = (JSONObject) jsonMsg.get("pos");
+                    if (!robotPos.has("dir")) {
+                        dir = dir;
+                    } else {
+                        dir = robotPos.get("dir").toString();
+                    }
+                    xCoor = robotPos.get("x").toString();
+                    yCoor = robotPos.get("y").toString();
+                }
 
-                mapInfo = new JSONObject(jsonMsg.get("map").toString());
-                p1 = mapInfo.get("p1").toString();
-                p2 = mapInfo.get("p2").toString();
+                if(jsonMsg.has("map")) {
+                    mapInfo = (JSONObject) jsonMsg.get("map");
+                    p1 = mapInfo.get("p1").toString();
+                    p2 = mapInfo.get("p2").toString();
+                }else{
+                    p1 = p1;
+                    p2 = p2;
+                }
 
-                images = jsonMsg.getJSONArray("images");
+//                if(jsonMsg.has("images"))
+//                    images = jsonMsg.getJSONArray("images");
 
-                robotStatus = jsonMsg.get("robot_status").toString();
+                if(jsonMsg.has("robot_status"))
+                    robot_status = jsonMsg.get("robot_status").toString();
+                else{
+                    robot_status = robot_status;
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
                 Log.e("TESTE", "Cannot turn string msg to json");
-                return;
             }
 
             /**
@@ -592,35 +606,35 @@ public class MainActivity extends AppCompatActivity {
              * RPI send image ID
              * formerly BLOCK command
              */
-            if(images.length() > 0){
-
-                for (int i=0; i<images.length(); i++) {
-                    JSONObject tempImg;
-                    try {
-                        tempImg = images.getJSONObject(i);
-                        imageID = Integer.toString((Integer.parseInt(tempImg.get("id").toString())+1)); //convert to integer, add 1, convert to string
-                        imageX = tempImg.get("x").toString();
-                        imageY = tempImg.get("y").toString();
-
-                        IDblock input = new IDblock(imageID, Integer.parseInt(imageX), Integer.parseInt(imageY));
-                        Map.getInstance().addNumberedBlocks(input);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                    loadGrid();
-                }
-
-            }
+//            if(images.length() > 0){
+//
+//                for (int i=0; i<images.length(); i++) {
+//                    JSONObject tempImg;
+//                    try {
+//                        tempImg = images.getJSONObject(i);
+//                        imageID = Integer.toString((Integer.parseInt(tempImg.get("id").toString())+1)); //convert to integer, add 1, convert to string
+//                        imageX = tempImg.get("x").toString();
+//                        imageY = tempImg.get("y").toString();
+//
+//                        IDblock input = new IDblock(imageID, Integer.parseInt(imageX), Integer.parseInt(imageY));
+//                        Map.getInstance().addNumberedBlocks(input);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+//                    loadGrid();
+//                }
+//
+//            }
 
             /**
              * RPI send robot status
              * formerly STATUS command
              */
-            if(robotStatus.length() != 0){
-                switch (robotStatus){
+            if(robot_status.length() != 0){
+                switch (robot_status){
                     case "0":
                         updateStatus("Stop");
                         break;
@@ -762,6 +776,12 @@ public class MainActivity extends AppCompatActivity {
 //                updateStatus("Invalid Message");
 //            }
         }
+        Log.d("Debug", "dir = " + dir);
+        Log.d("Debug", "xCoor = " + xCoor);
+        Log.d("Debug", "yCoor = " + yCoor);
+        Log.d("Debug", "p1 = " + p1);
+        Log.d("Debug", "p2 = " + p2);
+        Log.d("Debug", "robot_status = " + robot_status);
     }
 
 
@@ -834,6 +854,7 @@ public class MainActivity extends AppCompatActivity {
     //clear waypoint
     private void removeWaypoint(){
         WayPoint.getInstance().setPosition(null);
+        outgoingMessage("RemoveWayPoint\\{};", false);
         loadGrid();
     }
 
