@@ -5,6 +5,7 @@ void EncoderInit();
 void countTickR();
 void countTickL();
 void PIDInit();
+void PIDTInit();
 double calcTickFromDist(double dist);
 double getTicksFromAngle(double angle);
 double blocksToCm(double blocks);

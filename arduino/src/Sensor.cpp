@@ -210,7 +210,7 @@ double filter(double volt, double oldVal)
     return (alpha * volt) + (1 - alpha) * oldVal;
 }
 
-int sampleSize = 300;
+int sampleSize = 20;
 double getAvg1()
 {
     // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
