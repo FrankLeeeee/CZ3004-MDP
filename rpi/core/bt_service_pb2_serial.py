@@ -44,13 +44,18 @@ def add_bt_rpc_servicer_to_server(servicer, channel):
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.Position),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
+        'RemoveWayPoint': core.serial.unary_unary_rpc_method_handler(
+            servicer.RemoveWayPoint,
+            request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
+            response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
+        ),
         'SetRobotMode': core.serial.unary_unary_rpc_method_handler(
             servicer.SetRobotMode,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.RobotMode),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
         'Terminate': core.serial.unary_unary_rpc_method_handler(
-            servicer.Teminate,
+            servicer.Terminate,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         )
