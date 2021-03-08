@@ -16,9 +16,10 @@ from uuid import uuid4
 import bluetooth
 
 from config import config
+from core import message_pb2 as core_dot_message__pb2
 from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server, BtRPCServiceServicer
 from core.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
-    EchoRequest, RobotStatus
+    EchoRequest, RobotStatus, RobotMode
 from core.robot_context import RobotContext
 from server.serial_channel import SerialAioChannel
 from utils.constants import BT_MESSAGE_SEPARATOR
@@ -121,35 +122,64 @@ class BluetoothControlServicer(BtRPCServiceServicer):
         self.context = context
 
     async def Echo(self, request: EchoRequest) -> EchoResponse:
-        return EchoResponse(request.message, status=True)
+        return EchoResponse(message=request.message, status=True)
 
     async def Forward(self, request: MoveRequest) -> RobotInfo:
-        client = ArduinoRPCServiceStub(self.uart_serial_channel)
-        self.context.robot_status = RobotStatus.FORWARD
+        step = request.step
+        if step < 0 or step > 20 - 2:  # robot is 3 x 3
+            raise ValueError(f'step in {request} should not be less than 0 or larger than 20.')
+        # client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        await self.context.set_robot_status(RobotStatus.FORWARD)
         # response = await client.Forward(request)
-        self.context.robot_status = RobotStatus.STOP
-        return self.context.get_robot_info()
+        await self.context.set_robot_status(RobotStatus.STOP)
+        await self.context.set_forward(step=request.step)
+        response = await self.context.get_robot_info()
+        return response
 
-    def TurnLeft(self, request: TurnRequest) -> RobotInfo:
-        client = ArduinoRPCServiceStub(self.uart_serial_channel)
-        self.context.robot_status = RobotStatus.TURN_LEFT
+    async def TurnLeft(self, request: TurnRequest) -> RobotInfo:
+        angle = request.angle
+        if angle < 0 or angle > 180:
+            raise ValueError(f'angle in {request.angle} should not be less than 0 or larger than 180.')
+        elif angle % 90 != 0:
+            raise ValueError(f'angle in {request.angle} should be a multiple of 90.')
+        # client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        await self.context.set_robot_status(RobotStatus.TURN_LEFT)
         # response = await client.TurnLeft(request)
-        self.context.robot_status = RobotStatus.STOP
-        return self.context.get_robot_info()
+        await self.context.set_robot_status(RobotStatus.STOP)
+        await self.context.set_turn(-request.angle)
+        return await self.context.get_robot_info()
 
-    def TurnRight(self, request: TurnRequest) -> RobotInfo:
-        client = ArduinoRPCServiceStub(self.uart_serial_channel)
-        self.context.robot_status = RobotStatus.TURN_RIGHT
+    async def TurnRight(self, request: TurnRequest) -> RobotInfo:
+        angle = request.angle
+        if angle < 0 or angle > 180:
+            raise ValueError(f'angle in {request.angle} should not be less than 0 or larger than 180.')
+        elif angle % 90 != 0:
+            raise ValueError(f'angle in {request.angle} should be a multiple of 90.')
+        # client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        await self.context.set_robot_status(RobotStatus.TURN_RIGHT)
         # response = await client.TurnRight(request)
-        self.context.robot_status = RobotStatus.STOP
+        await self.context.set_robot_status(RobotStatus.STOP)
+        await self.context.set_turn(request.angle)
+        return await self.context.get_robot_info()
+
+    async def GetRobotInfo(self, request: EmptyRequest) -> RobotInfo:
+        return await self.context.get_robot_info()
+
+    async def SetPosition(self, request: Position) -> Status:
+        await self.context.set_position(request)
         return self.context.get_robot_info()
 
-    def GetRobotInfo(self, request: EmptyRequest) -> RobotInfo:
-        return self.context.get_robot_info()
+    async def SetWayPoint(self, request: Position) -> Status:
+        pass
 
-    def SetPosition(self, request: Position) -> Status:
-        self.context.position = request
-        return self.context.get_robot_info()
+    def RemoveWayPoint(self, request: EmptyRequest) -> Status:
+        pass
+
+    def SetRobotMode(self, request: RobotMode) -> Status:
+        pass
+
+    def Terminate(self, request: EmptyRequest) -> Status:
+        pass
 
 
 async def test():
