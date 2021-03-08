@@ -1,2 +1,8 @@
-serial_url: '/dev/ttyACM0'
-baudrate: 115200
+uart:
+  url: '/dev/ttyACM0'
+  baudrate: 115200
+  protocol: 'server.uart_rpc.SerialProtocol'
+  logger:
+    name: 'UART [RPC Client]'
+    welcome: false
+bluetooth:

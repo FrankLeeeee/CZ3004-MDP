@@ -4,13 +4,13 @@ import pytest
 
 from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from core.message_pb2 import EchoRequest, MoveRequest, TurnRequest, EmptyRequest
+from core.serial.channel import SerialAioChannel
 from config import config
-from server.serial_channel import SerialAioChannel
 
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_echo():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = EchoRequest(message=b'a')
         response = await stub.Echo(request)
@@ -19,7 +19,7 @@ async def test_arduino_rpc_echo():
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_forward():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = MoveRequest(step=10)
         response = await stub.Forward(request)
@@ -28,7 +28,7 @@ async def test_arduino_rpc_forward():
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_turn_left():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = TurnRequest(angle=90)
         response = await stub.TurnLeft(request)
@@ -37,7 +37,7 @@ async def test_arduino_rpc_turn_left():
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_turn_right():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = TurnRequest(angle=90)
         response = await stub.TurnLeft(request)
@@ -46,7 +46,7 @@ async def test_arduino_rpc_turn_right():
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_get_metrics():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = EmptyRequest()
         response = await stub.GetMetrics(request)
@@ -55,7 +55,7 @@ async def test_arduino_rpc_get_metrics():
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_calibration():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = EmptyRequest()
         response = await stub.Calibration(request)
@@ -64,7 +64,7 @@ async def test_arduino_rpc_calibration():
 
 @pytest.mark.asyncio
 async def test_arduino_rpc_terminate():
-    async with SerialAioChannel(config.serial_url) as channel:
+    async with SerialAioChannel(config.uart) as channel:
         stub = ArduinoRPCServiceStub(channel)
         request = EmptyRequest()
         response = await stub.Terminate(request)

@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Author: Li Yuanming
+Email: yli056@e.ntu.edu.sg
+Date: 2/16/2021
+"""
 import inspect
 
 
@@ -15,3 +22,4 @@ def unary_unary_rpc_method_handler(behavior,
         return response_serializer(response)
 
     return _async_handler if inspect.iscoroutinefunction(behavior) else _handler
+

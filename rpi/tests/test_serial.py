@@ -8,7 +8,8 @@ Date: 2/26/2021
 import asyncio
 
 from config import config
-from server.serial_channel import SerialAioChannel, SerialProtocol
+from core.serial.channel import SerialAioChannel
+from server.protocol import UartProtocol
 
 
 def _data_received_simple(self, data):
@@ -17,8 +18,8 @@ def _data_received_simple(self, data):
 
 
 async def main():
-    SerialProtocol.data_received = _data_received_simple
-    transport = SerialAioChannel(url=config.serial_url)
+    UartProtocol.data_received = _data_received_simple
+    transport = SerialAioChannel(config=config.uart)
     send_char = b'A'
     await transport.start()
     send_task = asyncio.ensure_future(transport.write_channel(send_char))

@@ -7,19 +7,75 @@ Date: 2/25/2021
 
 Server configuration
 """
+import asyncio
+from enum import Enum
+from pydoc import locate
 from typing import Optional
 
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, root_validator
 
 from utils.constants import PROJECT_ROOT_PATH
+
+
+class SeverityLevel(Enum):
+    NOTSET = 0
+    DEBUG = 10
+    INFO = 20
+    WARNING = 30
+    ERROR = 40
+    CRITICAL = 50
+
+
+class HandlerConfig(BaseModel):
+    StreamHandler: Optional[SeverityLevel]
+    FileHandler: Optional[SeverityLevel]
+
+
+class LoggerConfig(BaseModel):
+    name: str
+    welcome: Optional[bool] = True
+    filename: Optional[str]
+    severity_levels: Optional[HandlerConfig]
+
+
+class SerialDeviceConfig(BaseModel):
+    url: str
+    protocol: type
+    logger: LoggerConfig
+
+    @root_validator(pre=True)
+    def check_protocol_type(cls, values):
+        protocol = values.get('protocol')
+        if isinstance(protocol, str):
+            protocol = locate(protocol)
+
+        if not issubclass(protocol, asyncio.Protocol):
+            raise ValueError(f'protocol should be an subclass of {asyncio.Protocol}, '
+                             f'got {protocol}')
+
+        values['protocol'] = protocol
+        return values
+
+    class Config:
+        json_encoders = {
+            type: str
+        }
+
+
+class UartSerialConfig(SerialDeviceConfig):
+    baudrate: Optional[int] = 115200
+
+
+class BluetoothConfig(SerialDeviceConfig):
+    pass
 
 
 class ServerConfig(BaseModel):
     port: Optional[int] = 8001
     thread_num: Optional[int] = 8
-    serial_url: str
-    baudrate: Optional[int] = 115200
+    uart: UartSerialConfig
+    bluetooth: Optional[BluetoothConfig]
 
 
 with open(PROJECT_ROOT_PATH / 'server/config.yml') as f:
