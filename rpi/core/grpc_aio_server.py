@@ -95,11 +95,11 @@ class GRPCAioServer(object):
 
         await self.server.start()
 
+        self.logger.info(f'Listening on {self.bind_address}.')
+
         # run after sever start hooks
         for hook in self._hooks['after_server_start']:
             await self._exec_hook(hook)
-
-        self.logger.info(f'Listening on {self.bind_address}.')
 
     async def join(self):
         await self.server.wait_for_termination()

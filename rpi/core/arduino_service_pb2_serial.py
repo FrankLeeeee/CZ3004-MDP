@@ -16,7 +16,7 @@ class ArduinoRPCServiceStub(object):
 
         def metric_response_deserializer(text: bytes) -> core_dot_message__pb2.MetricResponse:
             # 6 sensor data (float, 4 bytes) + status (bool, 1 byte)
-            assert len(text) == 4 * 6 + 1, 'Metric Response should contain 24 bytes'
+            assert len(text) == 4 * 6 + 1, 'Metric Response should contain 25 bytes'
 
             response = core_dot_message__pb2.MetricResponse()
             for i in range(6):
