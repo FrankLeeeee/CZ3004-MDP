@@ -1,10 +1,12 @@
 import asyncio
+from typing import Optional
 
 from core.message_pb2 import Position, RobotStatus, MapDescription, RobotInfo, ImagePosition, RobotMode
+from utils.constants import ARENA_HEIGHT, ROBOT_ONE_SIDE_SIZE, ARENA_WIDTH
 
 
 class RobotContext(object):
-    def __init__(self, loop):
+    def __init__(self):
         # for android robot info
         self._pos = Position(x=1, y=1)
         self._pos_dirty = True
@@ -14,7 +16,16 @@ class RobotContext(object):
         self._robot_status_dirty = True
         self._image_positions = list()
         self._image_positions_dirty = True
+
+        # other context
+        self._way_point = Position(x=-1, y=-1)
+        self._robot_mode = RobotMode
+        self.start_flag: Optional[asyncio.Event] = None
+        self._lock: Optional[asyncio.Lock] = None
+
+    def set_loop(self, loop):
         self._lock = asyncio.Lock(loop=loop)
+        self.start_flag = asyncio.Event(loop=loop)
 
     async def get_position(self):
         async with self._lock:
@@ -49,13 +60,13 @@ class RobotContext(object):
         async with self._lock:
             self._pos_dirty = True
             if self._pos.dir == Position.Direction.NORTH:
-                self._pos.y = min(self._pos.y + step, 19 - 1)
+                self._pos.y = min(self._pos.y + step, ARENA_HEIGHT - 1 - ROBOT_ONE_SIDE_SIZE)
             elif self._pos.dir == Position.Direction.SOUTH:
-                self._pos.y = max(int(self._pos.y) - step, 0 + 1)
+                self._pos.y = max(int(self._pos.y) - step, 0 + ROBOT_ONE_SIDE_SIZE)
             elif self._pos.dir == Position.Direction.EAST:
-                self._pos.x = min(self._pos.x + step, 14 - 1)
+                self._pos.x = min(self._pos.x + step, ARENA_WIDTH - ROBOT_ONE_SIDE_SIZE)
             else:
-                self._pos.x = max(int(self._pos.x - step), 0 + 1)
+                self._pos.x = max(int(self._pos.x - step), 0 + ROBOT_ONE_SIDE_SIZE)
 
     async def set_turn(self, angle: int):
         """Update position dir."""
@@ -115,3 +126,38 @@ class RobotContext(object):
             self._robot_status_dirty = False
 
         return robot_info
+
+    async def set_way_point(self, position: Position):
+        if position.x < 0 or position.y > ARENA_WIDTH - 1:
+            raise ValueError(f'Way point in `Position.x` should not be less than 0 or larger '
+                             f'than {ARENA_WIDTH - 1}')
+        if position.y < 0 or position.y > ARENA_HEIGHT - 1:
+            raise ValueError(f'Way point in `Position.x` should not be less than 0 or larger '
+                             f'than {ARENA_HEIGHT - 1}')
+
+        position.dir = Position.Direction.NORTH
+        async with self._lock:
+            self._way_point = Position()
+            self._way_point.MergeFrom(position)
+
+    async def get_way_point(self) -> Position:
+        async with self._lock:
+            way_point = Position()
+            way_point.MergeFrom(self._way_point)
+            return way_point
+
+    async def remove_way_point(self):
+        async with self._lock:
+            self._way_point = None
+
+    async def set_robot_mode(self, mode: RobotMode):
+        # set robot mode will start the robot
+        async with self._lock:
+            self._robot_mode = RobotMode()
+            self._robot_mode.MergeFrom(mode)
+
+    async def get_robot_mode(self) -> RobotMode:
+        async with self._lock:
+            robot_mode = RobotMode()
+            robot_mode.MergeFrom(self._robot_mode)
+            return self._robot_mode
