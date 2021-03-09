@@ -43,7 +43,9 @@ void countTickL()
 //===== Parameters =====
 int delayms = 20;
 double motorfactorL = 1.01;    //6.2V 1.013
+//double motorfactorL = 1.03; //1.018, 6.19V not bad 
 double motorfactorR = 0.99025; //6.14V 0.993   6.13V 0.95       0.99025
+//double motorfactorR = 1; //0.990008 6.19V not bad
 double motorfactor = 0.9975;    // 0.99775
 //0.99655 6.05V
 // double motorfactor = 0.998;
@@ -322,9 +324,9 @@ void turnL(double angle)
     // delayms = delayms / 4;
     // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle);
+    targetTick = getTicksFromAngle(angle+3.5);
     speedL = 250;
-    speedR = speedL * motorfactorL;
+    speedR = 250 * motorfactorL;
     md.setSpeeds(speedR, -speedL);
     // delay(delayms);
     // oldTickR = (double)TickR;
@@ -344,8 +346,8 @@ void turnL(double angle)
         // md.setSpeeds(speedR * motorfactor, -speedL);
         // oldTickR += curTickR;
         // oldTickL += curTickL;
-        if (targetTick - TickR < 150)
-            md.setSpeeds(120 * motorfactorL, -120);
+        if (targetTick - TickR < 125)
+            md.setSpeeds(100 * motorfactorL, -100);
         // delay(delayms);
         getSensorReading();
     }
@@ -382,9 +384,9 @@ void turnL(double angle)
 
 void turnR(double angle)
 {
-    // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
+    // // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle);
+    targetTick = getTicksFromAngle(angle+5.1);
     speedL = 250;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
@@ -406,12 +408,48 @@ void turnR(double angle)
         // md.setSpeeds(-speedR, speedL);
         // oldTickR += curTickR;
         // oldTickL += curTickL;
-        if (targetTick - TickR < 150)
-            md.setSpeeds(-120 * motorfactorR, 120);
+        if (targetTick - TickR < 125)
+            md.setSpeeds(-100 * motorfactorR, 100);
         // delay(delayms);
         getSensorReading();
     }
     md.setBrakes(400, 400);
+    // delayms = delayms / 4;
+
+
+    //TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
+
+
+    // TickL = TickR = 0;
+    // targetTick = getTicksFromAngle(angle);
+    // speedL = 250 * motorfactorR;
+    // speedR = 250;
+    // md.setSpeeds(-speedL, speedR);
+    // // delay(delayms);
+    // // oldTickR = (double)TickR;
+    // // oldTickL = (double)TickL;
+    // // PIDInit();
+    // brakes = false;
+
+    // while (targetTick > TickR && targetTick > TickL)
+    // {
+    //     // curTickR = TickR - oldTickR;
+    //     // curTickL = TickL - oldTickL;
+    //     // Serial.print(curTickR);
+    //     // Serial.print(" ");
+    //     // Serial.println(curTickL);
+    //     // PID1.Compute();
+    //     // PID2.Compute();
+    //     // md.setSpeeds(speedR * motorfactor, -speedL);
+    //     // oldTickR += curTickR;
+    //     // oldTickL += curTickL;
+    //     if (targetTick - TickL < 150)
+    //         md.setSpeeds(100 * motorfactorR, -100);
+    //     // delay(delayms);
+    //     getSensorReading();
+    // }
+    // md.setBrakes(400, 400);
+    // // delayms = delayms * 4;
 }
 
 void brake()

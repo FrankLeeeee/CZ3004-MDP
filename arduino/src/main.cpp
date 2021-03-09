@@ -20,8 +20,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  //loopSeq();
-  readInput();
+  loopSeq();
+  //readInput();
 }
 
 //===== Inputs =====
@@ -91,27 +91,48 @@ void readInput()
 
 void testFunction()
 {
-  wallCalibrate();
-  delay(200);
-  for (int i = 0; i < 4; i++)
-  {
-    turnR(90);
-    delay(100);
-    moveF(20);
-    delay(100);
-  }
+  //wallCalibrate();
+  // delay(200);
+  // for (int i = 0; i < 4; i++)
+  // {
+  //   turnR(90);
+  //   delay(100);
+  //   moveF(20);
+  //   delay(100);
+  // }
+  // turnL(90);
+  // delay(100);
+  // wallCalibrate();
+  // delay(100);
+  // for (int i = 0; i < 4; i++)
+  // {
+  //   turnL(90);
+  //   delay(100);
+  //   moveF(20);
+  //   delay(100);
+  // }
+  // turnR(90);
+  // delay(100);
+  delay(10000);
+  //wallCalibrate();
   turnL(90);
-  delay(100);
-  wallCalibrate();
-  delay(100);
-  for (int i = 0; i < 4; i++)
-  {
-    turnL(90);
-    delay(100);
-    moveF(20);
-    delay(100);
-  }
-  turnR(90);
-  delay(100);
-  wallCalibrate();
+  delay(200);
+  turnL(90);
+    delay(200);
+  turnL(90);
+    delay(200);
+  turnL(90);
+  // delay(200);
+  // moveF(10);
+  // delay(200);
+  // turnR(90);
+  // delay(200);
+  // turnR(90);
+  // delay(200);
+  // moveF(10);
+
+ 
+  
+
+
 }
