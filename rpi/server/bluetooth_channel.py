@@ -82,7 +82,7 @@ class BluetoothControlServicer(BtRPCServiceServicer):
         return Status(status=True)
 
     async def SetRobotMode(self, request: RobotMode) -> Status:
-        await self.context.set_robot_status(request)
+        await self.context.set_robot_mode(request)
         self.context.start_flag.set()
         return Status(status=True)
 

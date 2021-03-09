@@ -57,10 +57,15 @@ class WaitForConnectionConfig(BaseModel):
     max_retry: Optional[int] = 16
 
 
+class AutoReconnectConfig(BaseModel):
+    enable: Optional[bool] = False
+    cooldown: Optional[int] = 5
+
+
 class SerialDeviceConfig(BaseModel):
     url: str
     wait_for_connection: Optional[WaitForConnectionConfig] = Field(default_factory=WaitForConnectionConfig)
-    auto_reconnect: Optional[bool] = False
+    auto_reconnect: Optional[AutoReconnectConfig] = Field(default_factory=AutoReconnectConfig)
     protocol: type
     logger: LoggerConfig
 

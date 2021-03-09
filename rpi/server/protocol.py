@@ -25,6 +25,8 @@ class UartProtocol(asyncio.Protocol):
         """Store the queue.
         """
         super().__init__()
+        self.disconnect = asyncio.Event()
+
         self._queue = queue
         self._buffer: Optional[bytes] = None
         self._logger = logger
@@ -32,6 +34,7 @@ class UartProtocol(asyncio.Protocol):
     def connection_made(self, transport: serial_asyncio.SerialTransport):
         """Store the serial transport and prepare to receive data.
         """
+        self.disconnect.clear()
         self._buffer = bytes()
         transport.serial.rts = False
         transport.flush()
@@ -49,6 +52,7 @@ class UartProtocol(asyncio.Protocol):
                 asyncio.ensure_future(self._queue.put(line))
 
     def connection_lost(self, exc):
+        self.disconnect.set()
         self._logger.info(f'Connection lost, reason: {exc}')
 
 
@@ -58,6 +62,7 @@ class BluetoothProtocol(asyncio.Protocol):
         """Store the queue.
         """
         super().__init__()
+        self.disconnect = asyncio.Event()
         self._queue = queue
         self._buffer: Optional[bytes] = None
         self._logger = logger
@@ -65,6 +70,7 @@ class BluetoothProtocol(asyncio.Protocol):
     def connection_made(self, transport: serial_asyncio.SerialTransport):
         """Store the serial transport and prepare to receive data.
         """
+        self.disconnect.clear()
         self._buffer = bytes()
         transport.serial.rts = False
         transport.flush()
@@ -83,4 +89,5 @@ class BluetoothProtocol(asyncio.Protocol):
                 asyncio.ensure_future(self._queue.put((method, request.encode())))
 
     def connection_lost(self, exc):
+        self.disconnect.set()
         self._logger.info(f'Connection lost, reason: {exc}')

@@ -32,6 +32,8 @@ class SerialAioChannel(object):
         self.transport: Optional[serial_asyncio.SerialTransport] = None
         self.protocol = None
 
+        self._auto_reconnect_task: Optional[asyncio.Task] = None
+
         self._loop: Optional[asyncio.AbstractEventLoop] = None
         self._queue: Optional[asyncio.Queue] = None
         self._channel_lock: Optional[asyncio.Lock] = None
@@ -44,6 +46,12 @@ class SerialAioChannel(object):
         self._queue = asyncio.Queue(loop=loop)
         self._channel_lock = asyncio.Lock(loop=loop)
 
+        await self._connection()
+
+        # subscribe for auto reconnect
+        self._auto_reconnect_task = self._loop.create_task(self._auto_reconnect_runner())
+
+    async def _connection(self):
         # the idea is from CSMA/CD. Retry 16 times and with each fail, expand the time slot size by 2 times until
         # 1024.
         time_slot = 1
@@ -53,7 +61,14 @@ class SerialAioChannel(object):
             trial = self.config.wait_for_connection.max_retry
         while True:
             try:
-                await self._connection()
+                protocol = partial(self.protocol_cls, self._queue, self._logger)
+                self.transport, self.protocol = await serial_asyncio.create_serial_connection(
+                    self._loop, protocol,
+                    **self.config.dict(
+                        exclude_none=True,
+                        exclude={'logger', 'protocol', 'wait_for_connection', 'auto_reconnect'}
+                    )
+                )
                 break
             except SerialException as exc:
                 if trial < self.config.wait_for_connection.max_retry:
@@ -72,16 +87,12 @@ class SerialAioChannel(object):
 
         self._logger.info(f'Listening on device {self.config.url}.')
 
-    async def _connection(self):
-        protocol = partial(self.protocol_cls, self._queue, self._logger)
-        self.transport, self.protocol = await serial_asyncio.create_serial_connection(
-            self._loop, protocol,
-            **self.config.dict(
-                exclude_none=True,
-                exclude={'logger', 'protocol', 'wait_for_connection', 'auto_reconnect'}
-            )
-        )
-
+    async def _auto_reconnect_runner(self):
+        auto_reconnect_config = self.config.auto_reconnect
+        while auto_reconnect_config.enable:
+            await self.protocol.disconnect.wait()
+            await asyncio.sleep(auto_reconnect_config.cooldown)
+            await self._connection()
 
     async def read_channel(self):
         return await self._queue.get()
@@ -110,12 +121,15 @@ class SerialAioChannel(object):
 
         return _callable
 
-    def close(self):
+    async def close(self):
         self.transport.close()
+        if not self._auto_reconnect_task.cancelled():
+            self._auto_reconnect_task.cancel()
+            await self._auto_reconnect_task
 
     async def __aenter__(self):
         await self.start()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        self.close()
+        await self.close()

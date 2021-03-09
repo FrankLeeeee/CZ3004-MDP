@@ -122,9 +122,9 @@ async def before_server_start(loop):
 
 
 @BackendRPCServer.register_hook('after_server_stop')
-def after_server_stop(loop):  # noqa
-    uart_channel.close()
-    bt_server.stop()
+async def after_server_stop(loop):  # noqa
+    await uart_channel.close()
+    await bt_server.stop()
 
 
 if __name__ == '__main__':
