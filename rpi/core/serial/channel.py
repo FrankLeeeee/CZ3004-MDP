@@ -13,12 +13,13 @@ Reference:
 """
 import asyncio
 import os
-from typing import Optional, Callable, Type
+import random
+from typing import Optional, Callable
 
 import serial_asyncio
 from functools import partial
 
-from pydantic import BaseModel
+from serial import SerialException
 
 from config import SerialDeviceConfig
 from utils.constants import SERIAL_MESSAGE_SEPARATOR
@@ -38,17 +39,49 @@ class SerialAioChannel(object):
         self.protocol_cls = config.protocol
 
     async def start(self, loop=None):
+        self._logger.info(f'Start with configuration:\n {self.config.json(indent=2)}')
         self._loop = loop or asyncio.get_event_loop()
         self._queue = asyncio.Queue(loop=loop)
         self._channel_lock = asyncio.Lock(loop=loop)
-        protocol = partial(self.protocol_cls, self._queue, self._logger)
-        self.transport, self.protocol = await serial_asyncio.create_serial_connection(
-            self._loop, protocol, **self.config.dict(exclude_none=True, exclude={'logger', 'protocol'})
-        )
+
+        # the idea is from CSMA/CD. Retry 16 times and with each fail, expand the time slot size by 2 times until
+        # 1024.
+        time_slot = 1
+        if self.config.wait_for_connection.enable:
+            trial = 1
+        else:
+            trial = self.config.wait_for_connection.max_retry
+        while True:
+            try:
+                await self._connection()
+                break
+            except SerialException as exc:
+                if trial < self.config.wait_for_connection.max_retry:
+                    self._logger.info(exc)
+                    backoff_time = random.randint(1, time_slot)
+                    time_slot = min(time_slot * 2, 1024)
+                    self._logger.warning(f'Attempt #{trial} fail to start device {self.config.url}, '
+                                         f'retry after {backoff_time}s...')
+                    await asyncio.sleep(backoff_time)
+                    trial += 1
+                else:
+                    self._logger.error(exc)
+                    raise exc
+
         await asyncio.sleep(3)
 
-        self._logger.info(f'Listening on device {self.config.url} with configuration: \n'
-                          f'{self.config.json(indent=2)}')
+        self._logger.info(f'Listening on device {self.config.url}.')
+
+    async def _connection(self):
+        protocol = partial(self.protocol_cls, self._queue, self._logger)
+        self.transport, self.protocol = await serial_asyncio.create_serial_connection(
+            self._loop, protocol,
+            **self.config.dict(
+                exclude_none=True,
+                exclude={'logger', 'protocol', 'wait_for_connection', 'auto_reconnect'}
+            )
+        )
+
 
     async def read_channel(self):
         return await self._queue.get()

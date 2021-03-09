@@ -7,6 +7,10 @@ uart:
     welcome: false
 bluetooth:
   url: '/dev/rfcomm7'
+  wait_for_connection:
+    enable: true
+    max_retry: 16
+  auto_reconnect: true
   protocol: 'server.protocol.BluetoothProtocol'
   logger:
     name: 'BT [RPC Server]'

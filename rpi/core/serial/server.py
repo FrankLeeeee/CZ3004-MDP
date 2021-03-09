@@ -40,6 +40,6 @@ class SerialAioServer(object):
             response = response.encode()
             await self._channel.write_channel(response)
 
-    async def stop(self):
+    def stop(self):
         self._channel.close()
         self.is_running = False

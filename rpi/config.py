@@ -14,7 +14,7 @@ from pydoc import locate
 from typing import Optional
 
 import yaml
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, root_validator, Field
 
 from utils.constants import PROJECT_ROOT_PATH
 
@@ -52,8 +52,15 @@ class LoggerConfig(BaseModel):
     severity_levels: Optional[HandlerConfig]
 
 
+class WaitForConnectionConfig(BaseModel):
+    enable: Optional[bool] = False
+    max_retry: Optional[int] = 16
+
+
 class SerialDeviceConfig(BaseModel):
     url: str
+    wait_for_connection: Optional[WaitForConnectionConfig] = Field(default_factory=WaitForConnectionConfig)
+    auto_reconnect: Optional[bool] = False
     protocol: type
     logger: LoggerConfig
 
