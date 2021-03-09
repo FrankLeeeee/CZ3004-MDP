@@ -19,6 +19,7 @@ void setup()
 
 void loop()
 {
+  getSensorReading();
   //loopSeq();
   readInput();
 }
@@ -33,7 +34,7 @@ void readInput()
     switch (inByte)
     {
     case 'w':
-      moveF(2);
+      moveF(1);
       break;
     case 's':
       moveB(1);
@@ -90,19 +91,27 @@ void readInput()
 
 void testFunction()
 {
-  while (1)
+  wallCalibrate();
+  delay(200);
+  for (int i = 0; i < 4; i++)
   {
-    moveF(10);
-    delay(150);
     turnR(90);
-    delay(150);
-    turnR(90);
-    delay(150);
-    moveF(10);
-    delay(150);
-    turnL(90);
-    delay(150);
-    turnL(90);
-    delay(150);
+    delay(100);
+    moveF(20);
+    delay(100);
   }
+  turnL(90);
+  delay(100);
+  wallCalibrate();
+  delay(100);
+  for (int i = 0; i < 4; i++)
+  {
+    turnL(90);
+    delay(100);
+    moveF(20);
+    delay(100);
+  }
+  turnR(90);
+  delay(100);
+  wallCalibrate();
 }

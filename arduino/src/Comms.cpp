@@ -151,6 +151,9 @@ int calibrationHandler(int argument, uint8_t *response)
 {
   bool status = true;
 
+  wallCalibrate();
+  float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
+
   return status_serializer(status, response);
 }
 
