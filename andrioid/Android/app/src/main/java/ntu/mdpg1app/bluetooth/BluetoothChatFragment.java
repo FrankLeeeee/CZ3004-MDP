@@ -56,6 +56,8 @@ import com.example.android.common.logger.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+
 import ntu.mdpg1app.MainActivity;
 import ntu.mdpg1app.R;
 
@@ -373,6 +375,9 @@ public class BluetoothChatFragment extends Fragment {
                 mOutEditText.setText(mOutStringBuffer);
             }
         }
+
+        Log.d("Debug", "send message = " + message);
+
         return true;
     }
 

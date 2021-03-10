@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_config2;
 
     String robot_status = "Idle";
-    String dir = "North";
+    String dir = "NORTH";
     String xCoor = "1";
     String yCoor = "1";
     String p1 = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         loadGrid();
 
         //Query RPI to get robot info
-//        queryMessage();
+        queryMessage();
     }
 
     public void queryMessage(){
@@ -142,13 +142,16 @@ public class MainActivity extends AppCompatActivity {
                         String instructionValue = new JSONObject().put("step", 1).toString();
                         String instruction = "Forward\\" + instructionValue + ";";
                         outgoingMessage(instruction, false);
-                        loadGrid();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+
+                updateStatus("Forward");
             }
         });
+
         btn_left.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateLeft();
@@ -159,12 +162,14 @@ public class MainActivity extends AppCompatActivity {
                     String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnLeft\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
-                    loadGrid();
+                    updateStatus("Turn Left");
+
                 } catch(JSONException e){
                     e.printStackTrace();
                 }
             }
         });
+
         btn_right.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateRight();
@@ -175,7 +180,8 @@ public class MainActivity extends AppCompatActivity {
                     String instructionValue = new JSONObject().put("angle", 90).toString();
                     String instruction = "TurnRight\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
-                    loadGrid();
+                    updateStatus("Turn Right");
+
                 } catch(JSONException e){
                     e.printStackTrace();
                 }
@@ -195,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     String instructionValue = new JSONObject().put("mode", 0).toString();
-                    String instruction = "SetRobotStatus\\" + instructionValue + ";";
+                    String instruction = "SetRobotMode\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -219,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     try {
                         String instructionValue = new JSONObject().put("mode", 1).toString();
-                        String instruction = "SetRobotStatus\\" + instructionValue + ";";
+                        String instruction = "SetRobotMode\\" + instructionValue + ";";
                         outgoingMessage(instruction, false);
                     }catch(JSONException e) {
                         e.printStackTrace();
@@ -277,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
                 //send explore message
                 try {
                     String instructionValue = new JSONObject().put("mode", 0).toString();
-                    String instruction = "SetRobotStatus\\" + instructionValue + ";";
+                    String instruction = "SetRobotMode\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
                 } catch(JSONException e){
                     e.printStackTrace();
@@ -286,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
                 //send fastest path message
                 try {
                     String instructionValue = new JSONObject().put("mode", 1).toString();
-                    String instruction = "SetRobotStatus\\" + instructionValue + ";";
+                    String instruction = "SetRobotMode\\" + instructionValue + ";";
                     outgoingMessage(instruction, false);
                 }catch(JSONException e) {
                     e.printStackTrace();
@@ -296,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                 outgoingMessage("Terminate\\{};", false);
 
                 //send set waypoint message
-                outgoingMessage("SetWayPoint\\{" + 10 + "," + 10 + "};", false);   //(10, 10)
+                outgoingMessage("SetWayPoint\\{\"x\":" + 10 + ",\"y\":" + 10 + "};", false);   //(10, 10)
 
                 //send set startpoint message
                 outgoingMessage("SetStartPoint\\{" + 0 + "," + 0 + "};", false);   //(0, 0)
@@ -518,7 +524,7 @@ public class MainActivity extends AppCompatActivity {
             fragment.showChat(true);
 
             JSONObject jsonMsg, robotPos, mapInfo;
-            //JSONArray images;
+            JSONArray images = null;
 
             System.out.println(readMsg);
 
@@ -528,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
                 if(jsonMsg.has("pos")) {
                     robotPos = (JSONObject) jsonMsg.get("pos");
                     if (!robotPos.has("dir")) {
-                        dir = dir;
+                        dir = "NORTH";
                     } else {
                         dir = robotPos.get("dir").toString();
                     }
@@ -540,13 +546,15 @@ public class MainActivity extends AppCompatActivity {
                     mapInfo = (JSONObject) jsonMsg.get("map");
                     p1 = mapInfo.get("p1").toString();
                     p2 = mapInfo.get("p2").toString();
+                    Log.d("Debug", "p2 = " + p2);
                 }else{
                     p1 = p1;
                     p2 = p2;
                 }
 
-//                if(jsonMsg.has("images"))
-//                    images = jsonMsg.getJSONArray("images");
+                if(jsonMsg.has("images")) {
+                    images = jsonMsg.getJSONArray("images");
+                }
 
                 if(jsonMsg.has("robot_status"))
                     robot_status = jsonMsg.get("robot_status").toString();
@@ -606,28 +614,28 @@ public class MainActivity extends AppCompatActivity {
              * RPI send image ID
              * formerly BLOCK command
              */
-//            if(images.length() > 0){
-//
-//                for (int i=0; i<images.length(); i++) {
-//                    JSONObject tempImg;
-//                    try {
-//                        tempImg = images.getJSONObject(i);
-//                        imageID = Integer.toString((Integer.parseInt(tempImg.get("id").toString())+1)); //convert to integer, add 1, convert to string
-//                        imageX = tempImg.get("x").toString();
-//                        imageY = tempImg.get("y").toString();
-//
-//                        IDblock input = new IDblock(imageID, Integer.parseInt(imageX), Integer.parseInt(imageY));
-//                        Map.getInstance().addNumberedBlocks(input);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//
-//                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-//                    loadGrid();
-//                }
-//
-//            }
+            if(images != null){
+
+                for (int i=0; i<images.length(); i++) {
+                    JSONObject tempImg;
+                    try {
+                        tempImg = images.getJSONObject(i);
+                        String imageID = Integer.toString((Integer.parseInt(tempImg.get("id").toString())+1)); //convert to integer, add 1, convert to string
+                        String imageX = tempImg.get("x").toString();
+                        String imageY = tempImg.get("y").toString();
+
+                        IDblock input = new IDblock(imageID, Integer.parseInt(imageX), Integer.parseInt(imageY));
+                        Map.getInstance().addNumberedBlocks(input);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
+                }
+
+            }
 
             /**
              * RPI send robot status
@@ -788,10 +796,12 @@ public class MainActivity extends AppCompatActivity {
     //method to send out message to rpi thru bluetooth -kept for backward compatibility
     public boolean outgoingMessage(String sendMsg, boolean isQuery) {
         //return fragment.sendMsg("@t" + sendMsg + "!");
-        if(isQuery)
+        if(isQuery) {
             return fragment.sendMsg(sendMsg, true);
-        else
+        }
+        else {
             return fragment.sendMsg(sendMsg, false);
+        }
     }
 
     public boolean outgoingMessage(String sendMsg, int destination) {
@@ -842,7 +852,7 @@ public class MainActivity extends AppCompatActivity {
         if(menu_set_waypoint.isChecked()){
             Position p = new Position(posX,posY);
             WayPoint.getInstance().setPosition(p);
-            outgoingMessage("SetWayPoint\\{" + (int)posX + "," + (int)posY + "};", false);
+            outgoingMessage("SetWayPoint\\{\"x\":" + (int)posX + ",\"y\":" + (int)posY + "};", false);
 
 //            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
             //Make a prompt here to confirm

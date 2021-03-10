@@ -110,6 +110,7 @@ public class Map {
 		exploredTileBinary =exploredTileBinary.substring(2, exploredTileBinary.length()-2);
 
 		String obstacleBinary = HexBin.hexToBin(obstacleHex);
+		obstacleBinary =obstacleBinary.substring(2, obstacleBinary.length()-2);
 
 		for(int i =0;i<exploredTileBinary.length();i++){
 			char exploreBit = exploredTileBinary.charAt(i);
