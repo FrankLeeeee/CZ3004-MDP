@@ -42,11 +42,11 @@ void countTickL()
 
 //===== Parameters =====
 int delayms = 20;
-double motorfactorL = 1.01;    //6.2V 1.013
-//double motorfactorL = 1.03; //1.018, 6.19V not bad 
+double motorfactorL = 1.01; //6.2V 1.013
+//double motorfactorL = 1.03; //1.018, 6.19V not bad
 double motorfactorR = 0.99025; //6.14V 0.993   6.13V 0.95       0.99025
 //double motorfactorR = 1; //0.990008 6.19V not bad
-double motorfactor = 0.9975;    // 0.99775
+double motorfactor = 0.985; // 0.99775
 //0.99655 6.05V
 // double motorfactor = 0.998;
 // double motorfactor = 1;
@@ -54,7 +54,7 @@ bool brakes = false;
 double circumference = PI * 6;
 double distance_cm;                  //distance in cm that the robot need to move
 double dist_between_wheels = 17.315; // in cm
-// double dist_between_wheels = 17.1; // in cm
+// double dist_between_wheels = 17; // in cm
 
 //dist_between_wheels = 17.315, 6.18V, motorfactor = 0.9975;
 
@@ -196,7 +196,7 @@ void moveF(double dist)
     //   delay(10);
     // }
     md.setSpeeds(speedR, speedL);
-    delay(delayms+3);
+    delay(delayms + 3);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
     PIDInit();
@@ -212,7 +212,7 @@ void moveF(double dist)
         // Serial.println(curTickL);
         PID1.Compute();
         PID2.Compute();
-        md.setSpeeds(speedR, speedL);
+        md.setSpeeds(speedR * motorfactor, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
         getSensorReading();
@@ -228,7 +228,7 @@ void moveF(double dist)
         // Serial.println(pepe2);
     }
     md.setBrakes(400, 400);
-    if(((getDist2(get_curFiltered2()) < emergencyDistance+5) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance+5) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance+5) && getDist4(get_curFiltered4()) > 0))
+    if (((getDist2(get_curFiltered2()) < emergencyDistance + 5) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance + 5) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance + 5) && getDist4(get_curFiltered4()) > 0))
     {
         wallCalibrate();
     }
@@ -322,33 +322,36 @@ void moveB(double dist)
 void turnL(double angle)
 {
     // delayms = delayms / 4;
-    // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle+3.5);
+    TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
+    // TickL = TickR = 0;
+    targetTick = getTicksFromAngle(angle + 1.5); //3.5
     speedL = 250;
-    speedR = 250 * motorfactorL;
+    speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);
-    // delay(delayms);
-    // oldTickR = (double)TickR;
-    // oldTickL = (double)TickL;
-    // PIDInit();
+    delay(delayms + 3);
+    oldTickR = (double)TickR;
+    oldTickL = (double)TickL;
+    PIDInit();
     brakes = false;
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        // curTickR = TickR - oldTickR;
-        // curTickL = TickL - oldTickL;
-        // Serial.print(curTickR);
-        // Serial.print(" ");
-        // Serial.println(curTickL);
-        // PID1.Compute();
-        // PID2.Compute();
-        // md.setSpeeds(speedR * motorfactor, -speedL);
-        // oldTickR += curTickR;
-        // oldTickL += curTickL;
         if (targetTick - TickR < 125)
             md.setSpeeds(100 * motorfactorL, -100);
-        // delay(delayms);
+        else
+        {
+            curTickR = TickR - oldTickR;
+            curTickL = TickL - oldTickL;
+            // Serial.print(curTickR);
+            // Serial.print(" ");
+            // Serial.println(curTickL);
+            PID1.Compute();
+            PID2.Compute();
+            md.setSpeeds(speedR, -speedL);
+            oldTickR += curTickR;
+            oldTickL += curTickL;
+            delay(delayms);
+        }
         getSensorReading();
     }
     md.setBrakes(400, 400);
@@ -384,41 +387,42 @@ void turnL(double angle)
 
 void turnR(double angle)
 {
-    // // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle+5.1);
+    TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
+    // TickL = TickR = 0;
+    targetTick = getTicksFromAngle(angle + 2); //5.1
     speedL = 250;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
-    // delay(delayms);
-    // oldTickR = (double)TickR;
-    // oldTickL = (double)TickL;
-    // PIDInit();
+    delay(delayms + 3);
+    oldTickR = (double)TickR;
+    oldTickL = (double)TickL;
+    PIDInit();
     brakes = false;
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        // curTickR = TickR - oldTickR;
-        // curTickL = TickL - oldTickL;
-        // Serial.print(curTickR);
-        // Serial.print(" ");
-        // Serial.println(curTickL);
-        // PID1.Compute();
-        // PID2.Compute();
-        // md.setSpeeds(-speedR, speedL);
-        // oldTickR += curTickR;
-        // oldTickL += curTickL;
         if (targetTick - TickR < 125)
             md.setSpeeds(-100 * motorfactorR, 100);
-        // delay(delayms);
+        else
+        {
+            curTickR = TickR - oldTickR;
+            curTickL = TickL - oldTickL;
+            // Serial.print(curTickR);
+            // Serial.print(" ");
+            // Serial.println(curTickL);
+            PID1.Compute();
+            PID2.Compute();
+            md.setSpeeds(-speedR, speedL);
+            oldTickR += curTickR;
+            oldTickL += curTickL;
+            delay(delayms);
+        }
         getSensorReading();
     }
     md.setBrakes(400, 400);
     // delayms = delayms / 4;
 
-
     //TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-
 
     // TickL = TickR = 0;
     // targetTick = getTicksFromAngle(angle);
@@ -458,11 +462,13 @@ void brake()
     brakes = true;
 }
 
-double calibrationTolerence = 0.4;
+double calibrationTolerence = 0.3;
+double calibrationBase = -0.15;
 // double calibrationTolerence = 0.6;
 // double calibrationTolerence = 0.75;
 // double sensorDiff = 0;
-double calibrationBase = -0.2;
+double calibrationToleranceCCW = 0.3;
+double calibrationBaseCCW = -0.15;
 int recursionCount = 5;
 
 void wallCalibrate()
@@ -483,20 +489,20 @@ void wallCalibrate()
         // Serial.println(getDist4(getAvg4()));
         return;
     }
-
-    if (sensorL < sensorR) //if Sensor 2(L) nearer than Sensor 4(R)
+    else if (diff < 0) //if Sensor 2(L) nearer than Sensor 4(R)
     {
         // Serial.print("CCW");
         CCW_Calibrate();
     }
-    else if (sensorR < sensorL) //if Sensor 4(R) nearer than Sensor 2(L)
+    else if (diff > 0) //if Sensor 4(R) nearer than Sensor 2(L)
     {
         // Serial.print("CW");
         CW_Calibrate();
     }
     md.setBrakes(400, 400);
     recursionCount--;
-    if(recursionCount == 0){
+    if (recursionCount == 0)
+    {
         return;
     }
     wallCalibrate();
@@ -506,7 +512,7 @@ void wallCalibrate()
 
 void CCW_Calibrate()
 {
-    int speed = 80;
+    int speed = 70;
     double readingsL;
     double readingsR;
     md.setSpeeds(speed * motorfactor, -speed);
@@ -524,7 +530,7 @@ void CCW_Calibrate()
         // Serial.print(readingsR);
         // Serial.print(" ");
         // Serial.println(diff);
-        if ((diff > calibrationBase) && (diff < (calibrationBase + calibrationTolerence))) //if diff between readings is close to 0
+        if ((diff > calibrationBaseCCW) && (diff < (calibrationBaseCCW + calibrationToleranceCCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
@@ -537,7 +543,7 @@ void CCW_Calibrate()
 
 void CW_Calibrate()
 {
-    int speed = 80;
+    int speed = 70;
     double readingsL;
     double readingsR;
     md.setSpeeds(-speed * motorfactor, speed);
