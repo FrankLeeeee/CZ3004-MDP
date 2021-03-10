@@ -46,7 +46,7 @@ double motorfactorL = 1.01; //6.2V 1.013
 //double motorfactorL = 1.03; //1.018, 6.19V not bad
 double motorfactorR = 0.99025; //6.14V 0.993   6.13V 0.95       0.99025
 //double motorfactorR = 1; //0.990008 6.19V not bad
-double motorfactor = 0.985; // 0.99775
+double motorfactor = 0.99; // 0.99775
 //0.99655 6.05V
 // double motorfactor = 0.998;
 // double motorfactor = 1;
@@ -324,7 +324,7 @@ void turnL(double angle)
     // delayms = delayms / 4;
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     // TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle + 1.5); //3.5
+    targetTick = getTicksFromAngle(angle + 2.1); //3.5
     speedL = 250;
     speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);

@@ -20,8 +20,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  //loopSeq();
-  readInput();
+  loopSeq();
+  //readInput();
 }
 
 //===== Inputs =====
@@ -92,6 +92,7 @@ void readInput()
 
 void testFunction()
 {
+  // while(1){
   //   turnL(90);
   // delay(250);
   //   turnL(90);
@@ -100,6 +101,7 @@ void testFunction()
   // delay(250);
   //   turnL(90);
   // delay(250);
+  // }
 
   turnL(90);
   delay(250);
