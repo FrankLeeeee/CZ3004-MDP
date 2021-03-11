@@ -126,10 +126,10 @@ void moveF(double dist)
         getSensorReading();
         getSensorReading();
         // Remember to re-enable after fastest path
-        // if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) || ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) || ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
-        // {
-        //     brakes = emergencyStop();
-        // }
+        if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0)        )//     || ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) || ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
+        {
+            brakes = emergencyStop();
+        }
         delay(delayms);
         // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
         // Serial.print("Time taken (ms): ");

@@ -53,8 +53,8 @@ void readInput()
       //Serial.println(getAvg3());
       Serial.print(getDist1(getAvg1()));
       Serial.print(" ");
-      Serial.print(getDist2(getAvg2()));
-      Serial.print(" ");
+      // Serial.print(getDist2(getAvg2()));
+      // Serial.print(" ");
       Serial.println(getDist4(getAvg4()));
       break;
     case 'f':
