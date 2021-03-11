@@ -41,9 +41,9 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
             self._logger.error(f'Invalid request: {request}, step should be less than or equal to 255.')
             return MetricResponse(status=False)
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
-        await self.context.set_robot_status(RobotStatus.FORWARD)
+        self.context.set_robot_status(RobotStatus.FORWARD)
         response = await serial_client.Forward(request)
-        await self.context.set_robot_status(RobotStatus.STOP)
+        self.context.set_robot_status(RobotStatus.STOP)
         await self.context.set_forward(step=request.step)
         return response
 
@@ -51,19 +51,19 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         if request.angle > 180:
             self._logger.error(f'Invalid request: {request}, angle should be less than or equal to 180.')
             return MetricResponse(status=False)
-        await self.context.set_robot_status(RobotStatus.TURN_LEFT)
+        self.context.set_robot_status(RobotStatus.TURN_LEFT)
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
         response = await serial_client.TurnLeft(request)
-        await self.context.set_robot_status(RobotStatus.STOP)
-        await self.context.set_turn(angle=-request.angle)
+        self.context.set_robot_status(RobotStatus.STOP)
+        self.context.set_turn(angle=-request.angle)
         return response
 
     async def TurnRight(self, request, context):
-        await self.context.set_robot_status(RobotStatus.TURN_RIGHT)
+        self.context.set_robot_status(RobotStatus.TURN_RIGHT)
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
         response = await serial_client.TurnRight(request)
-        await self.context.set_robot_status(RobotStatus.STOP)
-        await self.context.set_turn(angle=request.angle)
+        self.context.set_robot_status(RobotStatus.STOP)
+        self.context.set_turn(angle=request.angle)
         return response
 
     async def Calibrate(self, request, context):
@@ -85,12 +85,12 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         response = await serial_client.Terminate(request)
         return response
 
-    async def SetMap(self, request, context):
-        await self.context.set_map(request)
+    def SetMap(self, request, context):
+        self.context.set_map(request)
         return Status(status=True)
 
-    async def GetWayPoint(self, request, context):
-        return await self.context.get_way_point()
+    def GetWayPoint(self, request, context):
+        return self.context.get_way_point()
 
 
 class BackendRPCServer(GRPCAioServer):

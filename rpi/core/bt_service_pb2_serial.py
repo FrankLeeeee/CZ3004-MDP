@@ -54,8 +54,13 @@ def add_bt_rpc_servicer_to_server(servicer, channel):
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.RobotMode),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
-        'Terminate': core.serial.call.unary_unary_rpc_method_handler(
-            servicer.Terminate,
+        'Reset': core.serial.call.unary_unary_rpc_method_handler(
+            servicer.Reset,
+            request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
+            response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
+        ),
+        'TerminateEx': core.serial.call.unary_unary_rpc_method_handler(
+            servicer.TerminateEx,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         )
@@ -129,7 +134,14 @@ class BtRPCServiceServicer(abc.ABC):
         raise NotImplementedError('Method not implemented')
 
     @abc.abstractmethod
-    def Terminate(
+    def Reset(
+            self,
+            request: core_dot_message__pb2.EmptyRequest,
+    ) -> core_dot_message__pb2.Status:
+        raise NotImplementedError('Method not implemented')
+
+    @abc.abstractmethod
+    def TerminateEx(
             self,
             request: core_dot_message__pb2.EmptyRequest,
     ) -> core_dot_message__pb2.Status:
