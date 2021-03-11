@@ -16,7 +16,7 @@ double speedR, speedL;
 
 //===== Encoders =====
 double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-long TickL = 0, TickR = 0;
+volatile long TickL = 0, TickR = 0;
 double targetTick;
 
 void EncoderInit()
@@ -63,11 +63,11 @@ double dist_between_wheels = 17.315; // in cm
 
 //===== PID =====
 //10, 1, 0.25
-double kp = 10, ki = 7.5, kd = 2;
+double kp = 9.5, ki = 1.2, kd = 0;
 PID PID1(&curTickR, &speedR, &curTickL, kp, ki, kd, DIRECT);
 // PID PID2(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 
-double kp_t = 10, ki_t = 4, kd_t = 0;
+double kp_t = 10, ki_t = 0, kd_t = 0;
 PID PIDL(&curTickR, &speedR, &curTickL, kp_t, ki_t, kd_t, DIRECT);
 PID PIDR(&curTickL, &speedL, &curTickR, kp_t, ki_t, kd_t, DIRECT);
 
@@ -266,9 +266,9 @@ void moveFslow(double dist)
         //  unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
+        // Serial.print(curTickR);
+        // Serial.print(" ");
+        // Serial.println(curTickL);
         // PID1.Compute();
         // PID2.Compute();
         md.setSpeeds(speedR, speedL);
@@ -387,9 +387,9 @@ void moveB(double dist)
     {
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
-        Serial.print(curTickR);
-        Serial.print(" ");
-        Serial.println(curTickL);
+        // Serial.print(curTickR);
+        // Serial.print(" ");
+        // Serial.println(curTickL);
         PID1.Compute();
         // PID2.Compute();
         md.setSpeeds(-speedR * motorfactor, -speedL);
@@ -461,6 +461,8 @@ void turnL(double angle)
             delay(delayms);
         }
         getSensorReading();
+        getSensorReading();
+        getSensorReading();
     }
     md.setBrakes(400, 400);
     // delayms = delayms * 4;
@@ -525,6 +527,8 @@ void turnR(double angle)
             oldTickL += curTickL;
             delay(delayms);
         }
+        getSensorReading();
+        getSensorReading();
         getSensorReading();
     }
     md.setBrakes(400, 400);
@@ -722,7 +726,7 @@ void calibrateProc()
 {
     wallCalibrate();
     wallDistCalibrate();
-    moveFslow(0.25);
+    moveFslow(0.3);
     wallCalibrate();
 }
 

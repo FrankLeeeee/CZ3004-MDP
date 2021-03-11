@@ -114,6 +114,7 @@ int forwardHandler(int argument, uint8_t *response)
   bool status = true;
 
   moveF(argument);
+  delay(300);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
@@ -124,6 +125,7 @@ int turnLeftHandler(int argument, uint8_t *response)
   bool status = true;
 
   turnL(argument);
+  delay(300);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
@@ -134,6 +136,7 @@ int turnRightHandler(int argument, uint8_t *response)
   bool status = true;
 
   turnR(argument);
+  delay(300);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
@@ -151,7 +154,8 @@ int calibrationHandler(int argument, uint8_t *response)
 {
   bool status = true;
 
-  wallCalibrate();
+  calibrateProc();
+  delay(300);
   float data_values[] = {(float)getAvg1(), (float)getAvg2(), (float)getAvg3(), (float)getAvg4(), (float)getAvg5(), (float)getAvg6()};
 
   return status_serializer(status, response);

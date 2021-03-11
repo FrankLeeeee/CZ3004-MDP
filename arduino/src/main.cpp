@@ -20,7 +20,7 @@ void setup()
 
 void loop()
 {
-  //loopSeq();
+  // loopSeq();
   readInput();
 }
 
@@ -34,8 +34,7 @@ void readInput()
     switch (inByte)
     {
     case 'w':
-      delay(3000);
-      moveF(20);
+      moveF(1);
       break;
     case 's':
       moveB(1);
