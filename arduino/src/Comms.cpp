@@ -19,8 +19,6 @@
 
 #define PARSE_MSG_BUFFER_SIZE 64
 
-// resend = 0x00 echo = 0x01 forward = 0x02 left = 0x03 right = 0x04 getmetrics =0x05 getcalibration = 0x06 terminate = 0x07
-
 String message;
 const char c_separator = ';';
 const char c_separator_sequence[] = {';', ';', ';', ';', ';'};
