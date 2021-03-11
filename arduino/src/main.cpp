@@ -34,7 +34,7 @@ void readInput()
     switch (inByte)
     {
     case 'w':
-    delay(3000);
+      delay(3000);
       moveF(20);
       break;
     case 's':
@@ -65,7 +65,7 @@ void readInput()
       //receiveMessage(rpi_receive1);
       break;
     case 'r':
-      wallCalibrate();
+      calibrateProc();
       break;
     case 'p':
       delay(3000);
@@ -92,50 +92,60 @@ void readInput()
 
 void testFunction()
 {
-  turnL(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnL(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnL(90);
-  delay(500);
-  turnL(90);
-
   // while(1){
-  //   turnL(90);
-  // delay(250);
-  //   turnL(90);
-  // delay(250);
-  //   turnL(90);
-  // delay(250);
-  //   turnL(90);
-  // delay(250);
+  //   turnR(90);
+  // delay(500);
+  //   turnR(90);
+  // delay(500);
+  //   turnR(90);
+  // delay(500);
+  //   turnR(90);
+  // delay(500);
   // }
 
-  // turnL(90);
-  // delay(250);
-  // wallCalibrate();
-  // delay(250);
-  // turnR(90);
-  // delay(250);
-  // moveF(20);
-  // delay(250);
-  // turnL(90);
-  // delay(250);
-  // wallCalibrate();
-  // delay(250);
-  // turnL(90);
-  // delay(250);
-  // moveF(20);
-  // delay(250);
-  // turnR(90);
-  // delay(250);
-  // wallCalibrate();
-  // delay(250);
-  // turnR(90);
-  // delay(250);
+  turnL(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnL(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnL(90);
+  delay(500);
+  moveF(20);
+  delay(500);
+  turnL(90);
+  delay(500);
+  moveF(20);
+  delay(500);
+  turnL(90);
+  delay(500);
+  moveF(20);
+  delay(500);
+  turnL(90);
+  delay(500);
+  moveF(20);
+  delay(500);
+  turnR(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnR(90);
+  delay(500);
 
+  // moveF(20);
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // calibrateProc();
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // moveF(20);
+  // delay(500);
+  // turnR(90);
+  // delay(500);
+  // turnR(90);
+  // delay(500);
 }

@@ -16,7 +16,7 @@ double speedR, speedL;
 
 //===== Encoders =====
 double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-volatile long TickL = 0, TickR = 0;
+long TickL = 0, TickR = 0;
 double targetTick;
 
 void EncoderInit()
@@ -42,13 +42,14 @@ void countTickL()
 
 //===== Parameters =====
 int delayms = 20;
-double motorfactorL = 1.01; //6.2V 1.013
+double motorfactorL = 1; //6.2V 1.013
 //double motorfactorL = 1.03; //1.018, 6.19V not bad
-double motorfactorR = 0.99025; //6.14V 0.993   6.13V 0.95       0.99025
+double motorfactorR = 1; //6.14V 0.993   6.13V 0.95       0.99025
 //double motorfactorR = 1; //0.990008 6.19V not bad
-double motorfactor = 0.99; // 0.99775
+// double motorfactor = 0.966; // 0.99775
+double motorfactor = 1;
 
-double motorfactorB = 0.99; // 0.99775
+double motorfactorB = 1; // 0.99775
 //0.99655 6.05V
 // double motorfactor = 0.998;
 // double motorfactor = 1;
@@ -62,33 +63,39 @@ double dist_between_wheels = 17.315; // in cm
 
 //===== PID =====
 //10, 1, 0.25
-double kp = 10, ki = 1, kd = 0.25;
+double kp = 10, ki = 7.5, kd = 2;
 PID PID1(&curTickR, &speedR, &curTickL, kp, ki, kd, DIRECT);
-PID PID2(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
+// PID PID2(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 
-double kp_t = 1, ki_t = 0.1, kd_t = 0.25;
-PID PIDT1(&curTickR, &speedR, &curTickL, kp_t, ki_t, kd_t, DIRECT);
-PID PIDT2(&curTickL, &speedL, &curTickR, kp_t, ki_t, kd_t, DIRECT);
+double kp_t = 10, ki_t = 4, kd_t = 0;
+PID PIDL(&curTickR, &speedR, &curTickL, kp_t, ki_t, kd_t, DIRECT);
+PID PIDR(&curTickL, &speedL, &curTickR, kp_t, ki_t, kd_t, DIRECT);
 
 void PIDInit()
 {
     PID1.SetOutputLimits(-400, 400);
     PID1.SetSampleTime(delayms);
     PID1.SetMode(AUTOMATIC);
-    PID2.SetOutputLimits(-400, 400);
-    PID2.SetSampleTime(delayms);
-    PID2.SetMode(AUTOMATIC);
+    // PID2.SetOutputLimits(-400, 400);
+    // PID2.SetSampleTime(delayms);
+    // PID2.SetMode(AUTOMATIC);
+    PIDL.SetOutputLimits(-400, 400);
+    PIDL.SetSampleTime(delayms);
+    PIDL.SetMode(AUTOMATIC);
+    PIDR.SetOutputLimits(-400, 400);
+    PIDR.SetSampleTime(delayms);
+    PIDR.SetMode(AUTOMATIC);
 }
 
-void PIDTInit()
-{
-    PID1.SetOutputLimits(-400, 400);
-    PID1.SetSampleTime(delayms);
-    PID1.SetMode(AUTOMATIC);
-    PID2.SetOutputLimits(-400, 400);
-    PID2.SetSampleTime(delayms);
-    PID2.SetMode(AUTOMATIC);
-}
+// void PIDTInit()
+// {
+//     PID1.SetOutputLimits(-400, 400);
+//     PID1.SetSampleTime(delayms);
+//     PID1.SetMode(AUTOMATIC);
+//     PID2.SetOutputLimits(-400, 400);
+//     PID2.SetSampleTime(delayms);
+//     PID2.SetMode(AUTOMATIC);
+// }
 
 //===== Conversion Functions =====
 
@@ -113,7 +120,7 @@ void moveFstopWall(double distToStop)
     // distToStop = 17;
     // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     speedL = 100;
-    speedR = speedL * motorfactor;
+    speedR = speedL;
     md.setSpeeds(speedR, speedL);
     // delay(delayms);
     // oldTickR = (double)TickR;
@@ -213,8 +220,8 @@ void moveF(double dist)
         // Serial.print(" ");
         // Serial.println(curTickL);
         PID1.Compute();
-        PID2.Compute();
-        md.setSpeeds(speedR * motorfactor, speedL);
+        // PID2.Compute();
+        md.setSpeeds(speedR, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
         getSensorReading();
@@ -232,7 +239,7 @@ void moveF(double dist)
     md.setBrakes(400, 400);
     if (((getDist2(get_curFiltered2()) < emergencyDistance + 5) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance + 5) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance + 5) && getDist4(get_curFiltered4()) > 0))
     {
-        wallCalibrate();
+        calibrateProc();
     }
 }
 
@@ -241,8 +248,8 @@ void moveFslow(double dist)
     dist = blocksToCm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
-    speedL = 80;
-    speedR = speedL * motorfactor;
+    speedL = 100;
+    speedR = speedL;
     // for(int i = 0; i<350 ; i+=20){
     //   md.setSpeeds(i*motorfactor,i);
     //   delay(10);
@@ -291,7 +298,7 @@ void moveBstopWall(double distToStop)
     // TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     // distToStop = 12;
     speedL = 100;
-    speedR = speedL * motorfactorB;
+    speedR = speedL;
     md.setSpeeds(-speedR, -speedL);
     // delay(delayms);
     // oldTickR = (double)TickR;
@@ -384,7 +391,7 @@ void moveB(double dist)
         Serial.print(" ");
         Serial.println(curTickL);
         PID1.Compute();
-        PID2.Compute();
+        // PID2.Compute();
         md.setSpeeds(-speedR * motorfactor, -speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
@@ -425,8 +432,8 @@ void turnL(double angle)
     // delayms = delayms / 4;
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     // TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle + 2.1); //3.5
-    speedL = 250;
+    targetTick = getTicksFromAngle(angle - 2.7); //+2.1, speed 250, 6.1x V
+    speedL = 380;
     speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);
     delay(delayms + 3);
@@ -446,8 +453,8 @@ void turnL(double angle)
             // Serial.print(curTickR);
             // Serial.print(" ");
             // Serial.println(curTickL);
-            PID1.Compute();
-            PID2.Compute();
+            PIDL.Compute();
+            // PID2.Compute();
             md.setSpeeds(speedR, -speedL);
             oldTickR += curTickR;
             oldTickL += curTickL;
@@ -490,8 +497,8 @@ void turnR(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     // TickL = TickR = 0;
-    targetTick = getTicksFromAngle(angle + 2); //5.1
-    speedL = 250;
+    targetTick = getTicksFromAngle(angle - 3.1); //+2, speed 250, 6.1x V
+    speedL = 380;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
     delay(delayms + 3);
@@ -511,8 +518,8 @@ void turnR(double angle)
             // Serial.print(curTickR);
             // Serial.print(" ");
             // Serial.println(curTickL);
-            PID1.Compute();
-            PID2.Compute();
+            PIDR.Compute();
+            // PID2.Compute();
             md.setSpeeds(-speedR, speedL);
             oldTickR += curTickR;
             oldTickL += curTickL;
@@ -570,7 +577,7 @@ double calibrationBase = -0.15;
 // double sensorDiff = 0;
 double calibrationToleranceCCW = 0.3;
 double calibrationBaseCCW = -0.15;
-int recursionCount = 5;
+int recursionCount = 4;
 
 void wallCalibrate()
 {
@@ -608,7 +615,7 @@ void wallCalibrate()
     }
     wallCalibrate();
     wallCalibrate();
-    recursionCount = 5;
+    recursionCount = 4;
 }
 
 void CCW_Calibrate()
@@ -692,13 +699,15 @@ void wallDistCalibrate()
     {
         return;
     }
-    else if(FL > calibrationDist && FR > calibrationDist){
+    else if (FL > calibrationDist && FR > calibrationDist)
+    {
         moveFstopWall(calibrationDist);
     }
-    else if(FL < calibrationDist && FR < calibrationDist){
+    else if (FL < calibrationDist && FR < calibrationDist)
+    {
         moveBstopWall(calibrationDist);
     }
-    md.setBrakes(400,400);
+    md.setBrakes(400, 400);
     recursionCount--;
     if (recursionCount == 0)
     {
@@ -706,14 +715,14 @@ void wallDistCalibrate()
     }
     delay(100);
     wallDistCalibrate();
-    recursionCount = 5;
+    recursionCount = 4;
 }
 
 void calibrateProc()
 {
     wallCalibrate();
     wallDistCalibrate();
-    moveFslow(0.5);
+    moveFslow(0.25);
     wallCalibrate();
 }
 
