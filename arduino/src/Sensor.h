@@ -2,6 +2,7 @@
 #define Sensor_H
 
 int distToBlocks(double dist);
+void sensorInit();
 void getSensorReading();
 double get_curFiltered1();
 double get_curFiltered2();

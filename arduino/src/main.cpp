@@ -13,15 +13,15 @@ void setup()
 {
   Serial.begin(115200);
   EncoderInit();
+  sensorInit();
   while (!Serial)
     Serial.flush();
 }
 
 void loop()
 {
-  getSensorReading();
-  loopSeq();
-  //readInput();
+  //loopSeq();
+  readInput();
 }
 
 //===== Inputs =====
@@ -92,6 +92,18 @@ void readInput()
 
 void testFunction()
 {
+  turnL(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnL(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnL(90);
+  delay(500);
+  turnL(90);
+
   // while(1){
   //   turnL(90);
   // delay(250);
@@ -103,27 +115,27 @@ void testFunction()
   // delay(250);
   // }
 
-  turnL(90);
-  delay(250);
-  wallCalibrate();
-  delay(250);
-  turnR(90);
-  delay(250);
-  moveF(20);
-  delay(250);
-  turnL(90);
-  delay(250);
-  wallCalibrate();
-  delay(250);
-  turnL(90);
-  delay(250);
-  moveF(20);
-  delay(250);
-  turnR(90);
-  delay(250);
-  wallCalibrate();
-  delay(250);
-  turnR(90);
-  delay(250);
+  // turnL(90);
+  // delay(250);
+  // wallCalibrate();
+  // delay(250);
+  // turnR(90);
+  // delay(250);
+  // moveF(20);
+  // delay(250);
+  // turnL(90);
+  // delay(250);
+  // wallCalibrate();
+  // delay(250);
+  // turnL(90);
+  // delay(250);
+  // moveF(20);
+  // delay(250);
+  // turnR(90);
+  // delay(250);
+  // wallCalibrate();
+  // delay(250);
+  // turnR(90);
+  // delay(250);
 
 }

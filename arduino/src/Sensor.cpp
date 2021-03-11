@@ -28,11 +28,8 @@ int distToBlocks(double dist)
 
 //===== Sensors =====
 
-void getSensorReading()
+void sensorInit()
 {
-    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-
-    //Change according to pin (A0 = PS1, A1 = PS2, etc)
     V1 = analogRead(A0); // Read voltage
     V2 = analogRead(A1);
     V3 = analogRead(A2);
@@ -67,6 +64,49 @@ void getSensorReading()
 
     if (oldFiltered6 == -1) // sanity check for t=0
         oldFiltered6 = V6;
+    curFiltered6 = filter(V6, oldFiltered6); // Exponential filter
+    oldFiltered6 = curFiltered6;             // get old value
+}
+
+void getSensorReading()
+{
+    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
+
+    //Change according to pin (A0 = PS1, A1 = PS2, etc)
+    V1 = analogRead(A0); // Read voltage
+    V2 = analogRead(A1);
+    V3 = analogRead(A2);
+    V4 = analogRead(A3);
+    V5 = analogRead(A4);
+    V6 = analogRead(A5);
+
+    // if (oldFiltered1 == -1) // sanity check for t=0
+    //     oldFiltered1 = V1;
+    curFiltered1 = filter(V1, oldFiltered1); // Exponential filter
+    oldFiltered1 = curFiltered1;             // get old value
+
+    // if (oldFiltered2 == -1) // sanity check for t=0
+    //     oldFiltered2 = V2;
+    curFiltered2 = filter(V2, oldFiltered2); // Exponential filter
+    oldFiltered2 = curFiltered2;             // get old value
+
+    // if (oldFiltered3 == -1) // sanity check for t=0
+    //     oldFiltered3 = V3;
+    curFiltered3 = filter(V3, oldFiltered3); // Exponential filter
+    oldFiltered3 = curFiltered3;             // get old value
+
+    // if (oldFiltered4 == -1) // sanity check for t=0
+    //     oldFiltered4 = V4;
+    curFiltered4 = filter(V4, oldFiltered4); // Exponential filter
+    oldFiltered4 = curFiltered4;             // get old value
+
+    // if (oldFiltered5 == -1) // sanity check for t=0
+    //     oldFiltered5 = V5;
+    curFiltered5 = filter(V5, oldFiltered5); // Exponential filter
+    oldFiltered5 = curFiltered5;             // get old value
+
+    // if (oldFiltered6 == -1) // sanity check for t=0
+    //     oldFiltered6 = V6;
     curFiltered6 = filter(V6, oldFiltered6); // Exponential filter
     oldFiltered6 = curFiltered6;             // get old value
 
