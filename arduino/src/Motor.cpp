@@ -53,14 +53,14 @@ double dist_between_wheels = 17.315; // in cm
 
 //===== PID =====
 //10, 1, 0.25
-double kp = 9.5, ki = 1.2, kd = 0;
+double kp = 9.5, ki = 1.2, kd = 0.05;
 PID PID1(&curTickR, &speedR, &curTickL, kp, ki, kd, DIRECT);
 // PID PID2(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 
-double kp_l = 10, ki_l = 0, kd_l = 0;
+double kp_l = 10, ki_l = 1, kd_l = 0.05;
 PID PIDL(&curTickR, &speedR, &curTickL, kp_l, ki_l, kd_l, DIRECT);
 
-double kp_r = 10, ki_r = 0, kd_r = 0;
+double kp_r = 10, ki_r = 1, kd_r = 0.05;
 PID PIDR(&curTickL, &speedL, &curTickR, kp_r, ki_r, kd_r, DIRECT);
 
 void PIDInit()
@@ -125,10 +125,11 @@ void moveF(double dist)
         getSensorReading();
         getSensorReading();
         getSensorReading();
-        if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) || ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) || ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
-        {
-            brakes = emergencyStop();
-        }
+        // Remember to re-enable after fastest path
+        // if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) || ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) || ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
+        // {
+        //     brakes = emergencyStop();
+        // }
         delay(delayms);
         // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
         // Serial.print("Time taken (ms): ");

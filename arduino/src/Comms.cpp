@@ -1,9 +1,6 @@
 #include "Motor.h"
 #include "Sensor.h"
 #include "Comms.h"
-#include "message.pb.h"
-#include "pb_encode.h"
-#include "pb_decode.h"
 #include "stdint.h"
 #include "Arduino.h"
 #include <ArduinoJson.h>

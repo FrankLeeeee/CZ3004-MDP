@@ -20,8 +20,8 @@ void setup()
 
 void loop()
 {
-  // loopSeq();
-  readInput();
+  loopSeq();
+  // readInput();
 }
 
 //===== Inputs =====
