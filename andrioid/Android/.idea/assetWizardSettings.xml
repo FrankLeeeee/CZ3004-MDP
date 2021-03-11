@@ -163,7 +163,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="imagePath" value="C:\Users\jingh\Desktop\MDP_image\go.PNG" />
+                                                <entry key="imagePath" value="C:\Users\jingh\Desktop\20210311_141954.jpg" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -197,8 +197,8 @@
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
                                       <entry key="backgroundColor" value="000000" />
-                                      <entry key="imageAsset" value="C:\Users\jingh\Desktop\MDP_image\go.PNG" />
-                                      <entry key="outputName" value="go" />
+                                      <entry key="imageAsset" value="C:\Users\jingh\Desktop\20210311_141954.jpg" />
+                                      <entry key="outputName" value="app_logo" />
                                     </map>
                                   </option>
                                 </PersistentState>
