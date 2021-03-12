@@ -6,13 +6,10 @@ ON LINUX:
 1) git clone this repository
 2) Make sure you have **CMAKE Version >= 3.12 **
 3) In `Makefile` change your build configurations
- 
- 
- 
- __Without gpu build:__
+* __Without gpu build:__
       - set OPENCV = 1
       - LIBSO = 1
-__GPU Build:__
+* __GPU Build:__
       - set OPENCV = 1
       - LIBSO = 1
       - CUDNN_HALF =1
