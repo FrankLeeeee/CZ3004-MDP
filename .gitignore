@@ -1,3 +1,5 @@
 #jpg files
 *.jpg
-./venv
+./venv/
+./image_recognition/darknet/images_taken/
+./image_recognition/darknet/images_detected/
