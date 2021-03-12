@@ -20,6 +20,6 @@ ON LINUX:
      1)  CUDNN = 1
      1)  GPU = 1
 5) Cmake from darknet directory `cd ./darknet`
-6) `run_video.py` runs inference on raw images from `images_taken\` folder and writes the image with the bounding box with * confidence level >0.75 * into `images_detected\` folder 
-7)  a `.txt` file is also generated in the `images_detected\` folder that is in this format `class_id-1`,`bbox_x`, `bbox_y`, `bbox_w`, `bbox_h`,`confidence`
+6) `Prediction.py` runs inference on raw images in numpy array format and returns and writes the image with the bounding box with * confidence level >0.5 * into `images_detected\` folder 
+7) predict() in Prediction class returns the `class_id`,`(x_coord,y_coord,width_bbox,h_bbox)`,`confidence` of the prediction
 8) For more information visit Alexey's repository on [Darknet](https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-cmake)
