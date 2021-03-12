@@ -1,1 +1,1 @@
-The detect function is run on detect.py not main.py currently
+#HOW TO USE#
