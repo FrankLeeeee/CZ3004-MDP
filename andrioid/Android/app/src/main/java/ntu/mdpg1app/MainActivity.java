@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_forward;
     Button btn_left;
     Button btn_right;
+    Button btn_resetFP;
     Button btn_terminate;
     Button btn_explr;
     Button btn_fastest;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         btn_forward = (Button) findViewById(R.id.btn_forward);
         btn_left= (Button) findViewById(R.id.btn_left);
         btn_right= (Button) findViewById(R.id.btn_right);
+        btn_resetFP = (Button) findViewById(R.id.btn_reset);
         btn_terminate= (Button) findViewById(R.id.btn_terminate);
         btn_explr= (Button) findViewById(R.id.btn_explr);
         btn_fastest= (Button) findViewById(R.id.btn_fastest);
@@ -185,6 +187,25 @@ public class MainActivity extends AppCompatActivity {
                 } catch(JSONException e){
                     e.printStackTrace();
                 }
+            }
+        });
+
+        btn_resetFP.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String instruction = "Reset\\{};";
+                Robot r = Robot.getInstance();
+                r.setPosX(1);
+                r.setPosY(1);
+                r.setDirection("NORTH");
+                WayPoint.getInstance().setPosition(null);
+                p2 = "0000000000000000000000000000000000000000000000000000000000000000000000000000";
+                Map.getInstance().setMapJson(p2);
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
+                }
+                outgoingMessage(instruction, false);
+                Log.d("Debug", "reset fp pressed");
+                updateStatus(STATUS_RESET_FP);
             }
         });
 
@@ -512,6 +533,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String STATUS_EX_DESC = "Moving (Exploring)";
     public static final String STATUS_FP_DESC = "Moving (Fastest Path)";
     public static final String STATUS_TERMINATE_DESC = "Terminated";
+    public static final String STATUS_RESET_FP = "Reset FP";
 
     //method is ran when new message comes in
     @SuppressLint("LongLogTag")

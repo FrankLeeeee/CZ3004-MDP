@@ -457,13 +457,41 @@ public class BluetoothChatFragment extends Fragment {
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
-                    mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    if(writeMessage.contains("Echo\\")){
+                        String toDecode = writeMessage.substring(17, writeMessage.length()-3);
+                        System.out.println("toDecode = " + toDecode);
+                        byte[] data = Base64.decode(toDecode, Base64.NO_WRAP);
+                        String decoded = null;
+                        try {
+                            decoded = new String(data, "UTF-8");
+                            System.out.println("decoded = " + decoded);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        mConversationArrayAdapter.add("Me: " + "Echo\\{\"message\":" + decoded);
+                    }
+                    else
+                        mConversationArrayAdapter.add("Me:  " + writeMessage);
                     break;
                 case Constants.MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    if(readMessage.contains("Echo\\")){
+                        String toDecode = readMessage.substring(17, readMessage.length()-3);
+                        System.out.println("toDecode = " + toDecode);
+                        byte[] data = Base64.decode(toDecode, Base64.NO_WRAP);
+                        String decoded = null;
+                        try {
+                            decoded = new String(data, "UTF-8");
+                            System.out.println("decoded = " + decoded);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        mConversationArrayAdapter.add(mConnectedDeviceName + "Echo\\{\"message\":" + decoded);
+                    }
+                    else
+                        mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     //READ MESSAGE AT MAIN ACTIVITY
                     ((MainActivity)getActivity()).incomingMessage(readMessage);
                     break;
