@@ -3,7 +3,7 @@
 ## DOWNLOAD AND INSTALLATION
 
 ON LINUX:
-1) git clone this repository
+1) git clone the repository https://github.com/AlexeyAB
 2) pip install OPENCV latest
 3) Make sure you have **CMAKE Version >= 3.12 **
 4) In `Makefile` change your build configurations
