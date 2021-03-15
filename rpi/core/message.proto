@@ -1,0 +1,95 @@
+syntax = "proto3";
+
+
+message EchoRequest {
+  bytes message = 1;
+}
+
+message EchoResponse {
+  bytes message = 1;  // bytes -> base64 encoded
+  bool status = 2;
+}
+
+message MoveRequest {
+  uint32 step = 1;
+}
+
+message Status {
+  bool status = 1;
+}
+
+message EmptyRequest {
+}
+
+message TurnRequest {
+  uint32 angle = 1;
+}
+
+message RobotMode {
+  enum Mode {
+    EXPLORATION = 0;
+    FASTEST_PATH = 1;
+  }
+
+  Mode mode = 1;
+}
+
+message MetricResponse {
+  map<uint32, float> values = 1;
+  bool status = 2;
+}
+
+message Position {
+  enum Direction {
+    NORTH = 0;
+    EAST = 1;
+    SOUTH = 2;
+    WEST = 3;
+  }
+
+  int32 x = 1;
+  int32 y = 2;
+  Direction dir = 3;
+}
+
+message MapDescription {
+  string p1 = 1;  // Explored map description
+  string p2 = 2;  // Obstacle map description
+}
+
+message RobotInfo {
+  Position pos = 1;
+  MapDescription map = 2;
+  repeated ImagePosition images = 3;
+  RobotStatus robot_status = 4;
+}
+
+enum RobotStatus {
+  STOP = 0;
+  FORWARD = 1;
+  TURN_LEFT = 2;
+  TURN_RIGHT = 3;
+}
+
+message ImagePosition {
+  enum ImageID {
+    WHITE_UP = 0;
+    BLUE_DOWN = 1;
+    YELLOW_RIGHT = 2;
+    RED_LEFT = 3;
+    GREEN_CIRCLE = 4;
+    BLUE_SIX = 5;
+    GREEN_SEVEN = 6;
+    RED_EIGHT = 7;
+    WHITE_NINE = 8;
+    YELLOW_ZERO = 9;
+    RED_V = 10;
+    GREEN_W = 11;
+    WHITE_X = 12;
+    BLUE_Y = 13;
+    YELLOW_Z = 14;
+  }
+  uint32 x = 1;
+  uint32 y = 2;
+  ImageID id = 3;
+}
