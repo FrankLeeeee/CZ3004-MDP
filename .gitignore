@@ -1,5 +1,5 @@
 #jpg files
 *.jpg
 ./venv/
-./image_recognition/darknet/images_taken/
-./image_recognition/darknet/images_detected/
+rpi/image_recognition/darknet/images_taken/
+rpi/image_recognition/darknet/images_detected/

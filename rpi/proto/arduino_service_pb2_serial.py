@@ -1,6 +1,6 @@
 import struct
 
-import core.message_pb2 as core_dot_message__pb2
+import proto.message_pb2 as core_dot_message__pb2
 from core.serial.channel import SerialAioChannel
 
 

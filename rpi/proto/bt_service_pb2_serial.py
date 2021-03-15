@@ -4,7 +4,7 @@ import json
 import google.protobuf.json_format
 
 import core.serial.call
-from core import message_pb2 as core_dot_message__pb2
+from proto import message_pb2 as core_dot_message__pb2
 
 
 def add_bt_rpc_servicer_to_server(servicer, channel):

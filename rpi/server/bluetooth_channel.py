@@ -10,10 +10,10 @@ Bluetooth communication for interfacing with the tablet.
 """
 import asyncio
 
-from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
-from core.bt_service_pb2_serial import BtRPCServiceServicer
-from core.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
-    EchoRequest, RobotStatus, RobotMode, MapDescription
+from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from proto.bt_service_pb2_serial import BtRPCServiceServicer
+from proto.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
+    EchoRequest, RobotStatus, RobotMode
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
 

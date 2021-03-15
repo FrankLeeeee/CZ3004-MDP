@@ -1,7 +1,7 @@
 import asyncio
 from typing import Optional
 
-from core.message_pb2 import Position, RobotStatus, MapDescription, RobotInfo, ImagePosition, RobotMode
+from proto.message_pb2 import Position, RobotStatus, MapDescription, RobotInfo, ImagePosition, RobotMode
 from utils.constants import ARENA_HEIGHT, ROBOT_ONE_SIDE_SIZE, ARENA_WIDTH
 
 

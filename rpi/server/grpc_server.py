@@ -10,11 +10,11 @@ gRPC server for interfacing with the PC.
 import asyncio
 
 from config import ServerConfig, config
-from core import grpc_service_pb2_grpc
-from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
-from core.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
+from proto import grpc_service_pb2_grpc
+from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
 from core.grpc_aio_server import GRPCAioServer
-from core.message_pb2 import MetricResponse, RobotStatus, Status
+from proto.message_pb2 import MetricResponse, RobotStatus, Status
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
 from core.serial.server import SerialAioServer
