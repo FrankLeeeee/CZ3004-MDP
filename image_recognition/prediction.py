@@ -1,155 +1,82 @@
-from ctypes import *
-import random
 import os
+from collections import defaultdict
+from pathlib import Path
+
 import cv2
-import time
+import numpy as np
+
 from darknet import darknet
-import argparse
-from threading import Thread, enumerate
-from queue import Queue
 
 
-    
-class Prediction:
+class DarknetModel:
 
     def __init__(
-        self,
-        dst_folder_path = "./images_detected",
-        yolo_cfg = "yolo-obj.cfg",
-        yolo_obj_data = "obj.data",
-        weight_chosen = "yolo-obj_50000.weights"
-        ):
+            self,
+            yolo_cfg: os.PathLike,
+            yolo_obj_data: os.PathLike,
+            weight_chosen: os.PathLike,
+            batch_size: int = 1,
+    ):
+        self.batch_size = batch_size
+        self.network, self.class_names, self.class_colors = \
+            darknet.load_network(str(yolo_cfg), str(yolo_obj_data), str(weight_chosen), batch_size=self.batch_size)
+        self._width = darknet.network_width(self.network)
+        self._height = darknet.network_height(self.network)
 
-        #set where to take images and where to put detected images
-        self.dst_path = dst_folder_path
-        self.count = 0
-
-        #loads model
-        self.network, self.class_names, self.class_colors = darknet.load_network(
-            #args.config_file
-            yolo_cfg,
-            #args.data_file
-            yolo_obj_data,
-            #args.weights
-            weight_chosen,
-            batch_size=1
-        )
-
-        #debug
-        #self.two_count=0
-        #self.detected_image_count =0
-        #self.zero_count=0
         print("load completed successfully")
-    
 
-    def image_detection(self,raw_image,thresh):
+    def preprocess(self, image_np: np.ndarray):
+        image_rgb = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+        image_resized = cv2.resize(image_rgb, (self._width, self._height), interpolation=cv2.INTER_LINEAR)
+
+        return image_resized
+
+    def predict(self, image_np: np.ndarray, threshold: float = 0.25):
+        image_np = self.preprocess(image_np)
+
         # Darknet doesn't accept numpy images.
         # Create one with image we reuse for each detect
-        width = darknet.network_width(self.network)
-        height = darknet.network_height(self.network)
-        darknet_image = darknet.make_image(width, height, 3)
+        darknet_image = darknet.make_image(self._width, self._height, 3)
+        darknet.copy_image_from_bytes(darknet_image, bytes(image_np))
 
-        image = raw_image
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image_resized = cv2.resize(image_rgb, (width, height),
-                                interpolation=cv2.INTER_LINEAR)
+        detections = darknet.detect_image(self.network, self.class_names, darknet_image, thresh=threshold)
+        darknet.free_image(darknet_image)
 
-        darknet.copy_image_from_bytes(darknet_image, image_resized.tobytes())
-        
-        detections = darknet.detect_image(self.network, self.class_names, darknet_image, thresh=thresh)
-        
-        #exception handling for no detection case
-        print(len(detections))
-        if len(detections) == 0:
-            self.zero_count+=1
-            return None, None
-        else:
-            #get best detection from the list
-            best_detection = [detections[-1]]
-            
-            #debug
-            #if(len(best_detection)>1):
-            #    self.two_count+=1
-            #self.detected_image_count+=1
-            #print(self.detected_image_count)
-            #print("*"*30)
-            #debug
+        result = defaultdict(list)
+        for detection in detections:
+            # confidence is in percentage, bbox is in (x, y, w, h) as pixels
+            class_name, confidence, bbox = detection
+            result['class_ids'].append(self.class_names.index(class_name))
+            result['confidence'].append(float(confidence) / 100)
+            result['bbox'].append(
+                (bbox[0] / self._width, bbox[1] / self._height, bbox[2] / self._width, bbox[3] / self._height)
+            )
 
-            darknet.free_image(darknet_image)
-            image = darknet.draw_boxes(detections, image_resized, self.class_colors)
-            
-            return cv2.cvtColor(image, cv2.COLOR_BGR2RGB), detections
+        return dict(result)
 
-    #saving annotations
+    def draw_annotations(self, image_np: np.ndarray, detections):
 
-    def convert2relative(self,image, bbox):
-        """
-        YOLO format use relative coordinates for annotation
-        """
-        x, y, w, h = bbox
-        height, width, _ = image.shape
+        # convert detections to darknet format
+        names = list()
+        for id_ in detections['class_ids']:
+            names.append(self.class_names[id_])
+        height, width, _ = image_np.shape
 
-        #this returns actual coordinates
-        return x,y,w,h
+        bboxes = list()
+        for bbox in detections['bbox']:
+            bboxes.append((bbox[0] * width, bbox[1] * height, bbox[2] * width, bbox[3] * height))
 
-    def get_annotations(self, image, detections):
-
-        file_name = self.dst_path+"/"+str(self.count) + ".txt"
-        for label, confidence, bbox in detections:
-            x, y, w, h = self.convert2relative(image, bbox)
-            label = self.class_names.index(label)
-            confidence = float(confidence)
-        
-        return label,(x,y,w,h),confidence
-
-    def predict(self,image_np):
-
-        image = cv2.resize(image_np,(720,480))
-
-        #threshold for confidence level
-        thresh = 0.5
-        
-        # detect image
-        image_detected, detections = self.image_detection(
-            image, thresh
-        )
-        
-        #can change the return value to what you want, exception handling when detection is None
-        if image_detected is None:
-            print("No image detected")
-            return None
-        else:
-            #save image into detected image path
-            image_path = self.dst_path+"/"+str(self.count)+".jpg"
-            cv2.imwrite(image_path,image_detected)
-            class_id,(x,y,w,h),confidence = self.get_annotations(image,detections)
-            
-            #naming for detected files
-            self.count+=1
-            #actual class_id is +1 of the one used in training cos yolo nneed start with 0
-            return class_id+1,(x,y,w,h),confidence
+        detections_darknet = list(zip(names, detections['confidence'], bboxes))
+        image_np = darknet.draw_boxes(detections_darknet, image_np, self.class_colors)
+        return image_np
 
 
-#note if raw_image have detected images all <threshold the program will return nothing    
 if __name__ == "__main__":
 
-    
-    test_path = "/home/kevin/workspace/CZ3004-MDP/image_recognition/images_taken"
-    
-    p1 = Prediction()
-
-
-    #mass test
-    for image_name in os.listdir(test_path):
-        image = cv2.imread(test_path+"/"+image_name)
-        p1.predict(image)
-    
-    #print("Two Count: ",p1.two_count)
-    #print("zero Count: ",p1.zero_count)
-    #print("detected Count: ",p1.detected_image_count)
-    #print("Missed Count: ",301-p1.detected_image_count-p1.zero_count)
-    #indiv test
-    '''test_path = "/home/kevin/workspace/CZ3004-MDP/image_recognition/images_taken/1.jpg"
-    image=cv2.imread(test_path)
-    p1 = Prediction()
-    p1.predict(image)'''
+    # set DARKNET_PATH first
+    ROOT = Path(__file__).absolute().parent
+    net = DarknetModel(ROOT / 'output/yolo-obj.cfg', ROOT / 'output/obj.data', ROOT / 'output/yolo-obj_50000.weights')
+    image = cv2.imread(str(ROOT / 'images_taken/2.jpg'))
+    result = net.predict(image)
+    annotated_image = net.draw_annotations(image, result)
+    cv2.imwrite('2.jpg', annotated_image)
