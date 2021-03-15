@@ -1,25 +1,64 @@
-# HOW TO USE
+# Installation
 
-## DOWNLOAD AND INSTALLATION
+## Install environment
+```shell script
+pip install -r requirements.txt
 
-ON LINUX:
-1) git clone the repository https://github.com/AlexeyAB
-2) pip install OPENCV latest
-3) Make sure you have **CMAKE Version >= 3.12 **
-4) In `Makefile` change your build configurations
+# Clone the Darknet
+git clone https://github.com/AlexeyAB
+```
 
-   * __Without gpu build:__
-   
-   
-     1)  set OPENCV = 1
-     1)  LIBSO = 1
-   * __GPU Build:__
-     1)  set OPENCV = 1
-     1)  LIBSO = 1
-     1)  CUDNN_HALF =1
-     1)  CUDNN = 1
-     1)  GPU = 1
-5) Cmake from darknet directory `cd ./darknet`
-6) `Prediction.py` runs inference on raw images in numpy array format and returns and writes the image with the bounding box with * confidence level >0.5 * into `images_detected\` folder 
-7) predict() in Prediction class returns the `class_id`,`(x_coord,y_coord,width_bbox,h_bbox)`,`confidence` of the prediction
-8) For more information visit Alexey's repository on [Darknet](https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-cmake)
+## Install Darknet
+
+### Option 1: Download from the [Google Drive](https://drive.google.com/drive/u/1/folders/1qw8CFmSymAr-SRBuqNfH9dZKl8DwKLpi)
+
+1. Download the specific version (architecture and CUDA if you have GPU) to `./darknet`
+2. Make a soft link `ln -sf "$PWD/darknet/<libdarknet_your_specific_darknet_version>.so" "${PWD}/darknet/libdarknet.so"`
+
+### Option 2: Compile by yourself
+
+Requirement: `make`
+
+#### 1. Change the directory to `darknet`
+```shell script
+cd darknet
+```
+
+#### 2. Modify `Makefile`
+
+*   Without GPU
+```makefile
+OPENCV=1
+LIBSO=1
+```
+
+*   With GPU
+```makefile
+GPU=1
+CUDNN=1
+CUDNN_HALF=1
+OPENCV=1
+AVX=1
+OPENMP=1
+LIBSO=1
+```
+
+#### 3. Make the library
+```shell script
+make
+```
+
+### Download Weight Files
+
+Download weights from [Google Drive](https://drive.google.com/file/d/1QNc93VfulhZf_J2sZpTLPlNRbYvW9p9h/view?usp=sharing) and unzip it.
+
+## Usage
+
+```shell script
+export PYTHONPATH="${PWD}"
+export DARKNET_PATH="${PWD}/darknet"
+```
+
+## Reference
+
+[Darknet](https://github.com/AlexeyAB/darknet#how-to-compile-on-linux-using-cmake)
