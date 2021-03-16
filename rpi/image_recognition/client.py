@@ -4,7 +4,6 @@ import time
 from pathlib import Path
 
 import cv2
-
 import grpc
 import numpy as np
 
@@ -52,21 +51,25 @@ def make_request_from_numpy(input_tensor: np.array):
     return request
 
 
-async def runner(image_path, url):
-    with open(image_path, 'rb') as f:
-        image = f.read()
-    image_np = np.frombuffer(image, dtype=np.uint8)
+async def detect(image_stream, url):
+    image_np = np.frombuffer(image_stream, dtype=np.uint8)
     request = make_request_from_numpy(image_np)
 
-    tick = time.time()
     async with grpc.aio.insecure_channel(url) as channel:
         stub = PredictStub(channel)
         response = await stub.ModelInfer(request)
-    time_taken = time.time() - tick
 
-    detection_result = json.loads(response.json)
-    print(f'End-to-end inference time: {time_taken}')
-    print(f'Detection result is {detection_result}')
+    return json.loads(response.json)
+
+
+if __name__ == '__main__':
+    image_path = '../data/100.jpg'
+    with open(image_path, 'rb') as f:
+        image = f.read()
+    tick = time.time()
+    detection_result = asyncio.run(detect(image, 'localhost:50051'))
+    print(f'End-to-end inference time: {time.time() - tick}')
+    print(f'Result: {detection_result}')
 
     # draw annotation
     image = cv2.imread(image_path)
@@ -76,7 +79,3 @@ async def runner(image_path, url):
     annotated_image = DarknetModel.draw_annotations(image, detection_result, CLASS_COLORS)
     print(f'Save result image at {result_dir / image_path.name}.')
     cv2.imwrite(f'{result_dir / image_path.name}', annotated_image)
-
-
-if __name__ == '__main__':
-    asyncio.run(runner('../data/100.jpg', 'localhost:50051'))

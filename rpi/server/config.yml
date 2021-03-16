@@ -25,3 +25,4 @@ bluetooth:
     welcom: false
     severity_levels:
       StreamHandler: 'INFO'
+camera: true

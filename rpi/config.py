@@ -8,7 +8,6 @@ Date: 2/25/2021
 Server configuration
 """
 import asyncio
-import logging
 from enum import Enum
 from pydoc import locate
 from typing import Optional
@@ -101,6 +100,8 @@ class ServerConfig(BaseModel):
     thread_num: Optional[int] = 8
     uart: UartSerialConfig
     bluetooth: Optional[BluetoothConfig]
+    camera: Optional[bool] = False
+    recognition_server_url = 'localhost:50051'
 
 
 with open(PROJECT_ROOT_PATH / 'server/config.yml') as f:

@@ -24,4 +24,6 @@ service GRPCService {
   rpc SetMap(MapDescription) returns (Status) {}
 
   rpc GetWayPoint(EmptyRequest) returns (Position) {}
+
+  rpc TakePhoto(EmptyRequest) returns (Status) {}
 }

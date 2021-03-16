@@ -8,16 +8,20 @@ Date: 2/16/2021
 gRPC server for interfacing with the PC.
 """
 import asyncio
+import io
+
+import picamera
 
 from config import ServerConfig, config
-from proto import grpc_service_pb2_grpc
-from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
-from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
 from core.grpc_aio_server import GRPCAioServer
-from proto.message_pb2 import MetricResponse, RobotStatus, Status
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
 from core.serial.server import SerialAioServer
+from image_recognition.client import detect
+from proto import grpc_service_pb2_grpc
+from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
+from proto.message_pb2 import MetricResponse, RobotStatus, Status
 from server.bluetooth_channel import BluetoothControlServicer
 from utils.logger import Logger
 
@@ -28,7 +32,16 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         self.host = host
         self.port = config.port
         self.serial_channel = serial_channel
+        self.recognition_server_url = config.recognition_server_url
         self.context = context
+        self.camera = None
+
+        # init the camera module
+        if config.camera:
+            self.camera = picamera.PiCamera()
+            self.camera.start_preview()
+            # FIXME: may require a sleep
+
         self._logger = Logger('Backend gRPC server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
 
     async def Echo(self, request, context):
@@ -91,6 +104,16 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
 
     def GetWayPoint(self, request, context):
         return self.context.get_way_point()
+
+    async def TakePohot(self, request, context):
+        with io.BytesIO() as stream:
+            self.camera.capture(stream, format='jpeg')
+            result = await detect(stream.getvalue(), self.recognition_server_url)
+            # TODO: get image position here, send to android, and save picture
+            print(result)
+
+        status = bool(result)
+        return Status(status=status)
 
 
 class BackendRPCServer(GRPCAioServer):
