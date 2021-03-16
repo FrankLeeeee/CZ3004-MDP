@@ -109,6 +109,23 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
     def GetWayPoint(self, request, context):
         return self.context.get_way_point()
 
+    #function to get the image's position
+    def get_target_coord(self):
+        x = context.get_position().x
+        y = context.get_position().y
+        direction = context.get_position.dir
+        if direction == Position.NORTH:
+            return x+2,y
+        elif direction == Position.EAST:
+            return x,y-2
+        elif direction == Position.SOUTH:
+            return x-2,y
+        elif direction == Position.WEST:
+            return x,y+2
+        else:
+            print("Error - get_target_coord()")
+
+
     async def TakePhoto(self, request, context):
         loop = asyncio.get_event_loop()
         with io.BytesIO() as stream:
@@ -125,6 +142,15 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
                 loop.run_in_executor(None, self.save_photo, image_np, detection, '1.jpg')
+                
+                #get target image's coordinates
+                x,y = self.get_arena_coord()
+                #debug
+                print(x,y)
+                
+                #send to updated coordinates to android 
+                response = ImagePosition(id = image_id,x = x,y = y)
+                context.set_image_positions(response)
 
         status = bool(result)
         return Status(status=status)
