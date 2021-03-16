@@ -21,9 +21,14 @@ double V1, V2, V3, V4, V5, V6;
 
 //=====Conversion Functions=====
 
-int distToBlocks(double dist)
+// int distToBlocks(double dist)
+// {
+//     return (int)((dist + 5) / 10);
+// }
+
+double distToBlocks(double dist)
 {
-    return (int)((dist + 5) / 10);
+    return ((dist + 5) / 10);
 }
 
 //===== Sensors =====
@@ -190,6 +195,43 @@ void printSensorReading()
     // Serial.println(pepe2);
 }
 
+void printSensorBlocks()
+{
+    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
+
+    // Serial.print("Sensor 1: ");
+    // Serial.println(getBlocksSR(getDist1(getAvg1())));
+    // Serial.print("Sensor 2: ");
+    // Serial.println(getBlocksSR(getDist2(getAvg2())));
+    // Serial.print("Sensor 3: ");
+    // Serial.println(getBlocksSR(getDist3(getAvg3())));
+    // Serial.print("Sensor 4: ");
+    // Serial.println(getBlocksSR(getDist4(getAvg4())));
+    // Serial.print("Sensor 5: ");
+    // Serial.println(getBlocksSR(getDist5(getAvg5())));
+    // Serial.print("Sensor 6: ");
+    // Serial.println(getBlocksLR(getDist6(getAvg6())));
+    // Serial.println("");
+
+    Serial.print("Sensor 1: ");
+    Serial.println(distToBlocks(getDist1(getAvg1())));
+    Serial.print("Sensor 2: ");
+    Serial.println(distToBlocks(getDist2(getAvg2())));
+    Serial.print("Sensor 3: ");
+    Serial.println(distToBlocks(getDist3(getAvg3())));
+    Serial.print("Sensor 4: ");
+    Serial.println(distToBlocks(getDist4(getAvg4())));
+    Serial.print("Sensor 5: ");
+    Serial.println(distToBlocks(getDist5(getAvg5())));
+    Serial.print("Sensor 6: ");
+    Serial.println(distToBlocks(getDist6(getAvg6())));
+    Serial.println("");
+
+    // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // Serial.print("Time taken (ms): ");
+    // Serial.println(pepe2);
+}
+
 // Used for sensor 1 & 4
 double getDist1(double x)
 {
@@ -197,8 +239,8 @@ double getDist1(double x)
     // return -13.696 * pow(x, 5) + 101.4 * pow(x, 4) - 296.49 * pow(x, 3) + 438.4 * pow(x, 2) - 348.66 * x + 144.17;
     //return 204.0816327 / (0.0418 * x + 0.00007);
     //return 1 / (0.0002 * x - 0.0052);
-    //            return 1 / (0.0000005 * pow(x, 2) + 0.00005 * x + 0.0081);
-    return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0043);
+    return 1 / (0.0000005 * pow(x, 2) + 0.00005 * x + 0.0081);
+    // return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0043);
     //   return 1 / (0.0002 * x - 0.0003);
 }
 
@@ -208,15 +250,15 @@ double getDist2(double x)
     // return -11.577 * pow(x, 5) + 92.006 * pow(x, 4) - 288.75 * pow(x, 3) + 455 * pow(x, 2) - 377.91 * x + 155.37;
     //  return 204.0816327 / (0.0448 * x - 0.0022);
     //return 1 / (0.0002 * x - 0.0065);
-    return 1 / (0.0002 * x - 0.0054);
+    return 1 / (0.0002 * x - 0.0054) + 1;
 }
 
 double getDist3(double x)
 {
     // return 25.863 * pow(x, -1.268);
     //return 204.0816327 / (0.0483 * x - 0.0082);
-    return 1 / (0.0000004 * pow(x, 2) + 0.0001 * x + 0.0014);
-    //return 1 / (0.0002 * x - 0.0063);
+    // return 1 / (0.0000004 * pow(x, 2) + 0.0001 * x + 0.0014);
+    return 1 / (0.0002 * x - 0.0063);
 }
 
 double getDist4(double x)
@@ -224,8 +266,8 @@ double getDist4(double x)
     // return -20.988 * pow(x, 5) + 143.17 * pow(x, 4) - 383.55 * pow(x, 3) + 520.2 * pow(x, 2) - 382.96 * x + 148.66;
     //return 204.0816327 / (0.0429 * x - 0.00008);
     //return 1 / (0.0002 * x - 0.0035);
-    //          return 1 / (0.0000005 * pow(x, 2) + 0.00006 * x + 0.0062);
-    return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0012);
+    return 1 / (0.0000005 * pow(x, 2) + 0.00006 * x + 0.0062);
+    // return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0012);
     // return 1 / (0.0002 * x - 0.0037);
 }
 // 3 & 5
@@ -412,7 +454,7 @@ double getAvg6()
 int getBlocksSR(double dist)
 {
     int blocks = distToBlocks(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 3 || blocks < 0)
     {
         return 0;
     }
@@ -421,7 +463,7 @@ int getBlocksSR(double dist)
 int getBlocksLR(double dist)
 {
     int blocks = distToBlocks(dist);
-    if (blocks > 8 || blocks < 0)
+    if (blocks > 5 || blocks < 0)
     {
         return 0;
     }

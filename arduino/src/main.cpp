@@ -20,8 +20,9 @@ void setup()
 
 void loop()
 {
-  loopSeq();
-  // readInput();
+  getSensorReading();
+  // loopSeq();
+  readInput();
 }
 
 //===== Inputs =====
@@ -50,12 +51,13 @@ void readInput()
       break;
     case 'e':
       //  printSensorReading();
+      printSensorBlocks();
       //Serial.println(getAvg3());
-      Serial.print(getDist1(getAvg1()));
-      Serial.print(" ");
+      // Serial.print(getDist1(getAvg1()));
+      // Serial.print(" ");
       // Serial.print(getDist2(getAvg2()));
       // Serial.print(" ");
-      Serial.println(getDist4(getAvg4()));
+      // Serial.println(getDist4(getAvg4()));
       break;
     case 'f':
       //encodeMessage();
@@ -91,47 +93,47 @@ void readInput()
 
 void testFunction()
 {
-  // while(1){
-  //   turnR(90);
-  // delay(500);
-  //   turnR(90);
-  // delay(500);
-  //   turnR(90);
-  // delay(500);
-  //   turnR(90);
-  // delay(500);
-  // }
+  while(1){
+    turnR(90);
+  delay(500);
+    turnR(90);
+  delay(500);
+    turnR(90);
+  delay(500);
+    turnR(90);
+  delay(500);
+  }
 
-  turnL(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnL(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnL(90);
-  delay(500);
-  moveF(20);
-  delay(500);
-  turnL(90);
-  delay(500);
-  moveF(20);
-  delay(500);
-  turnL(90);
-  delay(500);
-  moveF(20);
-  delay(500);
-  turnL(90);
-  delay(500);
-  moveF(20);
-  delay(500);
-  turnR(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnR(90);
-  delay(500);
+  // turnL(90);
+  // delay(500);
+  // calibrateProc();
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // calibrateProc();
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // moveF(20);
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // moveF(20);
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // moveF(20);
+  // delay(500);
+  // turnL(90);
+  // delay(500);
+  // moveF(20);
+  // delay(500);
+  // turnR(90);
+  // delay(500);
+  // calibrateProc();
+  // delay(500);
+  // turnR(90);
+  // delay(500);
 
   // moveF(20);
   // delay(500);

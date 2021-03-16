@@ -83,7 +83,7 @@ void PIDInit()
 
 double calcTickFromDist(double dist)
 {
-    return ((1 * dist) * 1124.5) / circumference;
+    return ((0.90 * dist) * 1124.5) / circumference;
 }
 
 double getTicksFromAngle(double angle)
@@ -238,7 +238,7 @@ void moveB(double dist)
 void turnL(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle - 2.7); //+2.1, speed 250, 6.1x V
+    targetTick = getTicksFromAngle(angle - 4.4); //+2.1, speed 250, 6.1x V      // -2.7
     speedL = 380;
     speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);
@@ -272,7 +272,7 @@ void turnL(double angle)
 void turnR(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle - 3.1); //+2, speed 250, 6.1x V
+    targetTick = getTicksFromAngle(angle - 4.1); //+2, speed 250, 6.1x V
     speedL = 380;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
@@ -410,7 +410,7 @@ void wallDistCalibrate()
     {
         getSensorReading();
     }
-    double FC = getDist2(get_curFiltered2());
+    // double FC = getDist2(get_curFiltered2());
     double FL = getDist1(get_curFiltered1());
     double FR = getDist4(get_curFiltered4());
 
@@ -441,7 +441,7 @@ void calibrateProc()
 {
     wallCalibrate();
     wallDistCalibrate();
-    moveFslow(0.3);
+    moveFslow(0.2);
     wallCalibrate();
 }
 

@@ -100,6 +100,7 @@ void parseMessage()
 int echoHandler(int argument, uint8_t *const response)
 {
   bool status = true;
+  argument++;
 
   return echo_response_serializer((char)argument, status, response);
 }
@@ -171,7 +172,7 @@ int status_serializer(bool status, uint8_t *response)
 
 int echo_response_serializer(char message, bool status, uint8_t *response)
 {
-  *response = (uint8_t)(message + 1);
+  *response = (uint8_t)(message);
   //*(response + 1) = ARGUMENT_SEPARATOR;
   *(response + 1) = (uint8_t)status;
   return 2;

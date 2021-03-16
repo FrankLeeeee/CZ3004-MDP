@@ -1,7 +1,7 @@
 #ifndef Sensor_H
 #define Sensor_H
 
-int distToBlocks(double dist);
+double distToBlocks(double dist);
 void sensorInit();
 void getSensorReading();
 double get_curFiltered1();
@@ -11,6 +11,7 @@ double get_curFiltered4();
 double get_curFiltered5();
 double get_curFiltered6();
 void printSensorReading();
+void printSensorBlocks();
 double filter(double volt, double oldVal);
 double getDist1(double x);
 double getDist2(double x);
