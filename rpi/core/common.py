@@ -26,6 +26,24 @@ class Label(Enum):
     WHITE_UP = 'white_up'
 
 
+class Label2(Enum):
+    UP_ARROW = 1
+    DOWN_ARROW = 2
+    RIGHT_ARROW = 3
+    LEFT_ARROW = 4
+    GO = 5
+    SIX = 6
+    SEVEN = 7
+    EIGHT = 8
+    NINE = 9
+    ZERO = 10
+    ALPHABET_V = 11
+    ALPHABET_W = 12
+    ALPHABET_X = 13
+    ALPHABET_Y = 14
+    ALPHABET_Z = 15
+
+
 class ImageEncodeFormat(Enum):
     JPEG = 'jpeg'
     PNG = 'png'

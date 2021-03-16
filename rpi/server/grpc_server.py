@@ -15,6 +15,7 @@ import numpy as np
 import picamera
 
 from config import ServerConfig, config
+from core.common import Label2
 from core.grpc_aio_server import GRPCAioServer
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
@@ -113,12 +114,13 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         with io.BytesIO() as stream:
             self.camera.capture(stream, format='jpeg')
             result = await detect(stream.getvalue(), self.recognition_server_url)
-            # TODO: get image position here, send to android, and save picture
             if result:
                 # take only one
                 class_name = result['class_names'][-1]
                 confidence = result['confidence'][-1]
                 bbox = result['bbox'][-1]
+                image_id = Label2[class_name.upper()].value
+                # TODO: get image position here, send to android, and save picture
 
                 image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
