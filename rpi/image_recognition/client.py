@@ -63,16 +63,16 @@ async def detect(image_stream, url):
 
 
 if __name__ == '__main__':
-    image_path = '../data/100.jpg'
+    image_path = Path(__file__).absolute().parent / 'data/100.jpg'
     with open(image_path, 'rb') as f:
         image = f.read()
     tick = time.time()
-    detection_result = asyncio.run(detect(image, 'localhost:50051'))
+    detection_result = asyncio.run(detect(image, '155.69.146.35:50051'))
     print(f'End-to-end inference time: {time.time() - tick}')
     print(f'Result: {detection_result}')
 
     # draw annotation
-    image = cv2.imread(image_path)
+    image = cv2.imread(str(image_path))
     image_path = Path(image_path)
     result_dir = image_path.absolute().parent / 'result'
     result_dir.mkdir(exist_ok=True)

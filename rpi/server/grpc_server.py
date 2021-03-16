@@ -105,7 +105,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
     def GetWayPoint(self, request, context):
         return self.context.get_way_point()
 
-    async def TakePohot(self, request, context):
+    async def TakePhoto(self, request, context):
         with io.BytesIO() as stream:
             self.camera.capture(stream, format='jpeg')
             result = await detect(stream.getvalue(), self.recognition_server_url)
