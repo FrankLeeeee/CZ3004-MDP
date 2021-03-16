@@ -7,6 +7,7 @@ Date: 7/8/2020
 Request data type related utility functions.
 """
 import struct
+from collections import defaultdict
 from enum import Enum
 
 import numpy as np
@@ -57,6 +58,28 @@ def model_data_type_to_np(model_dtype):
             f'model_dtype is expecting one of the type: `int`, `str`, or `DataType` but got {type(model_dtype)}'
         )
     return mapper[model_dtype]
+
+
+def type_to_data_type(tensor_type):
+    mapper = defaultdict(
+        lambda: DataType.TYPE_INVALID, {
+            bool: DataType.TYPE_BOOL,
+            int: DataType.TYPE_INT32,
+            float: DataType.TYPE_FP32,
+            str: DataType.TYPE_BYTES,
+            np.dtype(np.bool): DataType.TYPE_BOOL,
+            np.dtype(np.uint8): DataType.TYPE_UINT8,
+            np.dtype(np.uint16): DataType.TYPE_UINT16,
+            np.dtype(np.uint32): DataType.TYPE_UINT32,
+            np.dtype(np.uint64): DataType.TYPE_UINT64,
+            np.dtype(np.float16): DataType.TYPE_FP16,
+            np.dtype(np.float32): DataType.TYPE_FP32,
+            np.dtype(np.float64): DataType.TYPE_FP64,
+            np.dtype(np.object): DataType.TYPE_BYTES,
+        }
+    )
+
+    return mapper[tensor_type]
 
 
 def serialize_byte_tensor(input_tensor: np.array):

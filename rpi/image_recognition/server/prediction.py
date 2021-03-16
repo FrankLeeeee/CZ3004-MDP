@@ -5,10 +5,13 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from image_recognition.darknet import darknet
+try:
+    from image_recognition.darknet import darknet
+except OSError as e:
+    print(f'Error when loading Darknet: {e}, skip loading the lib.')
 
 
-class DarknetModel:
+class DarknetModel(object):
 
     def __init__(
             self,
@@ -27,8 +30,6 @@ class DarknetModel:
             darknet.load_network(str(yolo_cfg), str(yolo_obj_data), str(weight_chosen), batch_size=self.batch_size)
         self._width = darknet.network_width(self.network)
         self._height = darknet.network_height(self.network)
-
-        print("load completed successfully")
 
     def preprocess(self, image_np: np.ndarray):
         image_rgb = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
@@ -51,7 +52,7 @@ class DarknetModel:
         for detection in detections:
             # confidence is in percentage, bbox is in (x, y, w, h) as pixels
             class_name, confidence, bbox = detection
-            result['class_ids'].append(self.class_names.index(class_name))
+            result['class_names'].append(class_name)
             result['confidence'].append(float(confidence) / 100)
             result['bbox'].append(
                 (bbox[0] / self._width, bbox[1] / self._height, bbox[2] / self._width, bbox[3] / self._height)
@@ -59,12 +60,27 @@ class DarknetModel:
 
         return dict(result)
 
-    def draw_annotations(self, image_np: np.ndarray, detections):
+    @staticmethod
+    def _bbox2points(bbox):
+        """
+        From bounding box yolo format
+        to corner points cv2 rectangle
+        """
+        x, y, w, h = bbox
+        xmin = int(round(x - (w / 2)))
+        xmax = int(round(x + (w / 2)))
+        ymin = int(round(y - (h / 2)))
+        ymax = int(round(y + (h / 2)))
+        return xmin, ymin, xmax, ymax
+
+    @staticmethod
+    def draw_annotations(image_np: np.ndarray, detections, class_colors):
 
         # convert detections to darknet format
-        names = list()
-        for id_ in detections['class_ids']:
-            names.append(self.class_names[id_])
+        if not detections:
+            return image_np
+
+        names = detections['class_names']
         height, width, _ = image_np.shape
 
         bboxes = list()
@@ -72,7 +88,15 @@ class DarknetModel:
             bboxes.append((bbox[0] * width, bbox[1] * height, bbox[2] * width, bbox[3] * height))
 
         detections_darknet = list(zip(names, detections['confidence'], bboxes))
-        image_np = darknet.draw_boxes(detections_darknet, image_np, self.class_colors)
+
+        # from darknet.drawbox
+        for label, confidence, bbox in detections_darknet:
+            left, top, right, bottom = DarknetModel._bbox2points(bbox)
+            cv2.rectangle(image_np, (left, top), (right, bottom), class_colors[label], 1)
+            cv2.putText(image_np, "{} [{:.2f}]".format(label, float(confidence)),
+                        (left, top - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                        class_colors[label], 2)
+
         return image_np
 
 
@@ -83,5 +107,5 @@ if __name__ == "__main__":
     net = DarknetModel(ROOT / 'output/yolo-obj.cfg', ROOT / 'output/obj.data', ROOT / 'output/yolo-obj_50000.weights')
     image = cv2.imread(str(ROOT / 'images_taken/2.jpg'))
     result = net.predict(image)
-    annotated_image = net.draw_annotations(image, result)
+    annotated_image = net.draw_annotations(image, result, net.class_colors)
     cv2.imwrite('2.jpg', annotated_image)

@@ -97,7 +97,7 @@ class InferenceServicer(PredictServicer):
 
         inputs = self.as_numpy(request)
         inputs = cv2.imdecode(inputs, cv2.IMREAD_COLOR)
-        result, handle_times = self.model_runner.predict(inputs)
+        result = self.model_runner.predict(inputs)
 
         response = InferResponse(json=json.dumps(result))
 
