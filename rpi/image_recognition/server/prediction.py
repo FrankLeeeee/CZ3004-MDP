@@ -24,7 +24,7 @@ class DarknetModel(object):
         self.batch_size = batch_size
         self.device = device or 0 if darknet.hasGPU else None
         if self.device:
-            darknet.set_gpu = device
+            darknet.set_gpu(device)
 
         self.network, self.class_names, self.class_colors = \
             darknet.load_network(str(yolo_cfg), str(yolo_obj_data), str(weight_chosen), batch_size=self.batch_size)

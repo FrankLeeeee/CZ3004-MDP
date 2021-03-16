@@ -130,7 +130,7 @@ if __name__ == '__main__':
     host_ = '0.0.0.0'
 
     # print(f'Using configuration:\n{config}')
-    server = InferenceServer(0, thread_concurrency=8, port=50051)  # config=config)
+    server = InferenceServer(device_id=3, thread_concurrency=8, port=50051)  # config=config)
 
     loop = asyncio.get_event_loop()
 
