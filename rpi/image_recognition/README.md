@@ -54,11 +54,19 @@ Download weights from [Google Drive](https://drive.google.com/file/d/1QNc93Vfulh
 
 ## Usage
 
+Run server:
 ```shell script
-export PYTHONPATH="${PWD}../"
+export PYTHONPATH="${PWD}/../"
 export DARKNET_PATH="${PWD}/darknet"
 
 python server/grpc_server.py
+```
+
+Run client:
+```shell script
+export PYTHONPATH="${PWD}/../"
+
+python server/client.py
 ```
 
 ## Reference
