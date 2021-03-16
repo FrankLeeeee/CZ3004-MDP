@@ -10,6 +10,8 @@ gRPC server for interfacing with the PC.
 import asyncio
 import io
 
+import cv2
+import numpy as np
 import picamera
 
 from config import ServerConfig, config
@@ -17,7 +19,8 @@ from core.grpc_aio_server import GRPCAioServer
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
 from core.serial.server import SerialAioServer
-from image_recognition.client import detect
+from image_recognition.client import detect, CLASS_COLORS
+from image_recognition.server.prediction import DarknetModel
 from proto import grpc_service_pb2_grpc
 from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
@@ -106,14 +109,29 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         return self.context.get_way_point()
 
     async def TakePhoto(self, request, context):
+        loop = asyncio.get_event_loop()
         with io.BytesIO() as stream:
             self.camera.capture(stream, format='jpeg')
             result = await detect(stream.getvalue(), self.recognition_server_url)
             # TODO: get image position here, send to android, and save picture
-            print(result)
+            if result:
+                # take only one
+                class_name = result['class_names'][-1]
+                confidence = result['confidence'][-1]
+                bbox = result['bbox'][-1]
+
+                image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
+                detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
+                loop.run_in_executor(None, self.save_photo, image_np, detection, '1.jpg')
 
         status = bool(result)
         return Status(status=status)
+
+    def save_photo(self, image_np, detection, file_name):
+        image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+        annotated_image = DarknetModel.draw_annotations(image, detection, CLASS_COLORS)
+        self._logger.info(f'Save result image at {file_name}')
+        cv2.imwrite(file_name, annotated_image)
 
 
 class BackendRPCServer(GRPCAioServer):

@@ -26,3 +26,4 @@ bluetooth:
     severity_levels:
       StreamHandler: 'INFO'
 camera: true
+recognition_server_url: '155.69.146.35:50051'
