@@ -42,12 +42,6 @@ message InferRequest {
     // must not be specified for any input tensor.
     //
     repeated bytes raw_input_contents = 7;
-
-    // Device ID
-    uint32 device_id = 8;
-
-    reserved 4;
-    reserved "parameters";
 }
 
 message InferResponse {

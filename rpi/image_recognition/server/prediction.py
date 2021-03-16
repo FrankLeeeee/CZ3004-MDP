@@ -5,7 +5,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from darknet import darknet
+from image_recognition.darknet import darknet
 
 
 class DarknetModel:
@@ -15,9 +15,14 @@ class DarknetModel:
             yolo_cfg: os.PathLike,
             yolo_obj_data: os.PathLike,
             weight_chosen: os.PathLike,
+            device: int = None,
             batch_size: int = 1,
     ):
         self.batch_size = batch_size
+        self.device = device or 0 if darknet.hasGPU else None
+        if self.device:
+            darknet.set_gpu = device
+
         self.network, self.class_names, self.class_colors = \
             darknet.load_network(str(yolo_cfg), str(yolo_obj_data), str(weight_chosen), batch_size=self.batch_size)
         self._width = darknet.network_width(self.network)
