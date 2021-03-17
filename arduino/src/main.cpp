@@ -50,14 +50,14 @@ void readInput()
       brake();
       break;
     case 'e':
-      //  printSensorReading();
-      printSensorBlocks();
+       printSensorReading();
+      // printSensorBlocks();
       //Serial.println(getAvg3());
-      // Serial.print(getDist1(getAvg1()));
+      // Serial.print(getAvg1());
       // Serial.print(" ");
-      // Serial.print(getDist2(getAvg2()));
+      // Serial.println(getAvg2());
       // Serial.print(" ");
-      // Serial.println(getDist4(getAvg4()));
+      // Serial.println(getAvg4());
       break;
     case 'f':
       //encodeMessage();

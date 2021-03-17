@@ -136,7 +136,7 @@ void moveF(double dist)
         // Serial.println(pepe2);
     }
     md.setBrakes(400, 400);
-    if (((getDist2(get_curFiltered2()) < emergencyDistance + 5) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance + 5) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance + 5) && getDist4(get_curFiltered4()) > 0))
+    if (((getDist2(get_curFiltered2()) < emergencyDistance + 1) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance + 1) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance + 1) && getDist4(get_curFiltered4()) > 0))
     {
         calibrateProc();
     }
@@ -313,7 +313,7 @@ double calibrationTolerence = 0.3;
 double calibrationBase = -0.15;
 double calibrationToleranceCCW = 0.3;
 double calibrationBaseCCW = -0.15;
-int recursionCount = 4;
+int recursionCount = 5;
 
 void wallCalibrate()
 {
@@ -344,7 +344,7 @@ void wallCalibrate()
     }
     wallCalibrate();
     wallCalibrate();
-    recursionCount = 4;
+    recursionCount = 5;
 }
 
 void CCW_Calibrate()
@@ -434,7 +434,7 @@ void wallDistCalibrate()
     }
     delay(100);
     wallDistCalibrate();
-    recursionCount = 4;
+    recursionCount = 5;
 }
 
 void calibrateProc()
