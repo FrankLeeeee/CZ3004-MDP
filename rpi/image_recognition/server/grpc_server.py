@@ -32,7 +32,6 @@ from core.grpc_aio_server import GRPCAioServer
 from image_recognition.server.prediction import DarknetModel
 from proto.predict_pb2 import InferResponse, InferRequest
 from proto.predict_pb2_grpc import PredictServicer, add_PredictServicer_to_server
-
 from utils.dtype import deserialize_bytes_tensor, model_data_type_to_np
 from utils.logger import Logger
 
@@ -47,6 +46,9 @@ class InferenceServicer(PredictServicer):
     def __init__(self, device_id: int):
         super().__init__()
         self.device_id = device_id
+
+        # TODO: configurable
+        self.threshold = 0.8
 
         # TODO: get weight config from yaml
         self.model_runner = DarknetModel(
@@ -97,7 +99,7 @@ class InferenceServicer(PredictServicer):
 
         inputs = self.as_numpy(request)
         inputs = cv2.imdecode(inputs, cv2.IMREAD_COLOR)
-        result = self.model_runner.predict(inputs)
+        result = self.model_runner.predict(inputs, threshold=self.threshold)
 
         response = InferResponse(json=json.dumps(result))
 

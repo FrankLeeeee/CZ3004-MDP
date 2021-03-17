@@ -9,6 +9,7 @@ gRPC server for interfacing with the PC.
 """
 import asyncio
 import io
+from typing import Tuple
 
 import cv2
 import numpy as np
@@ -47,6 +48,37 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
             # FIXME: may require a sleep
 
         self._logger = Logger('Backend gRPC server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
+
+    @staticmethod
+    def get_target_coord(bbox: Tuple[float, float, float, float]):
+        """Get image coordination when RPi is configured in a right wall hugging manner."""
+        x, y, w, h = bbox
+
+        # find the image pasted on left block, middle block or right block
+        detection_center = x + w / 2
+        block_offset = 0
+        if detection_center <= 1 / 3:
+            block_offset = -1
+        elif detection_center > 2 / 3:
+            block_offset = 1
+        # FIXME: try the image size to get distance?
+        distance_offset = 2
+
+        robot_position = context.get_position()
+        x, y = robot_position.x, robot_position.y
+        direction = robot_position.dir
+        if direction == Position.Direction.WEST:
+            # RPi facing north
+            return x + block_offset, y + distance_offset
+        elif direction == Position.Direction.NORTH:
+            # RPi facing east
+            return x + distance_offset, y - block_offset
+        elif direction == Position.Direction.EAST:
+            # RPi facing south
+            return x - block_offset, y - distance_offset
+        else:
+            # RPi facing west
+            return x - distance_offset, y + block_offset
 
     async def Echo(self, request, context):
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
@@ -109,25 +141,6 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
     def GetWayPoint(self, request, context):
         return self.context.get_way_point()
 
-    # function to get the image's position
-    @staticmethod
-    def get_target_coord():
-        # FIXME
-        robot_position = context.get_position()
-        x = robot_position.x
-        y = robot_position.y
-        direction = robot_position.dir
-        if direction == Position.Direction.NORTH:
-            return x + 2, y
-        elif direction == Position.Direction.EAST:
-            return x, y - 2
-        elif direction == Position.Direction.SOUTH:
-            return x - 2, y
-        elif direction == Position.Direction.WEST:
-            return x, y + 2
-        else:
-            print("Error - get_target_coord()")
-
     async def TakePhoto(self, request, context):
         loop = asyncio.get_event_loop()
         with io.BytesIO() as stream:
@@ -139,20 +152,17 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 confidence = result['confidence'][-1]
                 bbox = result['bbox'][-1]
                 image_id = Label2[class_name.upper()].value
-                # TODO: get image position here, send to android, and save picture
+
+                # get target image's coordinates
+                x, y = self.get_target_coord(bbox)
+                self._logger.debug((x, y))
+                # send to updated coordinates to android
+                response = ImagePosition(id=image_id, x=x, y=y)
+                context.set_image_positions(response)
 
                 image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
                 loop.run_in_executor(None, self.save_photo, image_np, detection, '1.jpg')
-
-                # get target image's coordinates
-                x, y = self.get_target_coord()
-                # debug
-                print(x, y)
-
-                # send to updated coordinates to android
-                response = ImagePosition(id=image_id, x=x, y=y)
-                context.set_image_positions(response)
 
         status = bool(result)
         return Status(status=status)

@@ -14,7 +14,9 @@ class RobotContext(object):
         self._map_dirty = True
         self._robot_status = RobotStatus.STOP
         self._robot_status_dirty = True
-        self._image_positions = list()
+        # A dict of image position / ID. As the image is not repeated, we override the position to the image with
+        # same ID
+        self._image_position_dict = dict()
         self._image_positions_dirty = True
 
         # other context
@@ -89,15 +91,16 @@ class RobotContext(object):
 
     def get_image_positions(self):
         image_position = list()
-        for image_position in self._image_positions:
+        for image_position in self._image_position_dict.values():
             new_image_position = ImagePosition()
             new_image_position.MergeFrom(image_position)
             image_position.append(new_image_position)
         return image_position
 
     def set_image_positions(self, image: ImagePosition):
-        self._image_positions_dirty = True
-        self._image_positions.append(image)
+        if image != self._image_position_dict.get(image.id):
+            self._image_positions_dirty = True
+            self._image_position_dict[image.id] = image
 
     def get_robot_info(self) -> RobotInfo:
         robot_info = RobotInfo()
@@ -155,7 +158,7 @@ class RobotContext(object):
         self._robot_status = RobotStatus.STOP
         self._robot_status_dirty = True
         # TODO: set image
-        self._image_positions = list()
+        self._image_position_dict = dict()
         self._image_positions_dirty = True
 
         # other context

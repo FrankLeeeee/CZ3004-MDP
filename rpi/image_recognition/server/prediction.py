@@ -37,7 +37,7 @@ class DarknetModel(object):
 
         return image_resized
 
-    def predict(self, image_np: np.ndarray, threshold: float = 0.25):
+    def predict(self, image_np: np.ndarray, threshold: float = 0.5):
         image_np = self.preprocess(image_np)
 
         # Darknet doesn't accept numpy images.
