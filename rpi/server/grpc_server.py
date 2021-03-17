@@ -25,7 +25,7 @@ from image_recognition.server.prediction import DarknetModel
 from proto import grpc_service_pb2_grpc
 from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
-from proto.message_pb2 import MetricResponse, RobotStatus, Status
+from proto.message_pb2 import MetricResponse, RobotStatus, Status, Position, ImagePosition
 from server.bluetooth_channel import BluetoothControlServicer
 from utils.logger import Logger
 
@@ -109,22 +109,24 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
     def GetWayPoint(self, request, context):
         return self.context.get_way_point()
 
-    #function to get the image's position
-    def get_target_coord(self):
-        x = context.get_position().x
-        y = context.get_position().y
-        direction = context.get_position.dir
-        if direction == Position.NORTH:
-            return x+2,y
-        elif direction == Position.EAST:
-            return x,y-2
-        elif direction == Position.SOUTH:
-            return x-2,y
-        elif direction == Position.WEST:
-            return x,y+2
+    # function to get the image's position
+    @staticmethod
+    def get_target_coord():
+        # FIXME
+        robot_position = context.get_position()
+        x = robot_position.x
+        y = robot_position.y
+        direction = robot_position.dir
+        if direction == Position.Direction.NORTH:
+            return x + 2, y
+        elif direction == Position.Direction.EAST:
+            return x, y - 2
+        elif direction == Position.Direction.SOUTH:
+            return x - 2, y
+        elif direction == Position.Direction.WEST:
+            return x, y + 2
         else:
             print("Error - get_target_coord()")
-
 
     async def TakePhoto(self, request, context):
         loop = asyncio.get_event_loop()
@@ -142,14 +144,14 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
                 loop.run_in_executor(None, self.save_photo, image_np, detection, '1.jpg')
-                
-                #get target image's coordinates
-                x,y = self.get_arena_coord()
-                #debug
-                print(x,y)
-                
-                #send to updated coordinates to android 
-                response = ImagePosition(id = image_id,x = x,y = y)
+
+                # get target image's coordinates
+                x, y = self.get_target_coord()
+                # debug
+                print(x, y)
+
+                # send to updated coordinates to android
+                response = ImagePosition(id=image_id, x=x, y=y)
                 context.set_image_positions(response)
 
         status = bool(result)

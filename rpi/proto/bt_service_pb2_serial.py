@@ -54,6 +54,11 @@ def add_bt_rpc_servicer_to_server(servicer, channel):
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.RobotMode),
             response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
         ),
+        'Calibrate': core.serial.call.unary_unary_rpc_method_handler(
+            servicer.Calibrate,
+            request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
+            response_serializer=_default_serializer_gen(core_dot_message__pb2.Status),
+        ),
         'Reset': core.serial.call.unary_unary_rpc_method_handler(
             servicer.Reset,
             request_deserializer=_default_deserializer_gen(core_dot_message__pb2.EmptyRequest),
@@ -120,6 +125,7 @@ class BtRPCServiceServicer(abc.ABC):
     ) -> core_dot_message__pb2.Status:
         raise NotImplementedError('Method not implemented')
 
+    @abc.abstractmethod
     def RemoveWayPoint(
             self,
             request: core_dot_message__pb2.EmptyRequest,
@@ -130,6 +136,13 @@ class BtRPCServiceServicer(abc.ABC):
     def SetRobotMode(
             self,
             request: core_dot_message__pb2.RobotMode,
+    ) -> core_dot_message__pb2.Status:
+        raise NotImplementedError('Method not implemented')
+
+    @abc.abstractmethod
+    def Calibrate(
+            self,
+            request: core_dot_message__pb2.EmptyRequest,
     ) -> core_dot_message__pb2.Status:
         raise NotImplementedError('Method not implemented')
 

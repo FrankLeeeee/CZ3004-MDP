@@ -10,12 +10,12 @@ Bluetooth communication for interfacing with the tablet.
 """
 import asyncio
 
+from core.robot_context import RobotContext
+from core.serial.channel import SerialAioChannel
 from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import BtRPCServiceServicer
 from proto.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
     EchoRequest, RobotStatus, RobotMode
-from core.robot_context import RobotContext
-from core.serial.channel import SerialAioChannel
 
 
 class BluetoothControlServicer(BtRPCServiceServicer):
@@ -89,6 +89,11 @@ class BluetoothControlServicer(BtRPCServiceServicer):
         loop = asyncio.get_event_loop()
         loop.call_soon_threadsafe(self.context.start_flag.set)
         return Status(status=True)
+
+    async def Calibrate(self, request: RobotMode) -> Status:
+        serial_client = ArduinoRPCServiceStub(self.uart_serial_channel)
+        response = await serial_client.Calibration(request)
+        return response
 
     async def Reset(self, request: EmptyRequest) -> Status:
         client = ArduinoRPCServiceStub(self.uart_serial_channel)
