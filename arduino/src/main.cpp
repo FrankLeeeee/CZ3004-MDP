@@ -21,8 +21,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  // loopSeq();
-  readInput();
+  loopSeq();
+  // readInput();
 }
 
 //===== Inputs =====
@@ -50,8 +50,8 @@ void readInput()
       brake();
       break;
     case 'e':
-       printSensorReading();
-      // printSensorBlocks();
+      // printSensorReading();
+       printSensorBlocks();
       //Serial.println(getAvg3());
       // Serial.print(getAvg1());
       // Serial.print(" ");

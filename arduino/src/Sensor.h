@@ -26,6 +26,7 @@ double getAvg4();
 double getAvg5();
 double getAvg6();
 int getBlocksSR(double dist);
+float getBlocksSR_float(double dist);
 int getBlocksLR(double dist);
-
+float getBlocksLR_float(double dist);
 #endif
