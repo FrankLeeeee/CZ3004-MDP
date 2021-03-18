@@ -14,16 +14,17 @@ Reference:
 import asyncio
 import os
 import random
+from functools import partial
 from typing import Optional, Callable
 
 import serial_asyncio
-from functools import partial
-
 from serial import SerialException
 
 from config import SerialDeviceConfig
 from utils.constants import SERIAL_MESSAGE_SEPARATOR
 from utils.logger import Logger
+
+MAX_WINDOW_SIZE = 30
 
 
 class SerialAioChannel(object):
@@ -74,7 +75,7 @@ class SerialAioChannel(object):
                 if trial < self.config.wait_for_connection.max_retry:
                     self._logger.info(exc)
                     backoff_time = random.randint(1, time_slot)
-                    time_slot = min(time_slot * 2, 1024)
+                    time_slot = min(time_slot * 2, MAX_WINDOW_SIZE)
                     self._logger.warning(f'Attempt #{trial} fail to start device {self.config.url}, '
                                          f'retry after {backoff_time}s...')
                     await asyncio.sleep(backoff_time)

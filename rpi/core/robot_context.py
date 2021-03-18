@@ -2,6 +2,7 @@ import asyncio
 from typing import Optional
 
 from proto.message_pb2 import Position, RobotStatus, MapDescription, RobotInfo, ImagePosition, RobotMode
+
 from utils.constants import ARENA_HEIGHT, ROBOT_ONE_SIDE_SIZE, ARENA_WIDTH
 
 
@@ -99,7 +100,6 @@ class RobotContext(object):
 
     def set_image_positions(self, image: ImagePosition):
         if image != self._image_position_dict.get(image.id):
-            self._image_positions_dirty = True
             self._image_position_dict[image.id] = image
 
     def get_robot_info(self) -> RobotInfo:
@@ -108,14 +108,12 @@ class RobotContext(object):
             robot_info.pos.MergeFrom(self.get_position())
         if self._map_dirty:
             robot_info.map.MergeFrom(self.get_map())
-        if self._image_positions_dirty:
-            robot_info.images.extend(self.get_image_positions())
+        robot_info.images.extend(self.get_image_positions())
         if self._robot_status_dirty:
             robot_info.robot_status = self.get_robot_status()
 
         self._pos_dirty = False
         self._map_dirty = False
-        self._image_positions_dirty = False
         self._robot_status_dirty = False
 
         return robot_info

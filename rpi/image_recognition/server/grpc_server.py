@@ -48,7 +48,7 @@ class InferenceServicer(PredictServicer):
         self.device_id = device_id
 
         # TODO: configurable
-        self.threshold = 0.8
+        self.threshold = 0.9
 
         # TODO: get weight config from yaml
         self.model_runner = DarknetModel(

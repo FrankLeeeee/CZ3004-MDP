@@ -73,21 +73,22 @@ enum RobotStatus {
 
 message ImagePosition {
   enum ImageID {
-    WHITE_UP = 0;
-    BLUE_DOWN = 1;
-    YELLOW_RIGHT = 2;
-    RED_LEFT = 3;
-    GREEN_CIRCLE = 4;
-    BLUE_SIX = 5;
-    GREEN_SEVEN = 6;
-    RED_EIGHT = 7;
-    WHITE_NINE = 8;
-    YELLOW_ZERO = 9;
-    RED_V = 10;
-    GREEN_W = 11;
-    WHITE_X = 12;
-    BLUE_Y = 13;
-    YELLOW_Z = 14;
+    UNKNOWN = 0;  // skip 0
+    WHITE_UP = 1;
+    BLUE_DOWN = 2;
+    YELLOW_RIGHT = 3;
+    RED_LEFT = 4;
+    GREEN_CIRCLE = 5;
+    BLUE_SIX = 6;
+    GREEN_SEVEN = 7;
+    RED_EIGHT = 8;
+    WHITE_NINE = 9;
+    YELLOW_ZERO = 10;
+    RED_V = 11;
+    GREEN_W = 12;
+    WHITE_X = 13;
+    BLUE_Y = 14;
+    YELLOW_Z = 15;
   }
   uint32 x = 1;
   uint32 y = 2;

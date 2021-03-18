@@ -27,6 +27,7 @@ class Label(Enum):
 
 
 class Label2(Enum):
+    UNKNOWN = 0
     UP_ARROW = 1
     DOWN_ARROW = 2
     RIGHT_ARROW = 3

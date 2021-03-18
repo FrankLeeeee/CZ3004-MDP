@@ -14,6 +14,7 @@ from typing import Tuple
 import cv2
 import numpy as np
 import picamera
+from proto.message_pb2 import MetricResponse, RobotStatus, Status, Position, ImagePosition, ImageResponse
 
 from config import ServerConfig, config
 from core.common import Label2
@@ -26,7 +27,6 @@ from image_recognition.server.prediction import DarknetModel
 from proto import grpc_service_pb2_grpc
 from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
-from proto.message_pb2 import MetricResponse, RobotStatus, Status, Position, ImagePosition, ImageResponse
 from server.bluetooth_channel import BluetoothControlServicer
 from utils.constants import IMAGE_ROOT_DIR
 from utils.logger import Logger
@@ -54,14 +54,13 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
     @staticmethod
     def get_target_coord(bbox: Tuple[float, float, float, float]):
         """Get image coordination when RPi is configured in a right wall hugging manner."""
-        x, y, w, h = bbox
+        detection_center, y, _, _ = bbox
 
         # find the image pasted on left block, middle block or right block
-        detection_center = x + w / 2
         block_offset = 0
-        if detection_center <= 1 / 3:
+        if detection_center <= 0.3:
             block_offset = -1
-        elif detection_center > 2 / 3:
+        elif detection_center > 0.65:
             block_offset = 1
         # FIXME: try the image size to get distance?
         distance_offset = 2
@@ -71,16 +70,21 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         direction = robot_position.dir
         if direction == Position.Direction.WEST:
             # RPi facing north
-            return x + block_offset, y + distance_offset
+            img_x = x + block_offset
+            img_y = y + distance_offset
         elif direction == Position.Direction.NORTH:
             # RPi facing east
-            return x + distance_offset, y - block_offset
+            img_x = x + distance_offset
+            img_y = y - block_offset
         elif direction == Position.Direction.EAST:
             # RPi facing south
-            return x - block_offset, y - distance_offset
+            img_x = x - block_offset
+            img_y = y - distance_offset
         else:
             # RPi facing west
-            return x - distance_offset, y + block_offset
+            img_x = x - distance_offset
+            img_y = y + block_offset
+        return max(img_x, 0), max(img_y, 0)
 
     async def Echo(self, request, context):
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
@@ -156,6 +160,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 image_id = Label2[class_name.upper()].value
 
                 # get target image's coordinates
+                self._logger.debug((image_id, bbox, confidence))
                 x, y = self.get_target_coord(bbox)
                 self._logger.debug((x, y))
                 # send to updated coordinates to android
@@ -168,7 +173,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 loop.run_in_executor(None, self.save_photo, image_np, detection,
                                      f'{IMAGE_ROOT_DIR / f"{image_id}.jpg"}')
             image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
-            with open('xxx.jpg', 'wb') as f:
+            with open('origin.jpg', 'wb') as f:
                 f.write(image_np)
 
         status = bool(len(result))
@@ -186,8 +191,10 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         if result_image is not None:
             _, result_image = cv2.imencode('.jpg', result_image)
             response = ImageResponse(raw_image=bytes(result_image))
+            with open('all.jpg', 'wb') as f:
+                f.write(bytes(result_image))
         else:
-            response = ImageResponse()
+            response = ImageResponse(raw_image=bytes())
         return response
 
     def save_photo(self, image_np, detection, file_name):
