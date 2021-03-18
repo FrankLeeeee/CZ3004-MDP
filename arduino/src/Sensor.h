@@ -1,7 +1,12 @@
 #ifndef Sensor_H
 #define Sensor_H
 
-double distToBlocks(double dist);
+double distToBlocksFront1(double dist);
+double distToBlocksFront2(double dist);
+double distToBlocksFront4(double dist);
+double distToBlocksSide3(double dist);
+double distToBlocksSide5(double dist);
+double distToBlocksLR(double dist);
 void sensorInit();
 void getSensorReading();
 double get_curFiltered1();
@@ -25,8 +30,19 @@ double getAvg3();
 double getAvg4();
 double getAvg5();
 double getAvg6();
-int getBlocksSR(double dist);
-float getBlocksSR_float(double dist);
-int getBlocksLR(double dist);
+double medianOfMedians(double a[], int size);
+void partialSort(int a[], int min, int max);
+float getBlocksSR_float_front1(double dist);
+float getBlocksSR_float_front2(double dist);
+float getBlocksSR_float_front4(double dist);
+float getBlocksSR_float_side3(double dist);
+float getBlocksSR_float_side5(double dist);
+int getBlocksSR_front1(double dist);
+int getBlocksSR_front2(double dist);
+int getBlocksSR_front4(double dist);
+int getBlocksSR_side3(double dist);
+int getBlocksSR_side5(double dist);
 float getBlocksLR_float(double dist);
+int getBlocksLR(double dist);
+
 #endif

@@ -26,13 +26,38 @@ double V1, V2, V3, V4, V5, V6;
 //     return (int)((dist + 5) / 10);
 // }
 
-double distToBlocks(double dist)
+double distToBlocksFront1(double dist)
 {
-    double blocks = ((dist + 2.5) / 10) +1;
-    // if ((int)blocks == 2)
-    // {
-    //     blocks = ((dist + 7.5) / 10);
-    // }
+    double blocks = ((dist + 3.5) / 10) +1;
+    return blocks;
+}
+
+double distToBlocksFront2(double dist)
+{
+    double blocks = ((dist + 2) / 10) +1;
+    return blocks;
+}
+double distToBlocksFront4(double dist)
+{
+    double blocks = ((dist + 3.9) / 10) +1;
+    return blocks;
+}
+
+double distToBlocksSide3(double dist)
+{
+    double blocks = ((dist + 4.5) / 10);
+    return blocks;
+}
+
+double distToBlocksSide5(double dist)
+{
+    double blocks = ((dist + 7.5) / 10);
+    return blocks;
+}
+
+double distToBlocksLR(double dist)
+{
+    double blocks = ((dist + 2.5) / 10) + 1;
     return blocks;
 }
 
@@ -158,23 +183,23 @@ double get_curFiltered6()
 void printSensorReading()
 {
     // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-    Serial.print("Sensor 1: ");
-    Serial.print(curFiltered1);
-    Serial.print("  ");
-    Serial.print(getDist1(curFiltered1));
-    Serial.print("  ");
-    Serial.println(getBlocksSR(getDist1(curFiltered1)));
-    Serial.print("  ");
-    Serial.println(getBlocksSR_float(getDist1(curFiltered1)));
+    // Serial.print("Sensor 1: ");
+    // Serial.print(curFiltered1);
+    // Serial.print("  ");
+    // Serial.print(getDist1(curFiltered1));
+    // Serial.print("  ");
+    // Serial.println(getBlocksSR(getDist1(curFiltered1)));
+    // Serial.print("  ");
+    // Serial.println(getBlocksSR_float(getDist1(curFiltered1)));
 
-    Serial.print("Sensor 2: ");
-    Serial.print(curFiltered2);
-    Serial.print("  ");
-    Serial.print(getDist2(curFiltered2));
-    Serial.print("  ");
-    Serial.println(getBlocksSR(getDist2(curFiltered2)));
-    Serial.print("  ");
-    Serial.println(getBlocksSR_float(getDist2(curFiltered2)));
+    // Serial.print("Sensor 2: ");
+    // Serial.print(curFiltered2);
+    // Serial.print("  ");
+    // Serial.print(getDist2(curFiltered2));
+    // Serial.print("  ");
+    // Serial.println(getBlocksSR(getDist2(curFiltered2)));
+    // Serial.print("  ");
+    // Serial.println(getBlocksSR_float(getDist2(curFiltered2)));
     // Serial.print("Sensor 3 ");
     // Serial.print(curFiltered3);
     // Serial.print("  ");
@@ -184,14 +209,14 @@ void printSensorReading()
     // Serial.print("  ");
     // Serial.println(getBlocksSR_float(getDist3(curFiltered3)));
 
-    Serial.print("Sensor 4 ");
-    Serial.print(curFiltered4);
-    Serial.print("  ");
-    Serial.print(getDist4(curFiltered4));
-    Serial.print("  ");
-    Serial.println(getBlocksSR(getDist4(curFiltered4)));
-    Serial.print("  ");
-    Serial.println(getBlocksSR_float(getDist4(curFiltered4)));
+    // Serial.print("Sensor 4 ");
+    // Serial.print(curFiltered4);
+    // Serial.print("  ");
+    // Serial.print(getDist4(curFiltered4));
+    // Serial.print("  ");
+    // Serial.println(getBlocksSR(getDist4(curFiltered4)));
+    // Serial.print("  ");
+    // Serial.println(getBlocksSR_float(getDist4(curFiltered4)));
 
     // Serial.print("Sensor 5 ");
     // Serial.print(curFiltered5);
@@ -199,7 +224,7 @@ void printSensorReading()
     // Serial.print(getDist5(curFiltered5));
     // Serial.print("  ");
     // Serial.println(getBlocksSR(getDist5(curFiltered5)));
-     // Serial.print("  ");
+    // Serial.print("  ");
     // Serial.println(getBlocksSR_float(getDist5(curFiltered5)));
 
     // Serial.print("Sensor 6 ");
@@ -208,7 +233,7 @@ void printSensorReading()
     // Serial.print(getDist6(curFiltered6));
     // Serial.print("  ");
     // Serial.println(getBlocksLR(getDist6(curFiltered6)));
-        // Serial.print("  ");
+    // Serial.print("  ");
     // Serial.println(getBlocksLR_float(getDist6(curFiltered6)));
 
     // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
@@ -235,36 +260,36 @@ void printSensorBlocks()
     Serial.println("");
 
     Serial.print("Sensor 1: ");
-    Serial.println(getBlocksSR(getDist1(getAvg1())));
+    Serial.println(getBlocksSR_front1(getDist1(getAvg1())));
     Serial.print("  ");
-    Serial.print(getBlocksSR_float(getDist1(getAvg1())));
+    Serial.print(getBlocksSR_float_front1(getDist1(getAvg1())));
     Serial.println("    ");
     Serial.print("Sensor 2: ");
-    Serial.println(getBlocksSR(getDist2(getAvg2())));
-     Serial.print("  ");
-    Serial.print(getBlocksSR_float(getDist2(getAvg2())));
-        Serial.println("    ");
+    Serial.println(getBlocksSR_front2(getDist2(getAvg2())));
+    Serial.print("  ");
+    Serial.print(getBlocksSR_float_front2(getDist2(getAvg2())));
+    Serial.println("    ");
 
-    // Serial.print("Sensor 3: ");
-    // Serial.println(getBlocksSR(getDist3(getAvg3())));
-    //  Serial.print("  ");
-    // Serial.print(getBlocksSR_float(getDist3(getAvg3())));
-    //    Serial.println("    ");
+    Serial.print("Sensor 3: ");
+    Serial.println(getBlocksSR_side3(getDist3(getAvg3())));
+    Serial.print("  ");
+    Serial.print(getBlocksSR_float_side3(getDist3(getAvg3())));
+    Serial.println("    ");
     Serial.print("Sensor 4: ");
-    Serial.println(getBlocksSR(getDist4(getAvg4())));
-     Serial.print("  ");
-    Serial.print(getBlocksSR_float(getDist4(getAvg4())));
-        Serial.println("    ");
-    // Serial.print("Sensor 5: ");
-    // Serial.println(getBlocksSR(getDist5(getAvg5())));
-    //  Serial.print("  ");
-    // Serial.print(getBlocksSR_float(getDist5(getAvg5())));
-    //    Serial.println("    ");
-    // Serial.print("Sensor 6: ");
-    // Serial.println(getBlocksLR(getDist6(getAvg6())));
-    //  Serial.print("  ");
-    // Serial.print(getBlocksSR_float(getDist6(getAvg6())));
-    // Serial.println("");
+    Serial.println(getBlocksSR_front4(getDist4(getAvg4())));
+    Serial.print("  ");
+    Serial.print(getBlocksSR_float_front4(getDist4(getAvg4())));
+    Serial.println("    ");
+    Serial.print("Sensor 5: ");
+    Serial.println(getBlocksSR_side5(getDist5(getAvg5())));
+    Serial.print("  ");
+    Serial.print(getBlocksSR_float_side5(getDist5(getAvg5())));
+    Serial.println("    ");
+    Serial.print("Sensor 6: ");
+    Serial.println(getBlocksLR(getDist6(getAvg6())));
+    Serial.print("  ");
+    Serial.print(getBlocksLR_float(getDist6(getAvg6())));
+    Serial.println("");
     //    Serial.println("    ");
     // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
     // Serial.print("Time taken (ms): ");
@@ -493,48 +518,174 @@ double getAvg6()
     return (sensorAvg);
 }
 
-
-
-float getBlocksSR_float(double dist)
+double medianOfMedians(double a[], int size)
 {
-    float blocks = distToBlocks(dist);
-    if (blocks > 3.5 || blocks < 0)
-    {
-        return 0;
-    }
-    return blocks;
+    // double ans;
+    // double numMedians = size / 5;
+    // double *medians = new double[numMedians];
+    // for (int i = 0; i < numMedians; i++)
+    // {
+    //     partialSort(a, i * 5, i * 5 + 4);
+    //     medians[i] = a[i * 5 + 2];
+    // }
+    // if (numMedians > 25)
+    // {
+    //     ans = medianOfMedians(medians, numMedians);
+    // }
+    // else
+    // {
+    //     sort(medians, numMedians);
+    //     ans = medians[numMedians / 2];
+    // }
+    // delete[] medians;
+    // medians = nullptr;
+    // return ans;
+    return 0;
 }
 
-int getBlocksSR(double dist)
+void partialSort(double a[], double min, double max)
 {
-    int blocks = distToBlocks(dist);
+    double t;
+    bool flag;
+    for (int i = min; i < max; i++)
+    {
+        flag = true;
+        for (int o = min; o < (max - i); o++)
+        {
+            if (a[o] > a[o + 1])
+            {
+                t = a[o];
+                a[o] = a[o + 1];
+                a[o + 1] = t;
+                flag = false;
+            }
+        }
+        if (flag)
+            break;
+    }
+}
+
+float getBlocksSR_float_front1(double dist)
+{
+    float blocks = distToBlocksFront1(dist);
     if (blocks > 4 || blocks < 0)
     {
         return 0;
     }
-    
     return blocks;
 }
 
+float getBlocksSR_float_front2(double dist)
+{
+    float blocks = distToBlocksFront2(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+    return blocks;
+}
+
+float getBlocksSR_float_front4(double dist)
+{
+    float blocks = distToBlocksFront4(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+    return blocks;
+}
+
+float getBlocksSR_float_side3(double dist)
+{
+    float blocks = distToBlocksSide3(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+    return blocks;
+}
+
+float getBlocksSR_float_side5(double dist)
+{
+    float blocks = distToBlocksSide5(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+    return blocks;
+}
+
+int getBlocksSR_front1(double dist)
+{
+    int blocks = distToBlocksFront1(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+
+    return blocks;
+}
+
+int getBlocksSR_front2(double dist)
+{
+    int blocks = distToBlocksFront2(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+
+    return blocks;
+}
+
+int getBlocksSR_front4(double dist)
+{
+    int blocks = distToBlocksFront4(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+
+    return blocks;
+}
+
+int getBlocksSR_side3(double dist)
+{
+    int blocks = distToBlocksSide3(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+
+    return blocks;
+}
+
+int getBlocksSR_side5(double dist)
+{
+    int blocks = distToBlocksSide5(dist);
+    if (blocks > 4 || blocks < 0)
+    {
+        return 0;
+    }
+
+    return blocks;
+}
 
 float getBlocksLR_float(double dist)
 {
-    float blocks = distToBlocks(dist);
+    float blocks = distToBlocksLR(dist);
     if (blocks > 5 || blocks < 0)
     {
         return 0;
     }
     return blocks;
 }
-
 
 int getBlocksLR(double dist)
 {
-    int blocks = distToBlocks(dist);
+    int blocks = distToBlocksLR(dist);
     if (blocks > 5 || blocks < 0)
     {
         return 0;
     }
     return blocks;
 }
-

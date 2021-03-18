@@ -41,7 +41,8 @@ void countTickL()
 }
 
 //===== Parameters =====
-int delayms = 20;
+// int delayms = 20;
+int delayms = 10;
 double motorfactorL = 1; //6.2V 1.013
 double motorfactorR = 1; //6.14V 0.993   6.13V 0.95       0.99025
 double motorfactor = 1;
@@ -53,14 +54,15 @@ double dist_between_wheels = 17.315; // in cm
 
 //===== PID =====
 //10, 1, 0.25
-double kp = 9.5, ki = 1.2, kd = 0.05;
-PID PID1(&curTickR, &speedR, &curTickL, kp, ki, kd, DIRECT);
+// double kp = 10, ki = 1, kd = 0.15;
+double kp = 14.5, ki = 10, kd = 0.01;
+PID PID1(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 // PID PID2(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 
-double kp_l = 10, ki_l = 1, kd_l = 0.05;
-PID PIDL(&curTickR, &speedR, &curTickL, kp_l, ki_l, kd_l, DIRECT);
+double kp_l = 14.5, ki_l = 18, kd_l = 0;
+PID PIDL(&curTickL, &speedL, &curTickR, kp_l, ki_l, kd_l, DIRECT);
 
-double kp_r = 10, ki_r = 1, kd_r = 0.05;
+double kp_r = 14.5, ki_r = 11, kd_r = 0;
 PID PIDR(&curTickL, &speedL, &curTickR, kp_r, ki_r, kd_r, DIRECT);
 
 void PIDInit()
@@ -83,7 +85,7 @@ void PIDInit()
 
 double calcTickFromDist(double dist)
 {
-    return ((0.90 * dist) * 1124.5) / circumference;
+    return ((0.92 * dist) * 1124.5) / circumference;
 }
 
 double getTicksFromAngle(double angle)
@@ -97,14 +99,15 @@ double blocksToCm(double blocks)
 }
 
 //===== Movement =====
-int emergencyDistance = 11; //in cm
+int emergencyDistance = 8; //in cm
 
 void moveF(double dist)
 {
     dist = blocksToCm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
-    speedL = 380;
+    // speedL = 300;
+    speedL = 300;
     speedR = speedL * motorfactor;
     md.setSpeeds(speedR, speedL);
     delay(delayms + 3);
@@ -122,6 +125,9 @@ void moveF(double dist)
         md.setSpeeds(speedR, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
+        // Serial.print(curTickL);
+        // Serial.print(" ");
+        // Serial.println(curTickR);
         getSensorReading();
         getSensorReading();
         getSensorReading();
@@ -136,7 +142,8 @@ void moveF(double dist)
         // Serial.println(pepe2);
     }
     md.setBrakes(400, 400);
-    if (((getDist2(get_curFiltered2()) < emergencyDistance + 1) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance + 1) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance + 1) && getDist4(get_curFiltered4()) > 0))
+    // (getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) && 
+    if (((getDist1(get_curFiltered1()) < emergencyDistance+3) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance+3) && getDist4(get_curFiltered4()) > 0))
     {
         calibrateProc();
     }
@@ -213,7 +220,7 @@ void moveB(double dist)
     dist = blocksToCm(dist);
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
-    speedL = 350;
+    speedL = 300;
     speedR = speedL * motorfactor;
     md.setSpeeds(-speedR, -speedL);
     delay(delayms);
@@ -238,8 +245,8 @@ void moveB(double dist)
 void turnL(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle - 4.4); //+2.1, speed 250, 6.1x V      // -2.7
-    speedL = 380;
+    targetTick = getTicksFromAngle(angle-1.8); //+2.1, speed 250, 6.1x V      // -2.7
+    speedL = 300;
     speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);
     delay(delayms + 3);
@@ -272,8 +279,8 @@ void turnL(double angle)
 void turnR(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle - 4.1); //+2, speed 250, 6.1x V
-    speedL = 380;
+    targetTick = getTicksFromAngle(angle-2.1); //+2, speed 250, 6.1x V
+    speedL = 300;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
     delay(delayms + 3);
@@ -402,7 +409,7 @@ void CW_Calibrate()
 
 double distTol = 0.4;
 double distTolBase = -0.4;
-int calibrationDist = 10; //cm from wall
+int calibrationDist = 8; //cm from wall
 
 void wallDistCalibrate()
 {
@@ -441,7 +448,7 @@ void calibrateProc()
 {
     wallCalibrate();
     wallDistCalibrate();
-    moveFslow(0.2);
+    moveFslow(0.35);
     wallCalibrate();
 }
 

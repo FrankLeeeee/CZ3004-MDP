@@ -21,8 +21,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  loopSeq();
-  // readInput();
+  // loopSeq();
+  readInput();
 }
 
 //===== Inputs =====
@@ -94,13 +94,13 @@ void readInput()
 void testFunction()
 {
   while(1){
-    turnR(90);
+    turnL(90);
   delay(500);
-    turnR(90);
+    turnL(90);
   delay(500);
-    turnR(90);
+    turnL(90);
   delay(500);
-    turnR(90);
+    turnL(90);
   delay(500);
   }
 
@@ -149,4 +149,15 @@ void testFunction()
   // delay(500);
   // turnR(90);
   // delay(500);
+
+  // for(int i = 0;i<8;i++){
+  //   moveF(1);
+  //   delay(300);
+  // }
+  // turnR(180);
+  // delay(100);
+  // for(int i = 0;i<8;i++){
+  //   moveF(1);
+  //   delay(300);
+  // }
 }

@@ -110,8 +110,8 @@ int forwardHandler(int argument, uint8_t *response)
   bool status = true;
 
   moveF(argument);
-  delay(100);
-  float data_values[] = {(float)getBlocksSR(getDist1(getAvg1())), (float)getBlocksSR(getDist2(getAvg2())), (float)getBlocksSR(getDist3(getAvg3())), (float)getBlocksSR(getDist4(getAvg4())), (float)getBlocksSR(getDist5(getAvg5())), (float)getBlocksLR(getDist6(getAvg6()))};
+  
+  float data_values[] = {(float)getBlocksSR_float_front1(getDist1(getAvg1())), (float)getBlocksSR_float_front2(getDist2(getAvg2())), (float)getBlocksSR_float_side3(getDist3(getAvg3())), (float)getBlocksSR_float_front4(getDist4(getAvg4())), (float)getBlocksSR_float_side5(getDist5(getAvg5())), (float)getBlocksLR_float(getDist6(getAvg6()))};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
@@ -121,8 +121,8 @@ int turnLeftHandler(int argument, uint8_t *response)
   bool status = true;
 
   turnL(argument);
-  delay(100);
-  float data_values[] = {(float)getBlocksSR(getDist1(getAvg1())), (float)getBlocksSR(getDist2(getAvg2())), (float)getBlocksSR(getDist3(getAvg3())), (float)getBlocksSR(getDist4(getAvg4())), (float)getBlocksSR(getDist5(getAvg5())), (float)getBlocksLR(getDist6(getAvg6()))};
+  
+  float data_values[] = {(float)getBlocksSR_float_front1(getDist1(getAvg1())), (float)getBlocksSR_float_front2(getDist2(getAvg2())), (float)getBlocksSR_float_side3(getDist3(getAvg3())), (float)getBlocksSR_float_front4(getDist4(getAvg4())), (float)getBlocksSR_float_side5(getDist5(getAvg5())), (float)getBlocksLR_float(getDist6(getAvg6()))};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
@@ -132,8 +132,8 @@ int turnRightHandler(int argument, uint8_t *response)
   bool status = true;
 
   turnR(argument);
-  delay(300);
-  float data_values[] = {(float)getBlocksSR(getDist1(getAvg1())), (float)getBlocksSR(getDist2(getAvg2())), (float)getBlocksSR(getDist3(getAvg3())), (float)getBlocksSR(getDist4(getAvg4())), (float)getBlocksSR(getDist5(getAvg5())), (float)getBlocksLR(getDist6(getAvg6()))};
+  
+  float data_values[] = {(float)getBlocksSR_float_front1(getDist1(getAvg1())), (float)getBlocksSR_float_front2(getDist2(getAvg2())), (float)getBlocksSR_float_side3(getDist3(getAvg3())), (float)getBlocksSR_float_front4(getDist4(getAvg4())), (float)getBlocksSR_float_side5(getDist5(getAvg5())), (float)getBlocksLR_float(getDist6(getAvg6()))};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
@@ -141,7 +141,7 @@ int turnRightHandler(int argument, uint8_t *response)
 int getMetricsHandler(int argument, uint8_t *response)
 {
   bool status = true;
-  float data_values[] = {(float)getBlocksSR(getDist1(getAvg1())), (float)getBlocksSR(getDist2(getAvg2())), (float)getBlocksSR(getDist3(getAvg3())), (float)getBlocksSR(getDist4(getAvg4())), (float)getBlocksSR(getDist5(getAvg5())), (float)getBlocksLR(getDist6(getAvg6()))};
+  float data_values[] = {(float)getBlocksSR_float_front1(getDist1(getAvg1())), (float)getBlocksSR_float_front2(getDist2(getAvg2())), (float)getBlocksSR_float_side3(getDist3(getAvg3())), (float)getBlocksSR_float_front4(getDist4(getAvg4())), (float)getBlocksSR_float_side5(getDist5(getAvg5())), (float)getBlocksLR_float(getDist6(getAvg6()))};
 
   return metric_response_serializer(data_values, sizeof(data_values) / sizeof(float), status, response);
 }
@@ -151,8 +151,8 @@ int calibrationHandler(int argument, uint8_t *response)
   bool status = true;
 
   calibrateProc();
-  delay(300);
-  float data_values[] = {(float)getBlocksSR(getDist1(getAvg1())), (float)getBlocksSR(getDist2(getAvg2())), (float)getBlocksSR(getDist3(getAvg3())), (float)getBlocksSR(getDist4(getAvg4())), (float)getBlocksSR(getDist5(getAvg5())), (float)getBlocksLR(getDist6(getAvg6()))};
+  
+  float data_values[] = {(float)getBlocksSR_float_front1(getDist1(getAvg1())), (float)getBlocksSR_float_front2(getDist2(getAvg2())), (float)getBlocksSR_float_side3(getDist3(getAvg3())), (float)getBlocksSR_float_front4(getDist4(getAvg4())), (float)getBlocksSR_float_side5(getDist5(getAvg5())), (float)getBlocksLR_float(getDist6(getAvg6()))};
 
   return status_serializer(status, response);
 }
