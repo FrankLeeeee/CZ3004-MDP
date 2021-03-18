@@ -93,3 +93,7 @@ message ImagePosition {
   uint32 y = 2;
   ImageID id = 3;
 }
+
+message ImageResponse {
+  bytes raw_image = 1;
+}

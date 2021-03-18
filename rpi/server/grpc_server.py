@@ -26,8 +26,9 @@ from image_recognition.server.prediction import DarknetModel
 from proto import grpc_service_pb2_grpc
 from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
-from proto.message_pb2 import MetricResponse, RobotStatus, Status, Position, ImagePosition
+from proto.message_pb2 import MetricResponse, RobotStatus, Status, Position, ImagePosition, ImageResponse
 from server.bluetooth_channel import BluetoothControlServicer
+from utils.constants import IMAGE_ROOT_DIR
 from utils.logger import Logger
 
 
@@ -40,6 +41,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         self.recognition_server_url = config.recognition_server_url
         self.context = context
         self.camera = None
+        self.image_paths = set()
 
         # init the camera module
         if config.camera:
@@ -157,21 +159,39 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 x, y = self.get_target_coord(bbox)
                 self._logger.debug((x, y))
                 # send to updated coordinates to android
-                response = ImagePosition(id=image_id, x=x, y=y)
-                context.set_image_positions(response)
+                image_position = ImagePosition(id=image_id, x=x, y=y)
+                context.set_image_positions(image_position)
 
+                # save image photo
                 image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
-                loop.run_in_executor(None, self.save_photo, image_np, detection, '1.jpg')
+                loop.run_in_executor(None, self.save_photo, image_np, detection, f'{IMAGE_ROOT_DIR / image_id}.jpg')
 
         status = bool(result)
         return Status(status=status)
 
+    def GetImageResult(self, request, context):
+        result_image = None
+        for path_path in self.image_paths:
+            img = cv2.imread(path_path)
+            if result_image is None:
+                result_image = img.copy()
+            else:
+                result_image = cv2.hconcat([img, result_image])
+        if result_image:
+            result_image = cv2.imencode('jpg', result_image)
+
+        response = ImageResponse(raw_image=result_image)
+        return response
+
     def save_photo(self, image_np, detection, file_name):
         image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
         annotated_image = DarknetModel.draw_annotations(image, detection, CLASS_COLORS)
+        self.image_paths.add(file_name)
         self._logger.info(f'Save result image at {file_name}')
         cv2.imwrite(file_name, annotated_image)
+
+
 
 
 class BackendRPCServer(GRPCAioServer):

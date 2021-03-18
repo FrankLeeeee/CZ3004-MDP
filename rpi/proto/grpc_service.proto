@@ -26,4 +26,6 @@ service GRPCService {
   rpc GetWayPoint(EmptyRequest) returns (Position) {}
 
   rpc TakePhoto(EmptyRequest) returns (Status) {}
+
+  rpc GetImageResult(EmptyRequest) returns (ImageResponse) {}
 }

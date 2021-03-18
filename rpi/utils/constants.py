@@ -1,6 +1,8 @@
 from pathlib import Path
 
 PROJECT_ROOT_PATH = Path(__file__).parents[1].absolute()
+IMAGE_ROOT_DIR = PROJECT_ROOT_PATH / 'image'
+IMAGE_ROOT_DIR.mkdir(exist_ok=True)
 
 METHOD_LENGTH = 1
 BYTE_ORDER = 'little'
