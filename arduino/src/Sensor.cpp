@@ -28,13 +28,13 @@ double V1, V2, V3, V4, V5, V6;
 
 double distToBlocksFront1(double dist)
 {
-    double blocks = ((dist + 3.5) / 10) +1;
+    double blocks = ((dist + 3.2) / 10) +1;
     return blocks;
 }
 
 double distToBlocksFront2(double dist)
 {
-    double blocks = ((dist + 2) / 10) +1;
+    double blocks = ((dist + 2.2) / 10) +1;
     return blocks;
 }
 double distToBlocksFront4(double dist)
@@ -57,7 +57,7 @@ double distToBlocksSide5(double dist)
 
 double distToBlocksLR(double dist)
 {
-    double blocks = ((dist + 2.5) / 10) + 1;
+    double blocks = ((dist + 6.5) / 10);
     return blocks;
 }
 
@@ -316,7 +316,7 @@ double getDist2(double x)
     //  return 204.0816327 / (0.0448 * x - 0.0022);
     //return 1 / (0.0002 * x - 0.0065);
     // return 1 / (0.0002 * x - 0.0054);
-    return 1 / (0.00000007 * pow(x, 2) + 0.0002 * x - 0.0007);
+    return 1 / (0.00000007 * pow(x, 2) + 0.0002 * x - 0.0007) - 2;
 }
 
 double getDist3(double x)
@@ -568,7 +568,7 @@ void partialSort(double a[], double min, double max)
 float getBlocksSR_float_front1(double dist)
 {
     float blocks = distToBlocksFront1(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 3 || blocks < 0)
     {
         return 0;
     }
@@ -578,7 +578,7 @@ float getBlocksSR_float_front1(double dist)
 float getBlocksSR_float_front2(double dist)
 {
     float blocks = distToBlocksFront2(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 3 || blocks < 0)
     {
         return 0;
     }
@@ -588,7 +588,7 @@ float getBlocksSR_float_front2(double dist)
 float getBlocksSR_float_front4(double dist)
 {
     float blocks = distToBlocksFront4(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 3 || blocks < 0)
     {
         return 0;
     }
@@ -598,7 +598,7 @@ float getBlocksSR_float_front4(double dist)
 float getBlocksSR_float_side3(double dist)
 {
     float blocks = distToBlocksSide3(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 3 || blocks < 0)
     {
         return 0;
     }
@@ -608,7 +608,7 @@ float getBlocksSR_float_side3(double dist)
 float getBlocksSR_float_side5(double dist)
 {
     float blocks = distToBlocksSide5(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 3 || blocks < 0)
     {
         return 0;
     }
@@ -673,7 +673,7 @@ int getBlocksSR_side5(double dist)
 float getBlocksLR_float(double dist)
 {
     float blocks = distToBlocksLR(dist);
-    if (blocks > 5 || blocks < 0)
+    if (blocks > 4 || blocks < 0)
     {
         return 0;
     }

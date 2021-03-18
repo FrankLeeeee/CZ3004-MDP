@@ -85,7 +85,7 @@ void PIDInit()
 
 double calcTickFromDist(double dist)
 {
-    return ((0.92 * dist) * 1124.5) / circumference;
+    return ((0.94 * dist) * 1124.5) / circumference;
 }
 
 double getTicksFromAngle(double angle)
@@ -245,7 +245,7 @@ void moveB(double dist)
 void turnL(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle-1.8); //+2.1, speed 250, 6.1x V      // -2.7
+    targetTick = getTicksFromAngle(angle-0.5); // -1.8
     speedL = 300;
     speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);
@@ -279,7 +279,7 @@ void turnL(double angle)
 void turnR(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle-2.1); //+2, speed 250, 6.1x V
+    targetTick = getTicksFromAngle(angle-0.5); //-2.1
     speedL = 300;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
@@ -409,7 +409,7 @@ void CW_Calibrate()
 
 double distTol = 0.4;
 double distTolBase = -0.4;
-int calibrationDist = 8; //cm from wall
+int calibrationDist = 10; //cm from wall
 
 void wallDistCalibrate()
 {
@@ -427,11 +427,11 @@ void wallDistCalibrate()
     }
     else if (FL > calibrationDist && FR > calibrationDist)
     {
-        moveFstopWall(calibrationDist);
+        moveFstopWall(calibrationDist-2);
     }
     else if (FL < calibrationDist && FR < calibrationDist)
     {
-        moveBstopWall(calibrationDist);
+        moveBstopWall(calibrationDist-2);
     }
     md.setBrakes(400, 400);
     recursionCount--;
@@ -448,7 +448,7 @@ void calibrateProc()
 {
     wallCalibrate();
     wallDistCalibrate();
-    moveFslow(0.35);
+    moveFslow(0.45);
     wallCalibrate();
 }
 
