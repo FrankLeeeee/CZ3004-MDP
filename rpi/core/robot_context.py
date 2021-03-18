@@ -90,12 +90,12 @@ class RobotContext(object):
         self._robot_status = robot_status_new
 
     def get_image_positions(self):
-        image_position = list()
+        image_position_list = list()
         for image_position in self._image_position_dict.values():
             new_image_position = ImagePosition()
             new_image_position.MergeFrom(image_position)
-            image_position.append(new_image_position)
-        return image_position
+            image_position_list.append(new_image_position)
+        return image_position_list
 
     def set_image_positions(self, image: ImagePosition):
         if image != self._image_position_dict.get(image.id):

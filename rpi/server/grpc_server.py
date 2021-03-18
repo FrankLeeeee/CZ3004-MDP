@@ -160,28 +160,34 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
                 self._logger.debug((x, y))
                 # send to updated coordinates to android
                 image_position = ImagePosition(id=image_id, x=x, y=y)
-                context.set_image_positions(image_position)
+                self.context.set_image_positions(image_position)
 
                 # save image photo
                 image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
                 detection = {'class_names': [class_name], 'confidence': [confidence], 'bbox': [bbox]}
-                loop.run_in_executor(None, self.save_photo, image_np, detection, f'{IMAGE_ROOT_DIR / image_id}.jpg')
+                loop.run_in_executor(None, self.save_photo, image_np, detection,
+                                     f'{IMAGE_ROOT_DIR / f"{image_id}.jpg"}')
+            image_np = np.frombuffer(stream.getvalue(), dtype=np.uint8)
+            with open('xxx.jpg', 'wb') as f:
+                f.write(image_np)
 
-        status = bool(result)
+        status = bool(len(result))
         return Status(status=status)
 
     def GetImageResult(self, request, context):
         result_image = None
-        for path_path in self.image_paths:
-            img = cv2.imread(path_path)
+        for image_path in self.image_paths:
+            image_path = str(image_path)
+            img = cv2.imread(image_path)
             if result_image is None:
                 result_image = img.copy()
             else:
                 result_image = cv2.hconcat([img, result_image])
-        if result_image:
-            result_image = cv2.imencode('jpg', result_image)
-
-        response = ImageResponse(raw_image=result_image)
+        if result_image is not None:
+            _, result_image = cv2.imencode('.jpg', result_image)
+            response = ImageResponse(raw_image=bytes(result_image))
+        else:
+            response = ImageResponse()
         return response
 
     def save_photo(self, image_np, detection, file_name):
@@ -189,9 +195,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
         annotated_image = DarknetModel.draw_annotations(image, detection, CLASS_COLORS)
         self.image_paths.add(file_name)
         self._logger.info(f'Save result image at {file_name}')
-        cv2.imwrite(file_name, annotated_image)
-
-
+        cv2.imwrite(str(file_name), annotated_image)
 
 
 class BackendRPCServer(GRPCAioServer):
