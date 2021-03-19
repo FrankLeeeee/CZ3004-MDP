@@ -49,12 +49,13 @@ public class MainActivity extends AppCompatActivity {
     MenuItem menu_enable_swipe_input;
     MenuItem menu_show_bluetooth_chat;
     MenuItem menu_show_data_strings;
+    MenuItem menu_calibrate;
 
     TextView tv_status;
     Button btn_forward;
     Button btn_left;
     Button btn_right;
-    Button btn_resetFP;
+    Button btn_reset;
     Button btn_terminate;
     Button btn_explr;
     Button btn_fastest;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         btn_forward = (Button) findViewById(R.id.btn_forward);
         btn_left= (Button) findViewById(R.id.btn_left);
         btn_right= (Button) findViewById(R.id.btn_right);
-        btn_resetFP = (Button) findViewById(R.id.btn_reset);
+        btn_reset = (Button) findViewById(R.id.btn_reset);
         btn_terminate= (Button) findViewById(R.id.btn_terminate);
         btn_explr= (Button) findViewById(R.id.btn_explr);
         btn_fastest= (Button) findViewById(R.id.btn_fastest);
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btn_resetFP.setOnClickListener(new View.OnClickListener() {
+        btn_reset.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 String instruction = "Reset\\{};";
                 Robot r = Robot.getInstance();
@@ -260,75 +261,14 @@ public class MainActivity extends AppCompatActivity {
 
         btn_config1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-//                SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
-//                String retrievedText = prefs.getString("string1", null);
-//                if (retrievedText != null) {
-//                    outgoingMessage(retrievedText);
-//                }
-
-                //testing
-                Test();
-            }
-
-            private void Test() {
-                //send forward message
-                try {
-                    String instructionValue = new JSONObject().put("step", 1).toString();
-                    String instruction = "Forward\\" + instructionValue + ";";
-                    outgoingMessage(instruction, false);
-                    loadGrid();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
+                String retrievedText = prefs.getString("string1", null);
+                if (retrievedText != null) {
+                    outgoingMessage(retrievedText, false);
                 }
-
-                //send turn left message
-                try {
-                    String instructionValue = new JSONObject().put("angle", 90).toString();
-                    String instruction = "TurnLeft\\" + instructionValue + ";";
-                    outgoingMessage(instruction, false);
-                    loadGrid();
-                } catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-                //send turn right message
-                try {
-                    String instructionValue = new JSONObject().put("angle", 90).toString();
-                    String instruction = "TurnRight\\" + instructionValue + ";";
-                    outgoingMessage(instruction, false);
-                    loadGrid();
-                } catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-                //send explore message
-                try {
-                    String instructionValue = new JSONObject().put("mode", 0).toString();
-                    String instruction = "SetRobotMode\\" + instructionValue + ";";
-                    outgoingMessage(instruction, false);
-                } catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-                //send fastest path message
-                try {
-                    String instructionValue = new JSONObject().put("mode", 1).toString();
-                    String instruction = "SetRobotMode\\" + instructionValue + ";";
-                    outgoingMessage(instruction, false);
-                }catch(JSONException e) {
-                    e.printStackTrace();
-                }
-
-                //send terminate message
-                outgoingMessage("Terminate\\{};", false);
-
-                //send set waypoint message
-                outgoingMessage("SetWayPoint\\{\"x\":" + 10 + ",\"y\":" + 10 + "};", false);   //(10, 10)
-
-                //send set startpoint message
-                outgoingMessage("SetStartPoint\\{" + 0 + "," + 0 + "};", false);   //(0, 0)
             }
         });
+
         btn_config2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
@@ -445,6 +385,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if(id == R.id.action_calibrate) {
+            calibrateRobot();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -510,7 +455,57 @@ public class MainActivity extends AppCompatActivity {
         String imgreg = "{";
         ArrayList<IDblock> numberedBlocks = Map.getInstance().getNumberedBlocks();
         for(IDblock blk : numberedBlocks){
-            imgreg += String.format("(%s, %d, %d)", blk.getID(), blk.getPosition().getPosX(), blk.getPosition().getPosY());
+            String imgID;
+            switch (blk.getID()){
+                case "WHITE_UP":
+                    imgID = "1";
+                    break;
+                case "BLUE_DOWN":
+                    imgID = "2";
+                    break;
+                case "YELLOW_RIGHT":
+                    imgID = "3";
+                    break;
+                case "RED_LEFT":
+                    imgID = "4";
+                    break;
+                case "GREEN_CIRCLE":
+                    imgID = "5";
+                    break;
+                case "BLUE_SIX":
+                    imgID = "6";
+                    break;
+                case "GREEN_SEVEN":
+                    imgID = "7";
+                    break;
+                case "RED_EIGHT":
+                    imgID = "8";
+                    break;
+                case "WHITE_NINE":
+                    imgID = "9";
+                    break;
+                case "YELLOW_ZERO":
+                    imgID = "10";
+                    break;
+                case "RED_V":
+                    imgID = "11";
+                    break;
+                case "GREEN_W":
+                    imgID = "12";
+                    break;
+                case "WHITE_X":
+                    imgID = "13";
+                    break;
+                case "BLUE_Y":
+                    imgID = "14";
+                    break;
+                case "YELLOW_Z":
+                    imgID = "15";
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + blk.getID());
+            }
+            imgreg += String.format("(%s, %d, %d)", imgID, blk.getPosition().getPosX(), blk.getPosition().getPosY());
             imgreg += ", ";
         }
         if(imgreg.length()>2)imgreg = imgreg.substring(0, imgreg.length()-2);
@@ -540,6 +535,8 @@ public class MainActivity extends AppCompatActivity {
     public void incomingMessage(String readMsg) {
         //update map
         final Robot r = Robot.getInstance();
+
+        Log.d("Read Message", "Message = " + readMsg);
 
         if(readMsg.length()>0) {
             menu_show_bluetooth_chat.setChecked(true);
@@ -637,21 +634,24 @@ public class MainActivity extends AppCompatActivity {
              * formerly BLOCK command
              */
             if(images != null){
-
+                ArrayList<IDblock> updatedList = new ArrayList<IDblock>();
                 for (int i=0; i<images.length(); i++) {
                     JSONObject tempImg;
                     try {
                         tempImg = images.getJSONObject(i);
-                        String imageID = Integer.toString((Integer.parseInt(tempImg.get("id").toString())+1)); //convert to integer, add 1, convert to string
+                        String imageID = tempImg.get("id").toString();
                         String imageX = tempImg.get("x").toString();
                         String imageY = tempImg.get("y").toString();
 
                         IDblock input = new IDblock(imageID, Integer.parseInt(imageX), Integer.parseInt(imageY));
-                        Map.getInstance().addNumberedBlocks(input);
+                        updatedList.add(input);
+//                        Map.getInstance().addNumberedBlocks(input);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                Map.getInstance().updateNumberedBlocks(updatedList);
+                Log.d("numberedList", "updatedList = " + Map.getInstance().getNumberedBlocks());
 
                 if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                     loadGrid();
@@ -888,6 +888,12 @@ public class MainActivity extends AppCompatActivity {
         WayPoint.getInstance().setPosition(null);
         outgoingMessage("RemoveWayPoint\\{};", false);
         loadGrid();
+    }
+
+    //calibrate robot
+    private void calibrateRobot(){
+        String instruction = "Calibrate\\{};";
+        outgoingMessage(instruction, false);
     }
 
     //swipe gesture input

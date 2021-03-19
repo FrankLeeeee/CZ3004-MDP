@@ -139,7 +139,7 @@
                 android:layout_marginRight="5dp"
                 android:layout_weight="97"
                 android:background="#F44336"
-                android:text="RESET FP" />
+                android:text="RESET" />
 
 
         </LinearLayout>

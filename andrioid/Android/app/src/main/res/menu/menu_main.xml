@@ -71,4 +71,10 @@
         android:orderInCategory="100"
         android:title="chat"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_calibrate"
+        android:orderInCategory="100"
+        android:title="Calibrate"
+        app:showAsAction="never" />
 </menu>

@@ -55,21 +55,21 @@ public class MapCanvas extends View implements View.OnTouchListener {
     private GestureDetector  mDetector;
 
     private static final HashMap<String, Integer> IDHash = new HashMap<String, Integer>(){{
-        put("1", R.mipmap.up_arrow);
-        put("2", R.mipmap.down_arrow);
-        put("3", R.mipmap.right_arrow);
-        put("4", R.mipmap.left_arrow);
-        put("5", R.mipmap.go);
-        put("6", R.mipmap.number_six);
-        put("7", R.mipmap.number_seven);
-        put("8", R.mipmap.number_eight);
-        put("9", R.mipmap.number_nine);
-        put("10", R.mipmap.number_zero);
-        put("11", R.mipmap.alphabet_v);
-        put("12", R.mipmap.alphabet_w);
-        put("13", R.mipmap.alphabet_x);
-        put("14", R.mipmap.alphabet_y);
-        put("15", R.mipmap.alphabet_z);
+        put("WHITE_UP", R.mipmap.up_arrow);
+        put("BLUE_DOWN", R.mipmap.down_arrow);
+        put("YELLOW_RIGHT", R.mipmap.right_arrow);
+        put("RED_LEFT", R.mipmap.left_arrow);
+        put("GREEN_CIRCLE", R.mipmap.go);
+        put("BLUE_SIX", R.mipmap.number_six);
+        put("GREEN_SEVEN", R.mipmap.number_seven);
+        put("RED_EIGHT", R.mipmap.number_eight);
+        put("WHITE_NINE", R.mipmap.number_nine);
+        put("YELLOW_ZERO", R.mipmap.number_zero);
+        put("RED_V", R.mipmap.alphabet_v);
+        put("GREEN_W", R.mipmap.alphabet_w);
+        put("WHITE_X", R.mipmap.alphabet_x);
+        put("BLUE_Y", R.mipmap.alphabet_y);
+        put("YELLOW_Z", R.mipmap.alphabet_z);
 
     }
 
@@ -230,13 +230,19 @@ public class MapCanvas extends View implements View.OnTouchListener {
             float posY = (paddingY+(19-block.getPosition().getPosY())*cellHeight);
 //            float posX = paddingX + (block.getPosition().getPosX()+0.5f) * cellWidth;
 //            float posY = paddingY + (20-block.getPosition().getPosY()) * cellHeight;
-//
-            if(obstacles[block.getPosition().getPosY()][block.getPosition().getPosX()]==1) {
-                Rect r = new Rect((int)posX, (int)posY, (int)(posX+cellWidth), (int)(posY+cellHeight));
-//                canvas.drawText(block.getID(), posX, posY, numberedObstacle);
-                Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), IDHash.get(block.getID()));
-                canvas.drawBitmap(bitmap, null, r, numberedObstacle);
-            }
+
+            //dont check if there's obstacle
+            Rect r = new Rect((int)posX, (int)posY, (int)(posX+cellWidth), (int)(posY+cellHeight));
+            Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), IDHash.get(block.getID()));
+            canvas.drawBitmap(bitmap, null, r, numberedObstacle);
+
+            //check if there's obstacle
+//            if(obstacles[block.getPosition().getPosY()][block.getPosition().getPosX()]==1) {
+//                Rect r = new Rect((int)posX, (int)posY, (int)(posX+cellWidth), (int)(posY+cellHeight));
+////                canvas.drawText(block.getID(), posX, posY, numberedObstacle);
+//                Bitmap bitmap = BitmapFactory.decodeResource(getContext().getResources(), IDHash.get(block.getID()));
+//                canvas.drawBitmap(bitmap, null, r, numberedObstacle);
+//            }
         }
     }
 

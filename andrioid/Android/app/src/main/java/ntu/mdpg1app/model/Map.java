@@ -46,6 +46,10 @@ public class Map {
 		numberedBlocks.add(block);
 	}
 
+	public void updateNumberedBlocks(ArrayList<IDblock> updatedList){
+		this.numberedBlocks = updatedList;
+	}
+
 	//in hexdecimal, from map descriptor file to arrays
 	public void setMap(String exploredTileHex, String obstacleHex, String exploredObstacleHex) {
 
