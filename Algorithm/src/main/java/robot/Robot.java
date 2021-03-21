@@ -1,9 +1,9 @@
 package robot;
 
 import communication.GrpcClient;
-import communication.MapDescriptor;
 import config.MapConst;
 import config.RobotConst;
+import grpc.GrpcService;
 import map.Map;
 import org.apache.log4j.Logger;
 import simulator.Simulator;
@@ -125,10 +125,10 @@ public class Robot {
 	}
 
 	public void move(RobotConst.MOVE m, Map exploredMap) {
-		move(m, true, exploredMap);
+		move(m, exploredMap, true, true);
 	}
 
-	public void move(RobotConst.MOVE m, boolean sendToAndroidFlag, Map exploredMap) {
+	public void move(RobotConst.MOVE m, Map exploredMap, boolean doSense, boolean sendToAndroidFlag) {
 		// if in simulation mode
 		if (!this.isRealRobot) {
 			try {
@@ -167,42 +167,54 @@ public class Robot {
 				break;
 		}
 
-		if (this.isRealRobot) sendMove(m, sendToAndroidFlag, exploredMap);
-		else logger.info("Move: " + RobotConst.MOVE.getMove(m));
+		if (this.isRealRobot) sendMove(m, exploredMap, sendToAndroidFlag, doSense);
+//		else logger.info("Move: " + RobotConst.MOVE.getMove(m));
+
 
 		// check if robot has reached goal
 		if (this.row == MapConst.GOAL_ROW && this.col == MapConst.GOAL_COL) this.hasReachedGoal = true;
+
 	}
 
 	private RobotConst.DIRECTION updateDir(RobotConst.MOVE m) {
 		return (m == RobotConst.MOVE.TURN_LEFT) ? RobotConst.DIRECTION.getNextAntiClk(this.dir) : RobotConst.DIRECTION.getNextClk(this.dir);
 	}
 
-	private void sendMove(RobotConst.MOVE m, boolean sendMoveToAndroidFlag, Map exploredMap) {
+	private void sendMove(RobotConst.MOVE m, Map exploredMap, boolean sendMoveToAndroidFlag, boolean doSense) {
 		if (m.equals(RobotConst.MOVE.CALIBRATE)) {
 			Boolean response = client.calibrate();
 			assert response : "Calibration returns status 0";
 		} else {
-			this.updateSensorsDirections();
-			java.util.Map<Integer, Double> response = client.moveRobot(m, 1);
+			java.util.Map<Integer, Float> response = client.moveRobot(m, 1);
 			assert response.size() == 6 : "Not all sensor data are obtained";
-			processSensorValue(response, exploredMap);
+
+			if (doSense) {
+				this.updateSensorsDirections();
+				processSensorValue(response, exploredMap);
+			}
+
 		}
 
 		if (sendMoveToAndroidFlag) {
-			sendDataToAndroid("DATA", exploredMap);
+			sendDataToAndroid(exploredMap);
 		}
 	}
 
-
 	public void moveForward(int numSteps, Map exploredMap) {
+		this.moveForward(numSteps, exploredMap, true, true);
+	}
+
+	public void moveForward(int numSteps, Map exploredMap, boolean sendToAndroid, boolean doSense) {
 		if (numSteps == 1) {
-			move(RobotConst.MOVE.FORWARD, exploredMap);
+			move(RobotConst.MOVE.FORWARD, exploredMap, false, false);
 		} else {
-			this.updateSensorsDirections();
-			java.util.Map<Integer, Double> response = client.moveRobot(RobotConst.MOVE.FORWARD, 1);
+			java.util.Map<Integer, Float> response = client.moveRobot(RobotConst.MOVE.FORWARD, numSteps);
 			assert response.size() == 6 : "Not all sensor data are obtained";
-			processSensorValue(response, exploredMap);
+
+			if (doSense) {
+				this.updateSensorsDirections();
+				processSensorValue(response, exploredMap);
+			}
 
 			switch (this.dir) {
 				case NORTH:
@@ -221,13 +233,43 @@ public class Robot {
 
 			logger.info(this.getRow() + ", " + this.getCol() + " " + this.getDir());
 
-			if (Simulator.task == "EXP") {
-				sendDataToAndroid("DATA", exploredMap);
-			} else {
-				sendDataToAndroid("ROBOTPOSITION", exploredMap);
+			if (sendToAndroid) {
+				sendDataToAndroid(exploredMap);
 			}
-
 		}
+	}
+
+	public void sendDataToAndroid(Map exploredMap) {
+		// pass map info to android
+		if (Simulator.task == "EXP") {
+			client.setMap(exploredMap);
+		}
+
+		// pass robot position to android
+		GrpcService.Position.Direction dir;
+		switch (this.dir) {
+			case NORTH:
+				dir = GrpcService.Position.Direction.NORTH;
+				break;
+			case EAST:
+				dir = GrpcService.Position.Direction.EAST;
+				break;
+
+			case SOUTH:
+				dir = GrpcService.Position.Direction.SOUTH;
+				break;
+
+			case WEST:
+				dir = GrpcService.Position.Direction.WEST;
+				break;
+
+			default:
+				dir = GrpcService.Position.Direction.WEST;
+				break;
+		}
+
+		// TODO: not needed anymore
+//		client.setPosition(this.col, this.row, dir);
 	}
 
 	public void updateSensorsDirections() {
@@ -277,50 +319,29 @@ public class Robot {
 	}
 
 	public void sense(Map exploredMap) {
-		java.util.Map<Integer, Double> response = client.getMetrics();
+		java.util.Map<Integer, Float> response = client.getMetrics();
 		processSensorValue(response, exploredMap);
-		sendDataToAndroid("GRID", exploredMap);
+		client.setMap(exploredMap);
 	}
 
-	public void processSensorValue(java.util.Map<Integer, Double> values, Map exploredMap) {
-		int[] sensorInt = new int[6]; // store the sensor data from the real sensors
+	public void processSensorValue(java.util.Map<Integer, Float> values, Map exploredMap) {
+//		Double valueFLSR = (1 / (0.0000005 * Math.pow(values.get(new Integer(1)), 2) + 0.00005 * values.get(new Integer(1)) + 0.0081) + 5) / 10.0;
+//		Double valueFCSR = (1 / (0.0002 * values.get(new Integer(2)) - 0.0054 + 1) + 5) / 10.0;
+//		Double valueRSR = ((1 / (0.0002 * values.get(new Integer(3)) - 0.0063) + 3) + 5) / 10.0;
+////		Double valueRSR = ((1 / (0.0000004 * Math.pow(values.get(new Integer(3)), 2) + 0.0001 * values.get(new Integer(3)) + 0.0014)) + 5) / 10.0;
+//		Double valueFRSR = ((1 / (0.0000005 * Math.pow(values.get(new Integer(4)), 2) + 0.00006 * values.get(new Integer(4)) + 0.0062)) + 5) / 10.0;
+//		Double valueLSR = ((1 / (0.0002 * values.get(new Integer(5)) - 0.0016)) + 5) / 10.0;
+//		Double valueLLR = ((1 / (0.00000009 * Math.pow(values.get(new Integer(6)), 2) + 0.00002 * values.get(new Integer(6)) + 0.0085)) + 5) /
+//				10.0;
 
-		// SRFL:SRFC:SRFR:SRL:SRR:LRL
-		for (int i = 0; i <= values.size(); i++) {
-			sensorInt[i] = values.get(new Integer(i)).intValue();
-		}
-		SRFrontLeft.sense(exploredMap, sensorInt[0]);
-		SRFrontCenter.sense(exploredMap, sensorInt[1]);
-		SRFrontRight.sense(exploredMap, sensorInt[2]);
-		SRLeft.sense(exploredMap, sensorInt[3]);
-		SRRight.sense(exploredMap, sensorInt[4]);
-		LRLeft.sense(exploredMap, sensorInt[5]);
-	}
+//		logger.info(valueFCSR);
+//		logger.info(valueFCSR.intValue());
 
-	public void sendDataToAndroid(String cmd, Map exploredMap) {
-		String message;
-		String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
-
-		switch (cmd) {
-			case "GRID":
-				message = cmd + ":,,," + mapDescriptors[0] + "," + mapDescriptors[1];
-				break;
-
-			case "DATA":
-				message = cmd + ":" + this.col + "," + this.row + "," + this.dir + "," + mapDescriptors[0] + "," + mapDescriptors[1];
-				break;
-
-			case "ROBOTPOSITION":
-				message = cmd + ":" + this.col + "," + this.row + "," + this.dir + ",,";
-				break;
-
-			default:
-				message = cmd + ":,,,,";
-				break;
-		}
-
-		// TODO: fix the map string
-		boolean response = client.setMap(message);
-		assert response : "Sending explored map to Android returns 0";
+		SRFrontLeft.sense(exploredMap, values.get(new Integer(1)).intValue());
+		SRFrontCenter.sense(exploredMap, values.get(new Integer(2)).intValue());
+		SRFrontRight.sense(exploredMap, values.get(new Integer(4)).intValue());
+		SRLeft.sense(exploredMap, values.get(new Integer(5)).intValue());
+		SRRight.sense(exploredMap, values.get(new Integer(3)).intValue());
+		LRLeft.sense(exploredMap, values.get(new Integer(6)).intValue());
 	}
 }

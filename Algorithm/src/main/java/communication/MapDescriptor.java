@@ -14,6 +14,7 @@ public class MapDescriptor {
 
 	private static Logger logger = Logger.getLogger(MapDescriptor.class);
 
+
 	public static void readMap(Map map, String mapPath) {
 		try {
 			InputStream inStream = new FileInputStream(mapPath);
@@ -29,9 +30,11 @@ public class MapDescriptor {
 			}
 
 			// convert to one whole string
-			String binaryMap = strBuilder.toString();
+			String hexMap = strBuilder.toString();
+			String binaryMap = hexStrToBin(hexMap);
+
 			int idx = 0;
-			for (int r = MapConst.NUM_ROWS - 1; r >= 0; r--) {
+			for (int r = 0; r < MapConst.NUM_ROWS; r++) {
 				for (int c = 0; c < MapConst.NUM_COLS; c++) {
 					if (binaryMap.charAt(idx) == '1') map.setObstacleCell(r, c, true);
 					idx++;
@@ -42,7 +45,6 @@ public class MapDescriptor {
 			// so that the map read in can be displayed on the screen
 			map.setAllCellsExplored();
 
-
 		} catch (IOException e) {
 			logger.error("Error reading map: " + e.toString());
 		}
@@ -50,6 +52,26 @@ public class MapDescriptor {
 
 	private static String binStrToHexStr(String binaryString) {
 		return Integer.toHexString(Integer.parseInt(binaryString, 2));
+	}
+
+	private static String hexStrToBin(String hex) {
+		hex = hex.replaceAll("0", "0000");
+		hex = hex.replaceAll("1", "0001");
+		hex = hex.replaceAll("2", "0010");
+		hex = hex.replaceAll("3", "0011");
+		hex = hex.replaceAll("4", "0100");
+		hex = hex.replaceAll("5", "0101");
+		hex = hex.replaceAll("6", "0110");
+		hex = hex.replaceAll("7", "0111");
+		hex = hex.replaceAll("8", "1000");
+		hex = hex.replaceAll("9", "1001");
+		hex = hex.replaceAll("A", "1010");
+		hex = hex.replaceAll("B", "1011");
+		hex = hex.replaceAll("C", "1100");
+		hex = hex.replaceAll("D", "1101");
+		hex = hex.replaceAll("E", "1110");
+		hex = hex.replaceAll("F", "1111");
+		return hex;
 	}
 
 	public static String[] generateMapDescriptor(Map map) {

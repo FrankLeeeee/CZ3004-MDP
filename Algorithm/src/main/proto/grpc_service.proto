@@ -6,23 +6,37 @@ service GRPCService {
 
   rpc Forward(MoveRequest) returns (MetricResponse) {}
 
-  rpc TurnLeft(MoveRequest) returns (MetricResponse) {}
+  rpc TurnLeft(TurnRequest) returns (MetricResponse) {}
 
-  rpc TurnRight(MoveRequest) returns (MetricResponse) {}
+  rpc TurnRight(TurnRequest) returns (MetricResponse) {}
 
-  rpc Calibrate(CalibrateRequest) returns (Status) {}
+  rpc Calibrate(EmptyRequest) returns (Status) {}
 
   rpc WaitForRobotStart(RobotStatus) returns (Status) {}
 
-  rpc StopRobot(RobotStatus) returns (Status) {}
+  rpc StopRobot(EmptyRequest) returns (Status) {}
 
-  rpc GetMetrics(MetricRequest) returns (MetricResponse) {}
+  rpc GetMetrics(EmptyRequest) returns (MetricResponse) {}
 
-  rpc SetPosition(Position) returns (Position) {}
+  rpc SetPosition(Position) returns (Status) {}
 
   rpc SetMap(MapDescription) returns (Status) {}
 
   rpc GetWayPoint(EmptyRequest) returns (Position) {}
+
+  rpc TakePhoto(EmptyRequest) returns (Status) {}
+
+  rpc GetImageResult(EmptyRequest) returns (ImageResponse) {}
+
+}
+
+message EchoRequest {
+  bytes message = 1;
+}
+
+message EchoResponse {
+  bytes message = 1;
+  bool status = 2;
 }
 
 message MoveRequest {
@@ -40,9 +54,6 @@ message TurnRequest {
   uint32 angle = 1;
 }
 
-message CalibrateRequest {
-}
-
 message RobotStatus {
   enum Mode {
     EXPLORATION = 0;
@@ -52,30 +63,41 @@ message RobotStatus {
   Mode mode = 1;
 }
 
-message MetricRequest {
-  // Sensor ID. Leave this field at default value (0) to fetch all metric data
-  uint32 id = 1;
-}
-
 message MetricResponse {
-  map<uint32, double> values = 1;
+  map<uint32, float> values = 1;
+  bool status = 2;
 }
 
 message Position {
-  // Period for getting position info. This field is only for `StreamGetMetrics`.
-  uint32 x = 1;
-  uint32 y = 2;
+  enum Direction {
+    NORTH = 0;
+    EAST = 1;
+    SOUTH = 2;
+    WEST = 3;
+  }
+
+  int32 x = 1;
+  int32 y = 2;
+  Direction dir = 3;
 }
 
 message MapDescription {
-  bytes description = 1;
+  string p1 = 1;  // Explored map description
+  string p2 = 2;  // Obstacle map description
 }
 
-message EchoRequest {
-  bytes message = 1;
+enum InfoMode {
+  MAP = 0;
+  POS = 1;
+  ALL = 2;
 }
 
-message EchoResponse {
-  bytes message = 1;
-  bool status = 2;
+message RobotInfo {
+  InfoMode mode = 1;
+  Position pos = 2;
+  MapDescription map = 3;
+}
+
+message ImageResponse {
+  bytes raw_image = 1;
 }

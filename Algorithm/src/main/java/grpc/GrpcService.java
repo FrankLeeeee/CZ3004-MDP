@@ -14,6 +14,1135 @@ public final class GrpcService {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
+  /**
+   * Protobuf enum {@code InfoMode}
+   */
+  public enum InfoMode
+      implements com.google.protobuf.ProtocolMessageEnum {
+    /**
+     * <code>MAP = 0;</code>
+     */
+    MAP(0),
+    /**
+     * <code>POS = 1;</code>
+     */
+    POS(1),
+    /**
+     * <code>ALL = 2;</code>
+     */
+    ALL(2),
+    UNRECOGNIZED(-1),
+    ;
+
+    /**
+     * <code>MAP = 0;</code>
+     */
+    public static final int MAP_VALUE = 0;
+    /**
+     * <code>POS = 1;</code>
+     */
+    public static final int POS_VALUE = 1;
+    /**
+     * <code>ALL = 2;</code>
+     */
+    public static final int ALL_VALUE = 2;
+
+
+    public final int getNumber() {
+      if (this == UNRECOGNIZED) {
+        throw new java.lang.IllegalArgumentException(
+            "Can't get the number of an unknown enum value.");
+      }
+      return value;
+    }
+
+    /**
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static InfoMode valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static InfoMode forNumber(int value) {
+      switch (value) {
+        case 0: return MAP;
+        case 1: return POS;
+        case 2: return ALL;
+        default: return null;
+      }
+    }
+
+    public static com.google.protobuf.Internal.EnumLiteMap<InfoMode>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static final com.google.protobuf.Internal.EnumLiteMap<
+        InfoMode> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<InfoMode>() {
+            public InfoMode findValueByNumber(int number) {
+              return InfoMode.forNumber(number);
+            }
+          };
+
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(ordinal());
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return grpc.GrpcService.getDescriptor().getEnumTypes().get(0);
+    }
+
+    private static final InfoMode[] VALUES = values();
+
+    public static InfoMode valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      if (desc.getIndex() == -1) {
+        return UNRECOGNIZED;
+      }
+      return VALUES[desc.getIndex()];
+    }
+
+    private final int value;
+
+    private InfoMode(int value) {
+      this.value = value;
+    }
+
+    // @@protoc_insertion_point(enum_scope:InfoMode)
+  }
+
+  public interface EchoRequestOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:EchoRequest)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes message = 1;</code>
+     */
+    com.google.protobuf.ByteString getMessage();
+  }
+  /**
+   * Protobuf type {@code EchoRequest}
+   */
+  public  static final class EchoRequest extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:EchoRequest)
+      EchoRequestOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use EchoRequest.newBuilder() to construct.
+    private EchoRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private EchoRequest() {
+      message_ = com.google.protobuf.ByteString.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private EchoRequest(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              message_ = input.readBytes();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return grpc.GrpcService.internal_static_EchoRequest_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return grpc.GrpcService.internal_static_EchoRequest_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              grpc.GrpcService.EchoRequest.class, grpc.GrpcService.EchoRequest.Builder.class);
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString message_;
+    /**
+     * <code>bytes message = 1;</code>
+     */
+    public com.google.protobuf.ByteString getMessage() {
+      return message_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!message_.isEmpty()) {
+        output.writeBytes(1, message_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!message_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, message_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof grpc.GrpcService.EchoRequest)) {
+        return super.equals(obj);
+      }
+      grpc.GrpcService.EchoRequest other = (grpc.GrpcService.EchoRequest) obj;
+
+      boolean result = true;
+      result = result && getMessage()
+          .equals(other.getMessage());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getMessage().hashCode();
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoRequest parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static grpc.GrpcService.EchoRequest parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static grpc.GrpcService.EchoRequest parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(grpc.GrpcService.EchoRequest prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code EchoRequest}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:EchoRequest)
+        grpc.GrpcService.EchoRequestOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return grpc.GrpcService.internal_static_EchoRequest_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return grpc.GrpcService.internal_static_EchoRequest_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                grpc.GrpcService.EchoRequest.class, grpc.GrpcService.EchoRequest.Builder.class);
+      }
+
+      // Construct using grpc.GrpcService.EchoRequest.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        message_ = com.google.protobuf.ByteString.EMPTY;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return grpc.GrpcService.internal_static_EchoRequest_descriptor;
+      }
+
+      @java.lang.Override
+      public grpc.GrpcService.EchoRequest getDefaultInstanceForType() {
+        return grpc.GrpcService.EchoRequest.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public grpc.GrpcService.EchoRequest build() {
+        grpc.GrpcService.EchoRequest result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public grpc.GrpcService.EchoRequest buildPartial() {
+        grpc.GrpcService.EchoRequest result = new grpc.GrpcService.EchoRequest(this);
+        result.message_ = message_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof grpc.GrpcService.EchoRequest) {
+          return mergeFrom((grpc.GrpcService.EchoRequest)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(grpc.GrpcService.EchoRequest other) {
+        if (other == grpc.GrpcService.EchoRequest.getDefaultInstance()) return this;
+        if (other.getMessage() != com.google.protobuf.ByteString.EMPTY) {
+          setMessage(other.getMessage());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        grpc.GrpcService.EchoRequest parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (grpc.GrpcService.EchoRequest) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString message_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes message = 1;</code>
+       */
+      public com.google.protobuf.ByteString getMessage() {
+        return message_;
+      }
+      /**
+       * <code>bytes message = 1;</code>
+       */
+      public Builder setMessage(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes message = 1;</code>
+       */
+      public Builder clearMessage() {
+        
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:EchoRequest)
+    }
+
+    // @@protoc_insertion_point(class_scope:EchoRequest)
+    private static final grpc.GrpcService.EchoRequest DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new grpc.GrpcService.EchoRequest();
+    }
+
+    public static grpc.GrpcService.EchoRequest getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<EchoRequest>
+        PARSER = new com.google.protobuf.AbstractParser<EchoRequest>() {
+      @java.lang.Override
+      public EchoRequest parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new EchoRequest(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<EchoRequest> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<EchoRequest> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public grpc.GrpcService.EchoRequest getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface EchoResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:EchoResponse)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>bytes message = 1;</code>
+     */
+    com.google.protobuf.ByteString getMessage();
+
+    /**
+     * <code>bool status = 2;</code>
+     */
+    boolean getStatus();
+  }
+  /**
+   * Protobuf type {@code EchoResponse}
+   */
+  public  static final class EchoResponse extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:EchoResponse)
+      EchoResponseOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use EchoResponse.newBuilder() to construct.
+    private EchoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private EchoResponse() {
+      message_ = com.google.protobuf.ByteString.EMPTY;
+      status_ = false;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private EchoResponse(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+
+              message_ = input.readBytes();
+              break;
+            }
+            case 16: {
+
+              status_ = input.readBool();
+              break;
+            }
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return grpc.GrpcService.internal_static_EchoResponse_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return grpc.GrpcService.internal_static_EchoResponse_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              grpc.GrpcService.EchoResponse.class, grpc.GrpcService.EchoResponse.Builder.class);
+    }
+
+    public static final int MESSAGE_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString message_;
+    /**
+     * <code>bytes message = 1;</code>
+     */
+    public com.google.protobuf.ByteString getMessage() {
+      return message_;
+    }
+
+    public static final int STATUS_FIELD_NUMBER = 2;
+    private boolean status_;
+    /**
+     * <code>bool status = 2;</code>
+     */
+    public boolean getStatus() {
+      return status_;
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!message_.isEmpty()) {
+        output.writeBytes(1, message_);
+      }
+      if (status_ != false) {
+        output.writeBool(2, status_);
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!message_.isEmpty()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(1, message_);
+      }
+      if (status_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, status_);
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof grpc.GrpcService.EchoResponse)) {
+        return super.equals(obj);
+      }
+      grpc.GrpcService.EchoResponse other = (grpc.GrpcService.EchoResponse) obj;
+
+      boolean result = true;
+      result = result && getMessage()
+          .equals(other.getMessage());
+      result = result && (getStatus()
+          == other.getStatus());
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getMessage().hashCode();
+      hash = (37 * hash) + STATUS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getStatus());
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoResponse parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static grpc.GrpcService.EchoResponse parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static grpc.GrpcService.EchoResponse parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(grpc.GrpcService.EchoResponse prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code EchoResponse}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:EchoResponse)
+        grpc.GrpcService.EchoResponseOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return grpc.GrpcService.internal_static_EchoResponse_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return grpc.GrpcService.internal_static_EchoResponse_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                grpc.GrpcService.EchoResponse.class, grpc.GrpcService.EchoResponse.Builder.class);
+      }
+
+      // Construct using grpc.GrpcService.EchoResponse.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        message_ = com.google.protobuf.ByteString.EMPTY;
+
+        status_ = false;
+
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return grpc.GrpcService.internal_static_EchoResponse_descriptor;
+      }
+
+      @java.lang.Override
+      public grpc.GrpcService.EchoResponse getDefaultInstanceForType() {
+        return grpc.GrpcService.EchoResponse.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public grpc.GrpcService.EchoResponse build() {
+        grpc.GrpcService.EchoResponse result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public grpc.GrpcService.EchoResponse buildPartial() {
+        grpc.GrpcService.EchoResponse result = new grpc.GrpcService.EchoResponse(this);
+        result.message_ = message_;
+        result.status_ = status_;
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof grpc.GrpcService.EchoResponse) {
+          return mergeFrom((grpc.GrpcService.EchoResponse)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(grpc.GrpcService.EchoResponse other) {
+        if (other == grpc.GrpcService.EchoResponse.getDefaultInstance()) return this;
+        if (other.getMessage() != com.google.protobuf.ByteString.EMPTY) {
+          setMessage(other.getMessage());
+        }
+        if (other.getStatus() != false) {
+          setStatus(other.getStatus());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        grpc.GrpcService.EchoResponse parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (grpc.GrpcService.EchoResponse) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+
+      private com.google.protobuf.ByteString message_ = com.google.protobuf.ByteString.EMPTY;
+      /**
+       * <code>bytes message = 1;</code>
+       */
+      public com.google.protobuf.ByteString getMessage() {
+        return message_;
+      }
+      /**
+       * <code>bytes message = 1;</code>
+       */
+      public Builder setMessage(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        message_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bytes message = 1;</code>
+       */
+      public Builder clearMessage() {
+        
+        message_ = getDefaultInstance().getMessage();
+        onChanged();
+        return this;
+      }
+
+      private boolean status_ ;
+      /**
+       * <code>bool status = 2;</code>
+       */
+      public boolean getStatus() {
+        return status_;
+      }
+      /**
+       * <code>bool status = 2;</code>
+       */
+      public Builder setStatus(boolean value) {
+        
+        status_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool status = 2;</code>
+       */
+      public Builder clearStatus() {
+        
+        status_ = false;
+        onChanged();
+        return this;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:EchoResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:EchoResponse)
+    private static final grpc.GrpcService.EchoResponse DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new grpc.GrpcService.EchoResponse();
+    }
+
+    public static grpc.GrpcService.EchoResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<EchoResponse>
+        PARSER = new com.google.protobuf.AbstractParser<EchoResponse>() {
+      @java.lang.Override
+      public EchoResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new EchoResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<EchoResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<EchoResponse> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public grpc.GrpcService.EchoResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
   public interface MoveRequestOrBuilder extends
       // @@protoc_insertion_point(interface_extends:MoveRequest)
       com.google.protobuf.MessageOrBuilder {
@@ -1855,418 +2984,6 @@ public final class GrpcService {
 
   }
 
-  public interface CalibrateRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:CalibrateRequest)
-      com.google.protobuf.MessageOrBuilder {
-  }
-  /**
-   * Protobuf type {@code CalibrateRequest}
-   */
-  public  static final class CalibrateRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:CalibrateRequest)
-      CalibrateRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use CalibrateRequest.newBuilder() to construct.
-    private CalibrateRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private CalibrateRequest() {
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private CalibrateRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return grpc.GrpcService.internal_static_CalibrateRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return grpc.GrpcService.internal_static_CalibrateRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              grpc.GrpcService.CalibrateRequest.class, grpc.GrpcService.CalibrateRequest.Builder.class);
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof grpc.GrpcService.CalibrateRequest)) {
-        return super.equals(obj);
-      }
-      grpc.GrpcService.CalibrateRequest other = (grpc.GrpcService.CalibrateRequest) obj;
-
-      boolean result = true;
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static grpc.GrpcService.CalibrateRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(grpc.GrpcService.CalibrateRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code CalibrateRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:CalibrateRequest)
-        grpc.GrpcService.CalibrateRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return grpc.GrpcService.internal_static_CalibrateRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return grpc.GrpcService.internal_static_CalibrateRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                grpc.GrpcService.CalibrateRequest.class, grpc.GrpcService.CalibrateRequest.Builder.class);
-      }
-
-      // Construct using grpc.GrpcService.CalibrateRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return grpc.GrpcService.internal_static_CalibrateRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public grpc.GrpcService.CalibrateRequest getDefaultInstanceForType() {
-        return grpc.GrpcService.CalibrateRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public grpc.GrpcService.CalibrateRequest build() {
-        grpc.GrpcService.CalibrateRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public grpc.GrpcService.CalibrateRequest buildPartial() {
-        grpc.GrpcService.CalibrateRequest result = new grpc.GrpcService.CalibrateRequest(this);
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof grpc.GrpcService.CalibrateRequest) {
-          return mergeFrom((grpc.GrpcService.CalibrateRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(grpc.GrpcService.CalibrateRequest other) {
-        if (other == grpc.GrpcService.CalibrateRequest.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        grpc.GrpcService.CalibrateRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (grpc.GrpcService.CalibrateRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:CalibrateRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:CalibrateRequest)
-    private static final grpc.GrpcService.CalibrateRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new grpc.GrpcService.CalibrateRequest();
-    }
-
-    public static grpc.GrpcService.CalibrateRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<CalibrateRequest>
-        PARSER = new com.google.protobuf.AbstractParser<CalibrateRequest>() {
-      @java.lang.Override
-      public CalibrateRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new CalibrateRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<CalibrateRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<CalibrateRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public grpc.GrpcService.CalibrateRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface RobotStatusOrBuilder extends
       // @@protoc_insertion_point(interface_extends:RobotStatus)
       com.google.protobuf.MessageOrBuilder {
@@ -2872,512 +3589,16 @@ public final class GrpcService {
 
   }
 
-  public interface MetricRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:MetricRequest)
-      com.google.protobuf.MessageOrBuilder {
-
-    /**
-     * <pre>
-     * Sensor ID. Leave this field at default value (0) to fetch all metric data
-     * </pre>
-     *
-     * <code>uint32 id = 1;</code>
-     */
-    int getId();
-  }
-  /**
-   * Protobuf type {@code MetricRequest}
-   */
-  public  static final class MetricRequest extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:MetricRequest)
-      MetricRequestOrBuilder {
-  private static final long serialVersionUID = 0L;
-    // Use MetricRequest.newBuilder() to construct.
-    private MetricRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
-      super(builder);
-    }
-    private MetricRequest() {
-      id_ = 0;
-    }
-
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private MetricRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new java.lang.NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 8: {
-
-              id_ = input.readUInt32();
-              break;
-            }
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
-    public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
-      return grpc.GrpcService.internal_static_MetricRequest_descriptor;
-    }
-
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
-      return grpc.GrpcService.internal_static_MetricRequest_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              grpc.GrpcService.MetricRequest.class, grpc.GrpcService.MetricRequest.Builder.class);
-    }
-
-    public static final int ID_FIELD_NUMBER = 1;
-    private int id_;
-    /**
-     * <pre>
-     * Sensor ID. Leave this field at default value (0) to fetch all metric data
-     * </pre>
-     *
-     * <code>uint32 id = 1;</code>
-     */
-    public int getId() {
-      return id_;
-    }
-
-    private byte memoizedIsInitialized = -1;
-    @java.lang.Override
-    public final boolean isInitialized() {
-      byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
-
-      memoizedIsInitialized = 1;
-      return true;
-    }
-
-    @java.lang.Override
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (id_ != 0) {
-        output.writeUInt32(1, id_);
-      }
-      unknownFields.writeTo(output);
-    }
-
-    @java.lang.Override
-    public int getSerializedSize() {
-      int size = memoizedSize;
-      if (size != -1) return size;
-
-      size = 0;
-      if (id_ != 0) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, id_);
-      }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
-      return size;
-    }
-
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
-      if (obj == this) {
-       return true;
-      }
-      if (!(obj instanceof grpc.GrpcService.MetricRequest)) {
-        return super.equals(obj);
-      }
-      grpc.GrpcService.MetricRequest other = (grpc.GrpcService.MetricRequest) obj;
-
-      boolean result = true;
-      result = result && (getId()
-          == other.getId());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
-    }
-
-    @java.lang.Override
-    public int hashCode() {
-      if (memoizedHashCode != 0) {
-        return memoizedHashCode;
-      }
-      int hash = 41;
-      hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + ID_FIELD_NUMBER;
-      hash = (53 * hash) + getId();
-      hash = (29 * hash) + unknownFields.hashCode();
-      memoizedHashCode = hash;
-      return hash;
-    }
-
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      return PARSER.parseFrom(data, extensionRegistry);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static grpc.GrpcService.MetricRequest parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
-    }
-    public static grpc.GrpcService.MetricRequest parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
-    }
-    public static grpc.GrpcService.MetricRequest parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
-      return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
-    }
-
-    @java.lang.Override
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
-    public static Builder newBuilder(grpc.GrpcService.MetricRequest prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
-    }
-    @java.lang.Override
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
-
-    @java.lang.Override
-    protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-      Builder builder = new Builder(parent);
-      return builder;
-    }
-    /**
-     * Protobuf type {@code MetricRequest}
-     */
-    public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:MetricRequest)
-        grpc.GrpcService.MetricRequestOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return grpc.GrpcService.internal_static_MetricRequest_descriptor;
-      }
-
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return grpc.GrpcService.internal_static_MetricRequest_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                grpc.GrpcService.MetricRequest.class, grpc.GrpcService.MetricRequest.Builder.class);
-      }
-
-      // Construct using grpc.GrpcService.MetricRequest.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @java.lang.Override
-      public Builder clear() {
-        super.clear();
-        id_ = 0;
-
-        return this;
-      }
-
-      @java.lang.Override
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return grpc.GrpcService.internal_static_MetricRequest_descriptor;
-      }
-
-      @java.lang.Override
-      public grpc.GrpcService.MetricRequest getDefaultInstanceForType() {
-        return grpc.GrpcService.MetricRequest.getDefaultInstance();
-      }
-
-      @java.lang.Override
-      public grpc.GrpcService.MetricRequest build() {
-        grpc.GrpcService.MetricRequest result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      @java.lang.Override
-      public grpc.GrpcService.MetricRequest buildPartial() {
-        grpc.GrpcService.MetricRequest result = new grpc.GrpcService.MetricRequest(this);
-        result.id_ = id_;
-        onBuilt();
-        return result;
-      }
-
-      @java.lang.Override
-      public Builder clone() {
-        return (Builder) super.clone();
-      }
-      @java.lang.Override
-      public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.setField(field, value);
-      }
-      @java.lang.Override
-      public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
-      }
-      @java.lang.Override
-      public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
-      }
-      @java.lang.Override
-      public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
-      }
-      @java.lang.Override
-      public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
-      }
-      @java.lang.Override
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof grpc.GrpcService.MetricRequest) {
-          return mergeFrom((grpc.GrpcService.MetricRequest)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(grpc.GrpcService.MetricRequest other) {
-        if (other == grpc.GrpcService.MetricRequest.getDefaultInstance()) return this;
-        if (other.getId() != 0) {
-          setId(other.getId());
-        }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
-        return this;
-      }
-
-      @java.lang.Override
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      @java.lang.Override
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        grpc.GrpcService.MetricRequest parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (grpc.GrpcService.MetricRequest) e.getUnfinishedMessage();
-          throw e.unwrapIOException();
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
-
-      private int id_ ;
-      /**
-       * <pre>
-       * Sensor ID. Leave this field at default value (0) to fetch all metric data
-       * </pre>
-       *
-       * <code>uint32 id = 1;</code>
-       */
-      public int getId() {
-        return id_;
-      }
-      /**
-       * <pre>
-       * Sensor ID. Leave this field at default value (0) to fetch all metric data
-       * </pre>
-       *
-       * <code>uint32 id = 1;</code>
-       */
-      public Builder setId(int value) {
-        
-        id_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <pre>
-       * Sensor ID. Leave this field at default value (0) to fetch all metric data
-       * </pre>
-       *
-       * <code>uint32 id = 1;</code>
-       */
-      public Builder clearId() {
-        
-        id_ = 0;
-        onChanged();
-        return this;
-      }
-      @java.lang.Override
-      public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
-      }
-
-      @java.lang.Override
-      public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.mergeUnknownFields(unknownFields);
-      }
-
-
-      // @@protoc_insertion_point(builder_scope:MetricRequest)
-    }
-
-    // @@protoc_insertion_point(class_scope:MetricRequest)
-    private static final grpc.GrpcService.MetricRequest DEFAULT_INSTANCE;
-    static {
-      DEFAULT_INSTANCE = new grpc.GrpcService.MetricRequest();
-    }
-
-    public static grpc.GrpcService.MetricRequest getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    private static final com.google.protobuf.Parser<MetricRequest>
-        PARSER = new com.google.protobuf.AbstractParser<MetricRequest>() {
-      @java.lang.Override
-      public MetricRequest parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new MetricRequest(input, extensionRegistry);
-      }
-    };
-
-    public static com.google.protobuf.Parser<MetricRequest> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<MetricRequest> getParserForType() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public grpc.GrpcService.MetricRequest getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
-  }
-
   public interface MetricResponseOrBuilder extends
       // @@protoc_insertion_point(interface_extends:MetricResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
     int getValuesCount();
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
     boolean containsValues(
         int key);
@@ -3385,26 +3606,31 @@ public final class GrpcService {
      * Use {@link #getValuesMap()} instead.
      */
     @java.lang.Deprecated
-    java.util.Map<java.lang.Integer, java.lang.Double>
+    java.util.Map<java.lang.Integer, java.lang.Float>
     getValues();
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
-    java.util.Map<java.lang.Integer, java.lang.Double>
+    java.util.Map<java.lang.Integer, java.lang.Float>
     getValuesMap();
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
 
-    double getValuesOrDefault(
+    float getValuesOrDefault(
         int key,
-        double defaultValue);
+        float defaultValue);
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
 
-    double getValuesOrThrow(
+    float getValuesOrThrow(
         int key);
+
+    /**
+     * <code>bool status = 2;</code>
+     */
+    boolean getStatus();
   }
   /**
    * Protobuf type {@code MetricResponse}
@@ -3419,6 +3645,7 @@ public final class GrpcService {
       super(builder);
     }
     private MetricResponse() {
+      status_ = false;
     }
 
     @java.lang.Override
@@ -3451,11 +3678,16 @@ public final class GrpcService {
                     ValuesDefaultEntryHolder.defaultEntry);
                 mutable_bitField0_ |= 0x00000001;
               }
-              com.google.protobuf.MapEntry<java.lang.Integer, java.lang.Double>
+              com.google.protobuf.MapEntry<java.lang.Integer, java.lang.Float>
               values__ = input.readMessage(
                   ValuesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
               values_.getMutableMap().put(
                   values__.getKey(), values__.getValue());
+              break;
+            }
+            case 16: {
+
+              status_ = input.readBool();
               break;
             }
             default: {
@@ -3502,21 +3734,22 @@ public final class GrpcService {
               grpc.GrpcService.MetricResponse.class, grpc.GrpcService.MetricResponse.Builder.class);
     }
 
+    private int bitField0_;
     public static final int VALUES_FIELD_NUMBER = 1;
     private static final class ValuesDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
-          java.lang.Integer, java.lang.Double> defaultEntry =
+          java.lang.Integer, java.lang.Float> defaultEntry =
               com.google.protobuf.MapEntry
-              .<java.lang.Integer, java.lang.Double>newDefaultInstance(
+              .<java.lang.Integer, java.lang.Float>newDefaultInstance(
                   grpc.GrpcService.internal_static_MetricResponse_ValuesEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.UINT32,
                   0,
-                  com.google.protobuf.WireFormat.FieldType.DOUBLE,
-                  0D);
+                  com.google.protobuf.WireFormat.FieldType.FLOAT,
+                  0F);
     }
     private com.google.protobuf.MapField<
-        java.lang.Integer, java.lang.Double> values_;
-    private com.google.protobuf.MapField<java.lang.Integer, java.lang.Double>
+        java.lang.Integer, java.lang.Float> values_;
+    private com.google.protobuf.MapField<java.lang.Integer, java.lang.Float>
     internalGetValues() {
       if (values_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -3529,7 +3762,7 @@ public final class GrpcService {
       return internalGetValues().getMap().size();
     }
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
 
     public boolean containsValues(
@@ -3541,41 +3774,50 @@ public final class GrpcService {
      * Use {@link #getValuesMap()} instead.
      */
     @java.lang.Deprecated
-    public java.util.Map<java.lang.Integer, java.lang.Double> getValues() {
+    public java.util.Map<java.lang.Integer, java.lang.Float> getValues() {
       return getValuesMap();
     }
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
 
-    public java.util.Map<java.lang.Integer, java.lang.Double> getValuesMap() {
+    public java.util.Map<java.lang.Integer, java.lang.Float> getValuesMap() {
       return internalGetValues().getMap();
     }
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
 
-    public double getValuesOrDefault(
+    public float getValuesOrDefault(
         int key,
-        double defaultValue) {
+        float defaultValue) {
       
-      java.util.Map<java.lang.Integer, java.lang.Double> map =
+      java.util.Map<java.lang.Integer, java.lang.Float> map =
           internalGetValues().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <code>map&lt;uint32, double&gt; values = 1;</code>
+     * <code>map&lt;uint32, float&gt; values = 1;</code>
      */
 
-    public double getValuesOrThrow(
+    public float getValuesOrThrow(
         int key) {
       
-      java.util.Map<java.lang.Integer, java.lang.Double> map =
+      java.util.Map<java.lang.Integer, java.lang.Float> map =
           internalGetValues().getMap();
       if (!map.containsKey(key)) {
         throw new java.lang.IllegalArgumentException();
       }
       return map.get(key);
+    }
+
+    public static final int STATUS_FIELD_NUMBER = 2;
+    private boolean status_;
+    /**
+     * <code>bool status = 2;</code>
+     */
+    public boolean getStatus() {
+      return status_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -3598,6 +3840,9 @@ public final class GrpcService {
           internalGetValues(),
           ValuesDefaultEntryHolder.defaultEntry,
           1);
+      if (status_ != false) {
+        output.writeBool(2, status_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -3607,15 +3852,19 @@ public final class GrpcService {
       if (size != -1) return size;
 
       size = 0;
-      for (java.util.Map.Entry<java.lang.Integer, java.lang.Double> entry
+      for (java.util.Map.Entry<java.lang.Integer, java.lang.Float> entry
            : internalGetValues().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<java.lang.Integer, java.lang.Double>
+        com.google.protobuf.MapEntry<java.lang.Integer, java.lang.Float>
         values__ = ValuesDefaultEntryHolder.defaultEntry.newBuilderForType()
             .setKey(entry.getKey())
             .setValue(entry.getValue())
             .build();
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(1, values__);
+      }
+      if (status_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(2, status_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -3635,6 +3884,8 @@ public final class GrpcService {
       boolean result = true;
       result = result && internalGetValues().equals(
           other.internalGetValues());
+      result = result && (getStatus()
+          == other.getStatus());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -3650,6 +3901,9 @@ public final class GrpcService {
         hash = (37 * hash) + VALUES_FIELD_NUMBER;
         hash = (53 * hash) + internalGetValues().hashCode();
       }
+      hash = (37 * hash) + STATUS_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getStatus());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -3806,6 +4060,8 @@ public final class GrpcService {
       public Builder clear() {
         super.clear();
         internalGetMutableValues().clear();
+        status_ = false;
+
         return this;
       }
 
@@ -3833,8 +4089,11 @@ public final class GrpcService {
       public grpc.GrpcService.MetricResponse buildPartial() {
         grpc.GrpcService.MetricResponse result = new grpc.GrpcService.MetricResponse(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         result.values_ = internalGetValues();
         result.values_.makeImmutable();
+        result.status_ = status_;
+        result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -3885,6 +4144,9 @@ public final class GrpcService {
         if (other == grpc.GrpcService.MetricResponse.getDefaultInstance()) return this;
         internalGetMutableValues().mergeFrom(
             other.internalGetValues());
+        if (other.getStatus() != false) {
+          setStatus(other.getStatus());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -3916,8 +4178,8 @@ public final class GrpcService {
       private int bitField0_;
 
       private com.google.protobuf.MapField<
-          java.lang.Integer, java.lang.Double> values_;
-      private com.google.protobuf.MapField<java.lang.Integer, java.lang.Double>
+          java.lang.Integer, java.lang.Float> values_;
+      private com.google.protobuf.MapField<java.lang.Integer, java.lang.Float>
       internalGetValues() {
         if (values_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
@@ -3925,7 +4187,7 @@ public final class GrpcService {
         }
         return values_;
       }
-      private com.google.protobuf.MapField<java.lang.Integer, java.lang.Double>
+      private com.google.protobuf.MapField<java.lang.Integer, java.lang.Float>
       internalGetMutableValues() {
         onChanged();;
         if (values_ == null) {
@@ -3942,7 +4204,7 @@ public final class GrpcService {
         return internalGetValues().getMap().size();
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
 
       public boolean containsValues(
@@ -3954,36 +4216,36 @@ public final class GrpcService {
        * Use {@link #getValuesMap()} instead.
        */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.Integer, java.lang.Double> getValues() {
+      public java.util.Map<java.lang.Integer, java.lang.Float> getValues() {
         return getValuesMap();
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
 
-      public java.util.Map<java.lang.Integer, java.lang.Double> getValuesMap() {
+      public java.util.Map<java.lang.Integer, java.lang.Float> getValuesMap() {
         return internalGetValues().getMap();
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
 
-      public double getValuesOrDefault(
+      public float getValuesOrDefault(
           int key,
-          double defaultValue) {
+          float defaultValue) {
         
-        java.util.Map<java.lang.Integer, java.lang.Double> map =
+        java.util.Map<java.lang.Integer, java.lang.Float> map =
             internalGetValues().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
 
-      public double getValuesOrThrow(
+      public float getValuesOrThrow(
           int key) {
         
-        java.util.Map<java.lang.Integer, java.lang.Double> map =
+        java.util.Map<java.lang.Integer, java.lang.Float> map =
             internalGetValues().getMap();
         if (!map.containsKey(key)) {
           throw new java.lang.IllegalArgumentException();
@@ -3997,7 +4259,7 @@ public final class GrpcService {
         return this;
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
 
       public Builder removeValues(
@@ -4011,16 +4273,16 @@ public final class GrpcService {
        * Use alternate mutation accessors instead.
        */
       @java.lang.Deprecated
-      public java.util.Map<java.lang.Integer, java.lang.Double>
+      public java.util.Map<java.lang.Integer, java.lang.Float>
       getMutableValues() {
         return internalGetMutableValues().getMutableMap();
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
       public Builder putValues(
           int key,
-          double value) {
+          float value) {
         
         
         internalGetMutableValues().getMutableMap()
@@ -4028,13 +4290,39 @@ public final class GrpcService {
         return this;
       }
       /**
-       * <code>map&lt;uint32, double&gt; values = 1;</code>
+       * <code>map&lt;uint32, float&gt; values = 1;</code>
        */
 
       public Builder putAllValues(
-          java.util.Map<java.lang.Integer, java.lang.Double> values) {
+          java.util.Map<java.lang.Integer, java.lang.Float> values) {
         internalGetMutableValues().getMutableMap()
             .putAll(values);
+        return this;
+      }
+
+      private boolean status_ ;
+      /**
+       * <code>bool status = 2;</code>
+       */
+      public boolean getStatus() {
+        return status_;
+      }
+      /**
+       * <code>bool status = 2;</code>
+       */
+      public Builder setStatus(boolean value) {
+        
+        status_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool status = 2;</code>
+       */
+      public Builder clearStatus() {
+        
+        status_ = false;
+        onChanged();
         return this;
       }
       @java.lang.Override
@@ -4095,18 +4383,23 @@ public final class GrpcService {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <pre>
-     * Period for getting position info. This field is only for `StreamGetMetrics`.
-     * </pre>
-     *
-     * <code>uint32 x = 1;</code>
+     * <code>int32 x = 1;</code>
      */
     int getX();
 
     /**
-     * <code>uint32 y = 2;</code>
+     * <code>int32 y = 2;</code>
      */
     int getY();
+
+    /**
+     * <code>.Position.Direction dir = 3;</code>
+     */
+    int getDirValue();
+    /**
+     * <code>.Position.Direction dir = 3;</code>
+     */
+    grpc.GrpcService.Position.Direction getDir();
   }
   /**
    * Protobuf type {@code Position}
@@ -4123,6 +4416,7 @@ public final class GrpcService {
     private Position() {
       x_ = 0;
       y_ = 0;
+      dir_ = 0;
     }
 
     @java.lang.Override
@@ -4151,12 +4445,18 @@ public final class GrpcService {
               break;
             case 8: {
 
-              x_ = input.readUInt32();
+              x_ = input.readInt32();
               break;
             }
             case 16: {
 
-              y_ = input.readUInt32();
+              y_ = input.readInt32();
+              break;
+            }
+            case 24: {
+              int rawValue = input.readEnum();
+
+              dir_ = rawValue;
               break;
             }
             default: {
@@ -4191,14 +4491,126 @@ public final class GrpcService {
               grpc.GrpcService.Position.class, grpc.GrpcService.Position.Builder.class);
     }
 
+    /**
+     * Protobuf enum {@code Position.Direction}
+     */
+    public enum Direction
+        implements com.google.protobuf.ProtocolMessageEnum {
+      /**
+       * <code>NORTH = 0;</code>
+       */
+      NORTH(0),
+      /**
+       * <code>EAST = 1;</code>
+       */
+      EAST(1),
+      /**
+       * <code>SOUTH = 2;</code>
+       */
+      SOUTH(2),
+      /**
+       * <code>WEST = 3;</code>
+       */
+      WEST(3),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <code>NORTH = 0;</code>
+       */
+      public static final int NORTH_VALUE = 0;
+      /**
+       * <code>EAST = 1;</code>
+       */
+      public static final int EAST_VALUE = 1;
+      /**
+       * <code>SOUTH = 2;</code>
+       */
+      public static final int SOUTH_VALUE = 2;
+      /**
+       * <code>WEST = 3;</code>
+       */
+      public static final int WEST_VALUE = 3;
+
+
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static Direction valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static Direction forNumber(int value) {
+        switch (value) {
+          case 0: return NORTH;
+          case 1: return EAST;
+          case 2: return SOUTH;
+          case 3: return WEST;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<Direction>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          Direction> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<Direction>() {
+              public Direction findValueByNumber(int number) {
+                return Direction.forNumber(number);
+              }
+            };
+
+      public final com.google.protobuf.Descriptors.EnumValueDescriptor
+          getValueDescriptor() {
+        return getDescriptor().getValues().get(ordinal());
+      }
+      public final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptorForType() {
+        return getDescriptor();
+      }
+      public static final com.google.protobuf.Descriptors.EnumDescriptor
+          getDescriptor() {
+        return grpc.GrpcService.Position.getDescriptor().getEnumTypes().get(0);
+      }
+
+      private static final Direction[] VALUES = values();
+
+      public static Direction valueOf(
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+        if (desc.getType() != getDescriptor()) {
+          throw new java.lang.IllegalArgumentException(
+            "EnumValueDescriptor is not for this type.");
+        }
+        if (desc.getIndex() == -1) {
+          return UNRECOGNIZED;
+        }
+        return VALUES[desc.getIndex()];
+      }
+
+      private final int value;
+
+      private Direction(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:Position.Direction)
+    }
+
     public static final int X_FIELD_NUMBER = 1;
     private int x_;
     /**
-     * <pre>
-     * Period for getting position info. This field is only for `StreamGetMetrics`.
-     * </pre>
-     *
-     * <code>uint32 x = 1;</code>
+     * <code>int32 x = 1;</code>
      */
     public int getX() {
       return x_;
@@ -4207,10 +4619,27 @@ public final class GrpcService {
     public static final int Y_FIELD_NUMBER = 2;
     private int y_;
     /**
-     * <code>uint32 y = 2;</code>
+     * <code>int32 y = 2;</code>
      */
     public int getY() {
       return y_;
+    }
+
+    public static final int DIR_FIELD_NUMBER = 3;
+    private int dir_;
+    /**
+     * <code>.Position.Direction dir = 3;</code>
+     */
+    public int getDirValue() {
+      return dir_;
+    }
+    /**
+     * <code>.Position.Direction dir = 3;</code>
+     */
+    public grpc.GrpcService.Position.Direction getDir() {
+      @SuppressWarnings("deprecation")
+      grpc.GrpcService.Position.Direction result = grpc.GrpcService.Position.Direction.valueOf(dir_);
+      return result == null ? grpc.GrpcService.Position.Direction.UNRECOGNIZED : result;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -4228,10 +4657,13 @@ public final class GrpcService {
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (x_ != 0) {
-        output.writeUInt32(1, x_);
+        output.writeInt32(1, x_);
       }
       if (y_ != 0) {
-        output.writeUInt32(2, y_);
+        output.writeInt32(2, y_);
+      }
+      if (dir_ != grpc.GrpcService.Position.Direction.NORTH.getNumber()) {
+        output.writeEnum(3, dir_);
       }
       unknownFields.writeTo(output);
     }
@@ -4244,11 +4676,15 @@ public final class GrpcService {
       size = 0;
       if (x_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(1, x_);
+          .computeInt32Size(1, x_);
       }
       if (y_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(2, y_);
+          .computeInt32Size(2, y_);
+      }
+      if (dir_ != grpc.GrpcService.Position.Direction.NORTH.getNumber()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(3, dir_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4270,6 +4706,7 @@ public final class GrpcService {
           == other.getX());
       result = result && (getY()
           == other.getY());
+      result = result && dir_ == other.dir_;
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -4285,6 +4722,8 @@ public final class GrpcService {
       hash = (53 * hash) + getX();
       hash = (37 * hash) + Y_FIELD_NUMBER;
       hash = (53 * hash) + getY();
+      hash = (37 * hash) + DIR_FIELD_NUMBER;
+      hash = (53 * hash) + dir_;
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -4422,6 +4861,8 @@ public final class GrpcService {
 
         y_ = 0;
 
+        dir_ = 0;
+
         return this;
       }
 
@@ -4450,6 +4891,7 @@ public final class GrpcService {
         grpc.GrpcService.Position result = new grpc.GrpcService.Position(this);
         result.x_ = x_;
         result.y_ = y_;
+        result.dir_ = dir_;
         onBuilt();
         return result;
       }
@@ -4504,6 +4946,9 @@ public final class GrpcService {
         if (other.getY() != 0) {
           setY(other.getY());
         }
+        if (other.dir_ != 0) {
+          setDirValue(other.getDirValue());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -4535,21 +4980,13 @@ public final class GrpcService {
 
       private int x_ ;
       /**
-       * <pre>
-       * Period for getting position info. This field is only for `StreamGetMetrics`.
-       * </pre>
-       *
-       * <code>uint32 x = 1;</code>
+       * <code>int32 x = 1;</code>
        */
       public int getX() {
         return x_;
       }
       /**
-       * <pre>
-       * Period for getting position info. This field is only for `StreamGetMetrics`.
-       * </pre>
-       *
-       * <code>uint32 x = 1;</code>
+       * <code>int32 x = 1;</code>
        */
       public Builder setX(int value) {
         
@@ -4558,11 +4995,7 @@ public final class GrpcService {
         return this;
       }
       /**
-       * <pre>
-       * Period for getting position info. This field is only for `StreamGetMetrics`.
-       * </pre>
-       *
-       * <code>uint32 x = 1;</code>
+       * <code>int32 x = 1;</code>
        */
       public Builder clearX() {
         
@@ -4573,13 +5006,13 @@ public final class GrpcService {
 
       private int y_ ;
       /**
-       * <code>uint32 y = 2;</code>
+       * <code>int32 y = 2;</code>
        */
       public int getY() {
         return y_;
       }
       /**
-       * <code>uint32 y = 2;</code>
+       * <code>int32 y = 2;</code>
        */
       public Builder setY(int value) {
         
@@ -4588,11 +5021,56 @@ public final class GrpcService {
         return this;
       }
       /**
-       * <code>uint32 y = 2;</code>
+       * <code>int32 y = 2;</code>
        */
       public Builder clearY() {
         
         y_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int dir_ = 0;
+      /**
+       * <code>.Position.Direction dir = 3;</code>
+       */
+      public int getDirValue() {
+        return dir_;
+      }
+      /**
+       * <code>.Position.Direction dir = 3;</code>
+       */
+      public Builder setDirValue(int value) {
+        dir_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.Position.Direction dir = 3;</code>
+       */
+      public grpc.GrpcService.Position.Direction getDir() {
+        @SuppressWarnings("deprecation")
+        grpc.GrpcService.Position.Direction result = grpc.GrpcService.Position.Direction.valueOf(dir_);
+        return result == null ? grpc.GrpcService.Position.Direction.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.Position.Direction dir = 3;</code>
+       */
+      public Builder setDir(grpc.GrpcService.Position.Direction value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        
+        dir_ = value.getNumber();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.Position.Direction dir = 3;</code>
+       */
+      public Builder clearDir() {
+        
+        dir_ = 0;
         onChanged();
         return this;
       }
@@ -4654,9 +5132,40 @@ public final class GrpcService {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes description = 1;</code>
+     * <pre>
+     * Explored map description
+     * </pre>
+     *
+     * <code>string p1 = 1;</code>
      */
-    com.google.protobuf.ByteString getDescription();
+    java.lang.String getP1();
+    /**
+     * <pre>
+     * Explored map description
+     * </pre>
+     *
+     * <code>string p1 = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getP1Bytes();
+
+    /**
+     * <pre>
+     * Obstacle map description
+     * </pre>
+     *
+     * <code>string p2 = 2;</code>
+     */
+    java.lang.String getP2();
+    /**
+     * <pre>
+     * Obstacle map description
+     * </pre>
+     *
+     * <code>string p2 = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getP2Bytes();
   }
   /**
    * Protobuf type {@code MapDescription}
@@ -4671,7 +5180,8 @@ public final class GrpcService {
       super(builder);
     }
     private MapDescription() {
-      description_ = com.google.protobuf.ByteString.EMPTY;
+      p1_ = "";
+      p2_ = "";
     }
 
     @java.lang.Override
@@ -4699,8 +5209,15 @@ public final class GrpcService {
               done = true;
               break;
             case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
 
-              description_ = input.readBytes();
+              p1_ = s;
+              break;
+            }
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              p2_ = s;
               break;
             }
             default: {
@@ -4735,13 +5252,88 @@ public final class GrpcService {
               grpc.GrpcService.MapDescription.class, grpc.GrpcService.MapDescription.Builder.class);
     }
 
-    public static final int DESCRIPTION_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString description_;
+    public static final int P1_FIELD_NUMBER = 1;
+    private volatile java.lang.Object p1_;
     /**
-     * <code>bytes description = 1;</code>
+     * <pre>
+     * Explored map description
+     * </pre>
+     *
+     * <code>string p1 = 1;</code>
      */
-    public com.google.protobuf.ByteString getDescription() {
-      return description_;
+    public java.lang.String getP1() {
+      java.lang.Object ref = p1_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        p1_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * Explored map description
+     * </pre>
+     *
+     * <code>string p1 = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getP1Bytes() {
+      java.lang.Object ref = p1_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        p1_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int P2_FIELD_NUMBER = 2;
+    private volatile java.lang.Object p2_;
+    /**
+     * <pre>
+     * Obstacle map description
+     * </pre>
+     *
+     * <code>string p2 = 2;</code>
+     */
+    public java.lang.String getP2() {
+      java.lang.Object ref = p2_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        p2_ = s;
+        return s;
+      }
+    }
+    /**
+     * <pre>
+     * Obstacle map description
+     * </pre>
+     *
+     * <code>string p2 = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getP2Bytes() {
+      java.lang.Object ref = p2_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        p2_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
     }
 
     private byte memoizedIsInitialized = -1;
@@ -4758,8 +5350,11 @@ public final class GrpcService {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!description_.isEmpty()) {
-        output.writeBytes(1, description_);
+      if (!getP1Bytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, p1_);
+      }
+      if (!getP2Bytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, p2_);
       }
       unknownFields.writeTo(output);
     }
@@ -4770,9 +5365,11 @@ public final class GrpcService {
       if (size != -1) return size;
 
       size = 0;
-      if (!description_.isEmpty()) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, description_);
+      if (!getP1Bytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, p1_);
+      }
+      if (!getP2Bytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, p2_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -4790,8 +5387,10 @@ public final class GrpcService {
       grpc.GrpcService.MapDescription other = (grpc.GrpcService.MapDescription) obj;
 
       boolean result = true;
-      result = result && getDescription()
-          .equals(other.getDescription());
+      result = result && getP1()
+          .equals(other.getP1());
+      result = result && getP2()
+          .equals(other.getP2());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -4803,8 +5402,10 @@ public final class GrpcService {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + DESCRIPTION_FIELD_NUMBER;
-      hash = (53 * hash) + getDescription().hashCode();
+      hash = (37 * hash) + P1_FIELD_NUMBER;
+      hash = (53 * hash) + getP1().hashCode();
+      hash = (37 * hash) + P2_FIELD_NUMBER;
+      hash = (53 * hash) + getP2().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -4938,7 +5539,9 @@ public final class GrpcService {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        description_ = com.google.protobuf.ByteString.EMPTY;
+        p1_ = "";
+
+        p2_ = "";
 
         return this;
       }
@@ -4966,7 +5569,8 @@ public final class GrpcService {
       @java.lang.Override
       public grpc.GrpcService.MapDescription buildPartial() {
         grpc.GrpcService.MapDescription result = new grpc.GrpcService.MapDescription(this);
-        result.description_ = description_;
+        result.p1_ = p1_;
+        result.p2_ = p2_;
         onBuilt();
         return result;
       }
@@ -5015,8 +5619,13 @@ public final class GrpcService {
 
       public Builder mergeFrom(grpc.GrpcService.MapDescription other) {
         if (other == grpc.GrpcService.MapDescription.getDefaultInstance()) return this;
-        if (other.getDescription() != com.google.protobuf.ByteString.EMPTY) {
-          setDescription(other.getDescription());
+        if (!other.getP1().isEmpty()) {
+          p1_ = other.p1_;
+          onChanged();
+        }
+        if (!other.getP2().isEmpty()) {
+          p2_ = other.p2_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -5047,31 +5656,180 @@ public final class GrpcService {
         return this;
       }
 
-      private com.google.protobuf.ByteString description_ = com.google.protobuf.ByteString.EMPTY;
+      private java.lang.Object p1_ = "";
       /**
-       * <code>bytes description = 1;</code>
+       * <pre>
+       * Explored map description
+       * </pre>
+       *
+       * <code>string p1 = 1;</code>
        */
-      public com.google.protobuf.ByteString getDescription() {
-        return description_;
+      public java.lang.String getP1() {
+        java.lang.Object ref = p1_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          p1_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
       }
       /**
-       * <code>bytes description = 1;</code>
+       * <pre>
+       * Explored map description
+       * </pre>
+       *
+       * <code>string p1 = 1;</code>
        */
-      public Builder setDescription(com.google.protobuf.ByteString value) {
+      public com.google.protobuf.ByteString
+          getP1Bytes() {
+        java.lang.Object ref = p1_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          p1_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Explored map description
+       * </pre>
+       *
+       * <code>string p1 = 1;</code>
+       */
+      public Builder setP1(
+          java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        description_ = value;
+        p1_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes description = 1;</code>
+       * <pre>
+       * Explored map description
+       * </pre>
+       *
+       * <code>string p1 = 1;</code>
        */
-      public Builder clearDescription() {
+      public Builder clearP1() {
         
-        description_ = getDefaultInstance().getDescription();
+        p1_ = getDefaultInstance().getP1();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Explored map description
+       * </pre>
+       *
+       * <code>string p1 = 1;</code>
+       */
+      public Builder setP1Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        p1_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object p2_ = "";
+      /**
+       * <pre>
+       * Obstacle map description
+       * </pre>
+       *
+       * <code>string p2 = 2;</code>
+       */
+      public java.lang.String getP2() {
+        java.lang.Object ref = p2_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          p2_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Obstacle map description
+       * </pre>
+       *
+       * <code>string p2 = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getP2Bytes() {
+        java.lang.Object ref = p2_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          p2_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <pre>
+       * Obstacle map description
+       * </pre>
+       *
+       * <code>string p2 = 2;</code>
+       */
+      public Builder setP2(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        p2_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Obstacle map description
+       * </pre>
+       *
+       * <code>string p2 = 2;</code>
+       */
+      public Builder clearP2() {
+        
+        p2_ = getDefaultInstance().getP2();
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Obstacle map description
+       * </pre>
+       *
+       * <code>string p2 = 2;</code>
+       */
+      public Builder setP2Bytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        p2_ = value;
         onChanged();
         return this;
       }
@@ -5128,29 +5886,59 @@ public final class GrpcService {
 
   }
 
-  public interface EchoRequestOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:EchoRequest)
+  public interface RobotInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:RobotInfo)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes message = 1;</code>
+     * <code>.InfoMode mode = 1;</code>
      */
-    com.google.protobuf.ByteString getMessage();
+    int getModeValue();
+    /**
+     * <code>.InfoMode mode = 1;</code>
+     */
+    grpc.GrpcService.InfoMode getMode();
+
+    /**
+     * <code>.Position pos = 2;</code>
+     */
+    boolean hasPos();
+    /**
+     * <code>.Position pos = 2;</code>
+     */
+    grpc.GrpcService.Position getPos();
+    /**
+     * <code>.Position pos = 2;</code>
+     */
+    grpc.GrpcService.PositionOrBuilder getPosOrBuilder();
+
+    /**
+     * <code>.MapDescription map = 3;</code>
+     */
+    boolean hasMap();
+    /**
+     * <code>.MapDescription map = 3;</code>
+     */
+    grpc.GrpcService.MapDescription getMap();
+    /**
+     * <code>.MapDescription map = 3;</code>
+     */
+    grpc.GrpcService.MapDescriptionOrBuilder getMapOrBuilder();
   }
   /**
-   * Protobuf type {@code EchoRequest}
+   * Protobuf type {@code RobotInfo}
    */
-  public  static final class EchoRequest extends
+  public  static final class RobotInfo extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:EchoRequest)
-      EchoRequestOrBuilder {
+      // @@protoc_insertion_point(message_implements:RobotInfo)
+      RobotInfoOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use EchoRequest.newBuilder() to construct.
-    private EchoRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use RobotInfo.newBuilder() to construct.
+    private RobotInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private EchoRequest() {
-      message_ = com.google.protobuf.ByteString.EMPTY;
+    private RobotInfo() {
+      mode_ = 0;
     }
 
     @java.lang.Override
@@ -5158,7 +5946,7 @@ public final class GrpcService {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private EchoRequest(
+    private RobotInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5177,9 +5965,36 @@ public final class GrpcService {
             case 0:
               done = true;
               break;
-            case 10: {
+            case 8: {
+              int rawValue = input.readEnum();
 
-              message_ = input.readBytes();
+              mode_ = rawValue;
+              break;
+            }
+            case 18: {
+              grpc.GrpcService.Position.Builder subBuilder = null;
+              if (pos_ != null) {
+                subBuilder = pos_.toBuilder();
+              }
+              pos_ = input.readMessage(grpc.GrpcService.Position.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(pos_);
+                pos_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+            case 26: {
+              grpc.GrpcService.MapDescription.Builder subBuilder = null;
+              if (map_ != null) {
+                subBuilder = map_.toBuilder();
+              }
+              map_ = input.readMessage(grpc.GrpcService.MapDescription.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(map_);
+                map_ = subBuilder.buildPartial();
+              }
+
               break;
             }
             default: {
@@ -5203,24 +6018,74 @@ public final class GrpcService {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return grpc.GrpcService.internal_static_EchoRequest_descriptor;
+      return grpc.GrpcService.internal_static_RobotInfo_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return grpc.GrpcService.internal_static_EchoRequest_fieldAccessorTable
+      return grpc.GrpcService.internal_static_RobotInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              grpc.GrpcService.EchoRequest.class, grpc.GrpcService.EchoRequest.Builder.class);
+              grpc.GrpcService.RobotInfo.class, grpc.GrpcService.RobotInfo.Builder.class);
     }
 
-    public static final int MESSAGE_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString message_;
+    public static final int MODE_FIELD_NUMBER = 1;
+    private int mode_;
     /**
-     * <code>bytes message = 1;</code>
+     * <code>.InfoMode mode = 1;</code>
      */
-    public com.google.protobuf.ByteString getMessage() {
-      return message_;
+    public int getModeValue() {
+      return mode_;
+    }
+    /**
+     * <code>.InfoMode mode = 1;</code>
+     */
+    public grpc.GrpcService.InfoMode getMode() {
+      @SuppressWarnings("deprecation")
+      grpc.GrpcService.InfoMode result = grpc.GrpcService.InfoMode.valueOf(mode_);
+      return result == null ? grpc.GrpcService.InfoMode.UNRECOGNIZED : result;
+    }
+
+    public static final int POS_FIELD_NUMBER = 2;
+    private grpc.GrpcService.Position pos_;
+    /**
+     * <code>.Position pos = 2;</code>
+     */
+    public boolean hasPos() {
+      return pos_ != null;
+    }
+    /**
+     * <code>.Position pos = 2;</code>
+     */
+    public grpc.GrpcService.Position getPos() {
+      return pos_ == null ? grpc.GrpcService.Position.getDefaultInstance() : pos_;
+    }
+    /**
+     * <code>.Position pos = 2;</code>
+     */
+    public grpc.GrpcService.PositionOrBuilder getPosOrBuilder() {
+      return getPos();
+    }
+
+    public static final int MAP_FIELD_NUMBER = 3;
+    private grpc.GrpcService.MapDescription map_;
+    /**
+     * <code>.MapDescription map = 3;</code>
+     */
+    public boolean hasMap() {
+      return map_ != null;
+    }
+    /**
+     * <code>.MapDescription map = 3;</code>
+     */
+    public grpc.GrpcService.MapDescription getMap() {
+      return map_ == null ? grpc.GrpcService.MapDescription.getDefaultInstance() : map_;
+    }
+    /**
+     * <code>.MapDescription map = 3;</code>
+     */
+    public grpc.GrpcService.MapDescriptionOrBuilder getMapOrBuilder() {
+      return getMap();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -5237,8 +6102,14 @@ public final class GrpcService {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!message_.isEmpty()) {
-        output.writeBytes(1, message_);
+      if (mode_ != grpc.GrpcService.InfoMode.MAP.getNumber()) {
+        output.writeEnum(1, mode_);
+      }
+      if (pos_ != null) {
+        output.writeMessage(2, getPos());
+      }
+      if (map_ != null) {
+        output.writeMessage(3, getMap());
       }
       unknownFields.writeTo(output);
     }
@@ -5249,9 +6120,17 @@ public final class GrpcService {
       if (size != -1) return size;
 
       size = 0;
-      if (!message_.isEmpty()) {
+      if (mode_ != grpc.GrpcService.InfoMode.MAP.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, message_);
+          .computeEnumSize(1, mode_);
+      }
+      if (pos_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getPos());
+      }
+      if (map_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(3, getMap());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5263,14 +6142,23 @@ public final class GrpcService {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof grpc.GrpcService.EchoRequest)) {
+      if (!(obj instanceof grpc.GrpcService.RobotInfo)) {
         return super.equals(obj);
       }
-      grpc.GrpcService.EchoRequest other = (grpc.GrpcService.EchoRequest) obj;
+      grpc.GrpcService.RobotInfo other = (grpc.GrpcService.RobotInfo) obj;
 
       boolean result = true;
-      result = result && getMessage()
-          .equals(other.getMessage());
+      result = result && mode_ == other.mode_;
+      result = result && (hasPos() == other.hasPos());
+      if (hasPos()) {
+        result = result && getPos()
+            .equals(other.getPos());
+      }
+      result = result && (hasMap() == other.hasMap());
+      if (hasMap()) {
+        result = result && getMap()
+            .equals(other.getMap());
+      }
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -5282,76 +6170,84 @@ public final class GrpcService {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-      hash = (53 * hash) + getMessage().hashCode();
+      hash = (37 * hash) + MODE_FIELD_NUMBER;
+      hash = (53 * hash) + mode_;
+      if (hasPos()) {
+        hash = (37 * hash) + POS_FIELD_NUMBER;
+        hash = (53 * hash) + getPos().hashCode();
+      }
+      if (hasMap()) {
+        hash = (37 * hash) + MAP_FIELD_NUMBER;
+        hash = (53 * hash) + getMap().hashCode();
+      }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(byte[] data)
+    public static grpc.GrpcService.RobotInfo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(java.io.InputStream input)
+    public static grpc.GrpcService.RobotInfo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoRequest parseDelimitedFrom(java.io.InputStream input)
+    public static grpc.GrpcService.RobotInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static grpc.GrpcService.EchoRequest parseDelimitedFrom(
+    public static grpc.GrpcService.RobotInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static grpc.GrpcService.EchoRequest parseFrom(
+    public static grpc.GrpcService.RobotInfo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5364,7 +6260,7 @@ public final class GrpcService {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(grpc.GrpcService.EchoRequest prototype) {
+    public static Builder newBuilder(grpc.GrpcService.RobotInfo prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -5380,26 +6276,26 @@ public final class GrpcService {
       return builder;
     }
     /**
-     * Protobuf type {@code EchoRequest}
+     * Protobuf type {@code RobotInfo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:EchoRequest)
-        grpc.GrpcService.EchoRequestOrBuilder {
+        // @@protoc_insertion_point(builder_implements:RobotInfo)
+        grpc.GrpcService.RobotInfoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return grpc.GrpcService.internal_static_EchoRequest_descriptor;
+        return grpc.GrpcService.internal_static_RobotInfo_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return grpc.GrpcService.internal_static_EchoRequest_fieldAccessorTable
+        return grpc.GrpcService.internal_static_RobotInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                grpc.GrpcService.EchoRequest.class, grpc.GrpcService.EchoRequest.Builder.class);
+                grpc.GrpcService.RobotInfo.class, grpc.GrpcService.RobotInfo.Builder.class);
       }
 
-      // Construct using grpc.GrpcService.EchoRequest.newBuilder()
+      // Construct using grpc.GrpcService.RobotInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5417,25 +6313,37 @@ public final class GrpcService {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        message_ = com.google.protobuf.ByteString.EMPTY;
+        mode_ = 0;
 
+        if (posBuilder_ == null) {
+          pos_ = null;
+        } else {
+          pos_ = null;
+          posBuilder_ = null;
+        }
+        if (mapBuilder_ == null) {
+          map_ = null;
+        } else {
+          map_ = null;
+          mapBuilder_ = null;
+        }
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return grpc.GrpcService.internal_static_EchoRequest_descriptor;
+        return grpc.GrpcService.internal_static_RobotInfo_descriptor;
       }
 
       @java.lang.Override
-      public grpc.GrpcService.EchoRequest getDefaultInstanceForType() {
-        return grpc.GrpcService.EchoRequest.getDefaultInstance();
+      public grpc.GrpcService.RobotInfo getDefaultInstanceForType() {
+        return grpc.GrpcService.RobotInfo.getDefaultInstance();
       }
 
       @java.lang.Override
-      public grpc.GrpcService.EchoRequest build() {
-        grpc.GrpcService.EchoRequest result = buildPartial();
+      public grpc.GrpcService.RobotInfo build() {
+        grpc.GrpcService.RobotInfo result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -5443,9 +6351,19 @@ public final class GrpcService {
       }
 
       @java.lang.Override
-      public grpc.GrpcService.EchoRequest buildPartial() {
-        grpc.GrpcService.EchoRequest result = new grpc.GrpcService.EchoRequest(this);
-        result.message_ = message_;
+      public grpc.GrpcService.RobotInfo buildPartial() {
+        grpc.GrpcService.RobotInfo result = new grpc.GrpcService.RobotInfo(this);
+        result.mode_ = mode_;
+        if (posBuilder_ == null) {
+          result.pos_ = pos_;
+        } else {
+          result.pos_ = posBuilder_.build();
+        }
+        if (mapBuilder_ == null) {
+          result.map_ = map_;
+        } else {
+          result.map_ = mapBuilder_.build();
+        }
         onBuilt();
         return result;
       }
@@ -5484,18 +6402,24 @@ public final class GrpcService {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof grpc.GrpcService.EchoRequest) {
-          return mergeFrom((grpc.GrpcService.EchoRequest)other);
+        if (other instanceof grpc.GrpcService.RobotInfo) {
+          return mergeFrom((grpc.GrpcService.RobotInfo)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(grpc.GrpcService.EchoRequest other) {
-        if (other == grpc.GrpcService.EchoRequest.getDefaultInstance()) return this;
-        if (other.getMessage() != com.google.protobuf.ByteString.EMPTY) {
-          setMessage(other.getMessage());
+      public Builder mergeFrom(grpc.GrpcService.RobotInfo other) {
+        if (other == grpc.GrpcService.RobotInfo.getDefaultInstance()) return this;
+        if (other.mode_ != 0) {
+          setModeValue(other.getModeValue());
+        }
+        if (other.hasPos()) {
+          mergePos(other.getPos());
+        }
+        if (other.hasMap()) {
+          mergeMap(other.getMap());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -5512,11 +6436,11 @@ public final class GrpcService {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        grpc.GrpcService.EchoRequest parsedMessage = null;
+        grpc.GrpcService.RobotInfo parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (grpc.GrpcService.EchoRequest) e.getUnfinishedMessage();
+          parsedMessage = (grpc.GrpcService.RobotInfo) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -5526,33 +6450,283 @@ public final class GrpcService {
         return this;
       }
 
-      private com.google.protobuf.ByteString message_ = com.google.protobuf.ByteString.EMPTY;
+      private int mode_ = 0;
       /**
-       * <code>bytes message = 1;</code>
+       * <code>.InfoMode mode = 1;</code>
        */
-      public com.google.protobuf.ByteString getMessage() {
-        return message_;
+      public int getModeValue() {
+        return mode_;
       }
       /**
-       * <code>bytes message = 1;</code>
+       * <code>.InfoMode mode = 1;</code>
        */
-      public Builder setMessage(com.google.protobuf.ByteString value) {
+      public Builder setModeValue(int value) {
+        mode_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>.InfoMode mode = 1;</code>
+       */
+      public grpc.GrpcService.InfoMode getMode() {
+        @SuppressWarnings("deprecation")
+        grpc.GrpcService.InfoMode result = grpc.GrpcService.InfoMode.valueOf(mode_);
+        return result == null ? grpc.GrpcService.InfoMode.UNRECOGNIZED : result;
+      }
+      /**
+       * <code>.InfoMode mode = 1;</code>
+       */
+      public Builder setMode(grpc.GrpcService.InfoMode value) {
         if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        message_ = value;
+          throw new NullPointerException();
+        }
+        
+        mode_ = value.getNumber();
         onChanged();
         return this;
       }
       /**
-       * <code>bytes message = 1;</code>
+       * <code>.InfoMode mode = 1;</code>
        */
-      public Builder clearMessage() {
+      public Builder clearMode() {
         
-        message_ = getDefaultInstance().getMessage();
+        mode_ = 0;
         onChanged();
         return this;
+      }
+
+      private grpc.GrpcService.Position pos_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          grpc.GrpcService.Position, grpc.GrpcService.Position.Builder, grpc.GrpcService.PositionOrBuilder> posBuilder_;
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public boolean hasPos() {
+        return posBuilder_ != null || pos_ != null;
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public grpc.GrpcService.Position getPos() {
+        if (posBuilder_ == null) {
+          return pos_ == null ? grpc.GrpcService.Position.getDefaultInstance() : pos_;
+        } else {
+          return posBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public Builder setPos(grpc.GrpcService.Position value) {
+        if (posBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          pos_ = value;
+          onChanged();
+        } else {
+          posBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public Builder setPos(
+          grpc.GrpcService.Position.Builder builderForValue) {
+        if (posBuilder_ == null) {
+          pos_ = builderForValue.build();
+          onChanged();
+        } else {
+          posBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public Builder mergePos(grpc.GrpcService.Position value) {
+        if (posBuilder_ == null) {
+          if (pos_ != null) {
+            pos_ =
+              grpc.GrpcService.Position.newBuilder(pos_).mergeFrom(value).buildPartial();
+          } else {
+            pos_ = value;
+          }
+          onChanged();
+        } else {
+          posBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public Builder clearPos() {
+        if (posBuilder_ == null) {
+          pos_ = null;
+          onChanged();
+        } else {
+          pos_ = null;
+          posBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public grpc.GrpcService.Position.Builder getPosBuilder() {
+        
+        onChanged();
+        return getPosFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      public grpc.GrpcService.PositionOrBuilder getPosOrBuilder() {
+        if (posBuilder_ != null) {
+          return posBuilder_.getMessageOrBuilder();
+        } else {
+          return pos_ == null ?
+              grpc.GrpcService.Position.getDefaultInstance() : pos_;
+        }
+      }
+      /**
+       * <code>.Position pos = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          grpc.GrpcService.Position, grpc.GrpcService.Position.Builder, grpc.GrpcService.PositionOrBuilder> 
+          getPosFieldBuilder() {
+        if (posBuilder_ == null) {
+          posBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              grpc.GrpcService.Position, grpc.GrpcService.Position.Builder, grpc.GrpcService.PositionOrBuilder>(
+                  getPos(),
+                  getParentForChildren(),
+                  isClean());
+          pos_ = null;
+        }
+        return posBuilder_;
+      }
+
+      private grpc.GrpcService.MapDescription map_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          grpc.GrpcService.MapDescription, grpc.GrpcService.MapDescription.Builder, grpc.GrpcService.MapDescriptionOrBuilder> mapBuilder_;
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public boolean hasMap() {
+        return mapBuilder_ != null || map_ != null;
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public grpc.GrpcService.MapDescription getMap() {
+        if (mapBuilder_ == null) {
+          return map_ == null ? grpc.GrpcService.MapDescription.getDefaultInstance() : map_;
+        } else {
+          return mapBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public Builder setMap(grpc.GrpcService.MapDescription value) {
+        if (mapBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          map_ = value;
+          onChanged();
+        } else {
+          mapBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public Builder setMap(
+          grpc.GrpcService.MapDescription.Builder builderForValue) {
+        if (mapBuilder_ == null) {
+          map_ = builderForValue.build();
+          onChanged();
+        } else {
+          mapBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public Builder mergeMap(grpc.GrpcService.MapDescription value) {
+        if (mapBuilder_ == null) {
+          if (map_ != null) {
+            map_ =
+              grpc.GrpcService.MapDescription.newBuilder(map_).mergeFrom(value).buildPartial();
+          } else {
+            map_ = value;
+          }
+          onChanged();
+        } else {
+          mapBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public Builder clearMap() {
+        if (mapBuilder_ == null) {
+          map_ = null;
+          onChanged();
+        } else {
+          map_ = null;
+          mapBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public grpc.GrpcService.MapDescription.Builder getMapBuilder() {
+        
+        onChanged();
+        return getMapFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      public grpc.GrpcService.MapDescriptionOrBuilder getMapOrBuilder() {
+        if (mapBuilder_ != null) {
+          return mapBuilder_.getMessageOrBuilder();
+        } else {
+          return map_ == null ?
+              grpc.GrpcService.MapDescription.getDefaultInstance() : map_;
+        }
+      }
+      /**
+       * <code>.MapDescription map = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          grpc.GrpcService.MapDescription, grpc.GrpcService.MapDescription.Builder, grpc.GrpcService.MapDescriptionOrBuilder> 
+          getMapFieldBuilder() {
+        if (mapBuilder_ == null) {
+          mapBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              grpc.GrpcService.MapDescription, grpc.GrpcService.MapDescription.Builder, grpc.GrpcService.MapDescriptionOrBuilder>(
+                  getMap(),
+                  getParentForChildren(),
+                  isClean());
+          map_ = null;
+        }
+        return mapBuilder_;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
@@ -5567,75 +6741,69 @@ public final class GrpcService {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:EchoRequest)
+      // @@protoc_insertion_point(builder_scope:RobotInfo)
     }
 
-    // @@protoc_insertion_point(class_scope:EchoRequest)
-    private static final grpc.GrpcService.EchoRequest DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:RobotInfo)
+    private static final grpc.GrpcService.RobotInfo DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new grpc.GrpcService.EchoRequest();
+      DEFAULT_INSTANCE = new grpc.GrpcService.RobotInfo();
     }
 
-    public static grpc.GrpcService.EchoRequest getDefaultInstance() {
+    public static grpc.GrpcService.RobotInfo getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<EchoRequest>
-        PARSER = new com.google.protobuf.AbstractParser<EchoRequest>() {
+    private static final com.google.protobuf.Parser<RobotInfo>
+        PARSER = new com.google.protobuf.AbstractParser<RobotInfo>() {
       @java.lang.Override
-      public EchoRequest parsePartialFrom(
+      public RobotInfo parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EchoRequest(input, extensionRegistry);
+        return new RobotInfo(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<EchoRequest> parser() {
+    public static com.google.protobuf.Parser<RobotInfo> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<EchoRequest> getParserForType() {
+    public com.google.protobuf.Parser<RobotInfo> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public grpc.GrpcService.EchoRequest getDefaultInstanceForType() {
+    public grpc.GrpcService.RobotInfo getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
-  public interface EchoResponseOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:EchoResponse)
+  public interface ImageResponseOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:ImageResponse)
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bytes message = 1;</code>
+     * <code>bytes raw_image = 1;</code>
      */
-    com.google.protobuf.ByteString getMessage();
-
-    /**
-     * <code>bool status = 2;</code>
-     */
-    boolean getStatus();
+    com.google.protobuf.ByteString getRawImage();
   }
   /**
-   * Protobuf type {@code EchoResponse}
+   * Protobuf type {@code ImageResponse}
    */
-  public  static final class EchoResponse extends
+  public  static final class ImageResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:EchoResponse)
-      EchoResponseOrBuilder {
+      // @@protoc_insertion_point(message_implements:ImageResponse)
+      ImageResponseOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use EchoResponse.newBuilder() to construct.
-    private EchoResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use ImageResponse.newBuilder() to construct.
+    private ImageResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private EchoResponse() {
-      message_ = com.google.protobuf.ByteString.EMPTY;
-      status_ = false;
+    private ImageResponse() {
+      rawImage_ = com.google.protobuf.ByteString.EMPTY;
     }
 
     @java.lang.Override
@@ -5643,7 +6811,7 @@ public final class GrpcService {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private EchoResponse(
+    private ImageResponse(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5664,12 +6832,7 @@ public final class GrpcService {
               break;
             case 10: {
 
-              message_ = input.readBytes();
-              break;
-            }
-            case 16: {
-
-              status_ = input.readBool();
+              rawImage_ = input.readBytes();
               break;
             }
             default: {
@@ -5693,33 +6856,24 @@ public final class GrpcService {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return grpc.GrpcService.internal_static_EchoResponse_descriptor;
+      return grpc.GrpcService.internal_static_ImageResponse_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return grpc.GrpcService.internal_static_EchoResponse_fieldAccessorTable
+      return grpc.GrpcService.internal_static_ImageResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              grpc.GrpcService.EchoResponse.class, grpc.GrpcService.EchoResponse.Builder.class);
+              grpc.GrpcService.ImageResponse.class, grpc.GrpcService.ImageResponse.Builder.class);
     }
 
-    public static final int MESSAGE_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString message_;
+    public static final int RAW_IMAGE_FIELD_NUMBER = 1;
+    private com.google.protobuf.ByteString rawImage_;
     /**
-     * <code>bytes message = 1;</code>
+     * <code>bytes raw_image = 1;</code>
      */
-    public com.google.protobuf.ByteString getMessage() {
-      return message_;
-    }
-
-    public static final int STATUS_FIELD_NUMBER = 2;
-    private boolean status_;
-    /**
-     * <code>bool status = 2;</code>
-     */
-    public boolean getStatus() {
-      return status_;
+    public com.google.protobuf.ByteString getRawImage() {
+      return rawImage_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -5736,11 +6890,8 @@ public final class GrpcService {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!message_.isEmpty()) {
-        output.writeBytes(1, message_);
-      }
-      if (status_ != false) {
-        output.writeBool(2, status_);
+      if (!rawImage_.isEmpty()) {
+        output.writeBytes(1, rawImage_);
       }
       unknownFields.writeTo(output);
     }
@@ -5751,13 +6902,9 @@ public final class GrpcService {
       if (size != -1) return size;
 
       size = 0;
-      if (!message_.isEmpty()) {
+      if (!rawImage_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(1, message_);
-      }
-      if (status_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(2, status_);
+          .computeBytesSize(1, rawImage_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -5769,16 +6916,14 @@ public final class GrpcService {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof grpc.GrpcService.EchoResponse)) {
+      if (!(obj instanceof grpc.GrpcService.ImageResponse)) {
         return super.equals(obj);
       }
-      grpc.GrpcService.EchoResponse other = (grpc.GrpcService.EchoResponse) obj;
+      grpc.GrpcService.ImageResponse other = (grpc.GrpcService.ImageResponse) obj;
 
       boolean result = true;
-      result = result && getMessage()
-          .equals(other.getMessage());
-      result = result && (getStatus()
-          == other.getStatus());
+      result = result && getRawImage()
+          .equals(other.getRawImage());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -5790,79 +6935,76 @@ public final class GrpcService {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + MESSAGE_FIELD_NUMBER;
-      hash = (53 * hash) + getMessage().hashCode();
-      hash = (37 * hash) + STATUS_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getStatus());
+      hash = (37 * hash) + RAW_IMAGE_FIELD_NUMBER;
+      hash = (53 * hash) + getRawImage().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(byte[] data)
+    public static grpc.GrpcService.ImageResponse parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(java.io.InputStream input)
+    public static grpc.GrpcService.ImageResponse parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoResponse parseDelimitedFrom(java.io.InputStream input)
+    public static grpc.GrpcService.ImageResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static grpc.GrpcService.EchoResponse parseDelimitedFrom(
+    public static grpc.GrpcService.ImageResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static grpc.GrpcService.EchoResponse parseFrom(
+    public static grpc.GrpcService.ImageResponse parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -5875,7 +7017,7 @@ public final class GrpcService {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(grpc.GrpcService.EchoResponse prototype) {
+    public static Builder newBuilder(grpc.GrpcService.ImageResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -5891,26 +7033,26 @@ public final class GrpcService {
       return builder;
     }
     /**
-     * Protobuf type {@code EchoResponse}
+     * Protobuf type {@code ImageResponse}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:EchoResponse)
-        grpc.GrpcService.EchoResponseOrBuilder {
+        // @@protoc_insertion_point(builder_implements:ImageResponse)
+        grpc.GrpcService.ImageResponseOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return grpc.GrpcService.internal_static_EchoResponse_descriptor;
+        return grpc.GrpcService.internal_static_ImageResponse_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return grpc.GrpcService.internal_static_EchoResponse_fieldAccessorTable
+        return grpc.GrpcService.internal_static_ImageResponse_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                grpc.GrpcService.EchoResponse.class, grpc.GrpcService.EchoResponse.Builder.class);
+                grpc.GrpcService.ImageResponse.class, grpc.GrpcService.ImageResponse.Builder.class);
       }
 
-      // Construct using grpc.GrpcService.EchoResponse.newBuilder()
+      // Construct using grpc.GrpcService.ImageResponse.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -5928,9 +7070,7 @@ public final class GrpcService {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        message_ = com.google.protobuf.ByteString.EMPTY;
-
-        status_ = false;
+        rawImage_ = com.google.protobuf.ByteString.EMPTY;
 
         return this;
       }
@@ -5938,17 +7078,17 @@ public final class GrpcService {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return grpc.GrpcService.internal_static_EchoResponse_descriptor;
+        return grpc.GrpcService.internal_static_ImageResponse_descriptor;
       }
 
       @java.lang.Override
-      public grpc.GrpcService.EchoResponse getDefaultInstanceForType() {
-        return grpc.GrpcService.EchoResponse.getDefaultInstance();
+      public grpc.GrpcService.ImageResponse getDefaultInstanceForType() {
+        return grpc.GrpcService.ImageResponse.getDefaultInstance();
       }
 
       @java.lang.Override
-      public grpc.GrpcService.EchoResponse build() {
-        grpc.GrpcService.EchoResponse result = buildPartial();
+      public grpc.GrpcService.ImageResponse build() {
+        grpc.GrpcService.ImageResponse result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -5956,10 +7096,9 @@ public final class GrpcService {
       }
 
       @java.lang.Override
-      public grpc.GrpcService.EchoResponse buildPartial() {
-        grpc.GrpcService.EchoResponse result = new grpc.GrpcService.EchoResponse(this);
-        result.message_ = message_;
-        result.status_ = status_;
+      public grpc.GrpcService.ImageResponse buildPartial() {
+        grpc.GrpcService.ImageResponse result = new grpc.GrpcService.ImageResponse(this);
+        result.rawImage_ = rawImage_;
         onBuilt();
         return result;
       }
@@ -5998,21 +7137,18 @@ public final class GrpcService {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof grpc.GrpcService.EchoResponse) {
-          return mergeFrom((grpc.GrpcService.EchoResponse)other);
+        if (other instanceof grpc.GrpcService.ImageResponse) {
+          return mergeFrom((grpc.GrpcService.ImageResponse)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(grpc.GrpcService.EchoResponse other) {
-        if (other == grpc.GrpcService.EchoResponse.getDefaultInstance()) return this;
-        if (other.getMessage() != com.google.protobuf.ByteString.EMPTY) {
-          setMessage(other.getMessage());
-        }
-        if (other.getStatus() != false) {
-          setStatus(other.getStatus());
+      public Builder mergeFrom(grpc.GrpcService.ImageResponse other) {
+        if (other == grpc.GrpcService.ImageResponse.getDefaultInstance()) return this;
+        if (other.getRawImage() != com.google.protobuf.ByteString.EMPTY) {
+          setRawImage(other.getRawImage());
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -6029,11 +7165,11 @@ public final class GrpcService {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        grpc.GrpcService.EchoResponse parsedMessage = null;
+        grpc.GrpcService.ImageResponse parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (grpc.GrpcService.EchoResponse) e.getUnfinishedMessage();
+          parsedMessage = (grpc.GrpcService.ImageResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -6043,57 +7179,31 @@ public final class GrpcService {
         return this;
       }
 
-      private com.google.protobuf.ByteString message_ = com.google.protobuf.ByteString.EMPTY;
+      private com.google.protobuf.ByteString rawImage_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>bytes message = 1;</code>
+       * <code>bytes raw_image = 1;</code>
        */
-      public com.google.protobuf.ByteString getMessage() {
-        return message_;
+      public com.google.protobuf.ByteString getRawImage() {
+        return rawImage_;
       }
       /**
-       * <code>bytes message = 1;</code>
+       * <code>bytes raw_image = 1;</code>
        */
-      public Builder setMessage(com.google.protobuf.ByteString value) {
+      public Builder setRawImage(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        message_ = value;
+        rawImage_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>bytes message = 1;</code>
+       * <code>bytes raw_image = 1;</code>
        */
-      public Builder clearMessage() {
+      public Builder clearRawImage() {
         
-        message_ = getDefaultInstance().getMessage();
-        onChanged();
-        return this;
-      }
-
-      private boolean status_ ;
-      /**
-       * <code>bool status = 2;</code>
-       */
-      public boolean getStatus() {
-        return status_;
-      }
-      /**
-       * <code>bool status = 2;</code>
-       */
-      public Builder setStatus(boolean value) {
-        
-        status_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bool status = 2;</code>
-       */
-      public Builder clearStatus() {
-        
-        status_ = false;
+        rawImage_ = getDefaultInstance().getRawImage();
         onChanged();
         return this;
       }
@@ -6110,46 +7220,56 @@ public final class GrpcService {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:EchoResponse)
+      // @@protoc_insertion_point(builder_scope:ImageResponse)
     }
 
-    // @@protoc_insertion_point(class_scope:EchoResponse)
-    private static final grpc.GrpcService.EchoResponse DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:ImageResponse)
+    private static final grpc.GrpcService.ImageResponse DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new grpc.GrpcService.EchoResponse();
+      DEFAULT_INSTANCE = new grpc.GrpcService.ImageResponse();
     }
 
-    public static grpc.GrpcService.EchoResponse getDefaultInstance() {
+    public static grpc.GrpcService.ImageResponse getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<EchoResponse>
-        PARSER = new com.google.protobuf.AbstractParser<EchoResponse>() {
+    private static final com.google.protobuf.Parser<ImageResponse>
+        PARSER = new com.google.protobuf.AbstractParser<ImageResponse>() {
       @java.lang.Override
-      public EchoResponse parsePartialFrom(
+      public ImageResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new EchoResponse(input, extensionRegistry);
+        return new ImageResponse(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<EchoResponse> parser() {
+    public static com.google.protobuf.Parser<ImageResponse> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<EchoResponse> getParserForType() {
+    public com.google.protobuf.Parser<ImageResponse> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public grpc.GrpcService.EchoResponse getDefaultInstanceForType() {
+    public grpc.GrpcService.ImageResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
   }
 
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_EchoRequest_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_EchoRequest_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_EchoResponse_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_EchoResponse_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MoveRequest_descriptor;
   private static final 
@@ -6171,20 +7291,10 @@ public final class GrpcService {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_TurnRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_CalibrateRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_CalibrateRequest_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_RobotStatus_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_RobotStatus_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_MetricRequest_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_MetricRequest_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_MetricResponse_descriptor;
   private static final 
@@ -6206,15 +7316,15 @@ public final class GrpcService {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_MapDescription_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_EchoRequest_descriptor;
+    internal_static_RobotInfo_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_EchoRequest_fieldAccessorTable;
+      internal_static_RobotInfo_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_EchoResponse_descriptor;
+    internal_static_ImageResponse_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_EchoResponse_fieldAccessorTable;
+      internal_static_ImageResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -6224,32 +7334,40 @@ public final class GrpcService {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\022grpc_service.proto\"\033\n\013MoveRequest\022\014\n\004s" +
-      "tep\030\001 \001(\r\"\030\n\006Status\022\016\n\006status\030\001 \001(\010\"\016\n\014E" +
-      "mptyRequest\"\034\n\013TurnRequest\022\r\n\005angle\030\001 \001(" +
-      "\r\"\022\n\020CalibrateRequest\"Y\n\013RobotStatus\022\037\n\004" +
-      "mode\030\001 \001(\0162\021.RobotStatus.Mode\")\n\004Mode\022\017\n" +
-      "\013EXPLORATION\020\000\022\020\n\014FASTEST_PATH\020\001\"\033\n\rMetr" +
-      "icRequest\022\n\n\002id\030\001 \001(\r\"l\n\016MetricResponse\022" +
-      "+\n\006values\030\001 \003(\0132\033.MetricResponse.ValuesE" +
-      "ntry\032-\n\013ValuesEntry\022\013\n\003key\030\001 \001(\r\022\r\n\005valu" +
-      "e\030\002 \001(\001:\0028\001\" \n\010Position\022\t\n\001x\030\001 \001(\r\022\t\n\001y\030" +
-      "\002 \001(\r\"%\n\016MapDescription\022\023\n\013description\030\001" +
-      " \001(\014\"\036\n\013EchoRequest\022\017\n\007message\030\001 \001(\014\"/\n\014" +
-      "EchoResponse\022\017\n\007message\030\001 \001(\014\022\016\n\006status\030" +
-      "\002 \001(\0102\343\003\n\013GRPCService\022%\n\004Echo\022\014.EchoRequ" +
-      "est\032\r.EchoResponse\"\000\022*\n\007Forward\022\014.MoveRe" +
-      "quest\032\017.MetricResponse\"\000\022+\n\010TurnLeft\022\014.M" +
-      "oveRequest\032\017.MetricResponse\"\000\022,\n\tTurnRig" +
-      "ht\022\014.MoveRequest\032\017.MetricResponse\"\000\022)\n\tC" +
-      "alibrate\022\021.CalibrateRequest\032\007.Status\"\000\022," +
-      "\n\021WaitForRobotStart\022\014.RobotStatus\032\007.Stat" +
-      "us\"\000\022$\n\tStopRobot\022\014.RobotStatus\032\007.Status" +
-      "\"\000\022/\n\nGetMetrics\022\016.MetricRequest\032\017.Metri" +
-      "cResponse\"\000\022%\n\013SetPosition\022\t.Position\032\t." +
-      "Position\"\000\022$\n\006SetMap\022\017.MapDescription\032\007." +
-      "Status\"\000\022)\n\013GetWayPoint\022\r.EmptyRequest\032\t" +
-      ".Position\"\000B\006\n\004grpcb\006proto3"
+      "\n\022grpc_service.proto\"\036\n\013EchoRequest\022\017\n\007m" +
+      "essage\030\001 \001(\014\"/\n\014EchoResponse\022\017\n\007message\030" +
+      "\001 \001(\014\022\016\n\006status\030\002 \001(\010\"\033\n\013MoveRequest\022\014\n\004" +
+      "step\030\001 \001(\r\"\030\n\006Status\022\016\n\006status\030\001 \001(\010\"\016\n\014" +
+      "EmptyRequest\"\034\n\013TurnRequest\022\r\n\005angle\030\001 \001" +
+      "(\r\"Y\n\013RobotStatus\022\037\n\004mode\030\001 \001(\0162\021.RobotS" +
+      "tatus.Mode\")\n\004Mode\022\017\n\013EXPLORATION\020\000\022\020\n\014F" +
+      "ASTEST_PATH\020\001\"|\n\016MetricResponse\022+\n\006value" +
+      "s\030\001 \003(\0132\033.MetricResponse.ValuesEntry\022\016\n\006" +
+      "status\030\002 \001(\010\032-\n\013ValuesEntry\022\013\n\003key\030\001 \001(\r" +
+      "\022\r\n\005value\030\002 \001(\002:\0028\001\"y\n\010Position\022\t\n\001x\030\001 \001" +
+      "(\005\022\t\n\001y\030\002 \001(\005\022 \n\003dir\030\003 \001(\0162\023.Position.Di" +
+      "rection\"5\n\tDirection\022\t\n\005NORTH\020\000\022\010\n\004EAST\020" +
+      "\001\022\t\n\005SOUTH\020\002\022\010\n\004WEST\020\003\"(\n\016MapDescription" +
+      "\022\n\n\002p1\030\001 \001(\t\022\n\n\002p2\030\002 \001(\t\"Z\n\tRobotInfo\022\027\n" +
+      "\004mode\030\001 \001(\0162\t.InfoMode\022\026\n\003pos\030\002 \001(\0132\t.Po" +
+      "sition\022\034\n\003map\030\003 \001(\0132\017.MapDescription\"\"\n\r" +
+      "ImageResponse\022\021\n\traw_image\030\001 \001(\014*%\n\010Info" +
+      "Mode\022\007\n\003MAP\020\000\022\007\n\003POS\020\001\022\007\n\003ALL\020\0022\267\004\n\013GRPC" +
+      "Service\022%\n\004Echo\022\014.EchoRequest\032\r.EchoResp" +
+      "onse\"\000\022*\n\007Forward\022\014.MoveRequest\032\017.Metric" +
+      "Response\"\000\022+\n\010TurnLeft\022\014.TurnRequest\032\017.M" +
+      "etricResponse\"\000\022,\n\tTurnRight\022\014.TurnReque" +
+      "st\032\017.MetricResponse\"\000\022%\n\tCalibrate\022\r.Emp" +
+      "tyRequest\032\007.Status\"\000\022,\n\021WaitForRobotStar" +
+      "t\022\014.RobotStatus\032\007.Status\"\000\022%\n\tStopRobot\022" +
+      "\r.EmptyRequest\032\007.Status\"\000\022.\n\nGetMetrics\022" +
+      "\r.EmptyRequest\032\017.MetricResponse\"\000\022#\n\013Set" +
+      "Position\022\t.Position\032\007.Status\"\000\022$\n\006SetMap" +
+      "\022\017.MapDescription\032\007.Status\"\000\022)\n\013GetWayPo" +
+      "int\022\r.EmptyRequest\032\t.Position\"\000\022%\n\tTakeP" +
+      "hoto\022\r.EmptyRequest\032\007.Status\"\000\0221\n\016GetIma" +
+      "geResult\022\r.EmptyRequest\032\016.ImageResponse\"" +
+      "\000B\006\n\004grpcb\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -6263,54 +7381,54 @@ public final class GrpcService {
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_MoveRequest_descriptor =
+    internal_static_EchoRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
+    internal_static_EchoRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_EchoRequest_descriptor,
+        new java.lang.String[] { "Message", });
+    internal_static_EchoResponse_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_EchoResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_EchoResponse_descriptor,
+        new java.lang.String[] { "Message", "Status", });
+    internal_static_MoveRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_MoveRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_MoveRequest_descriptor,
         new java.lang.String[] { "Step", });
     internal_static_Status_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_Status_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Status_descriptor,
         new java.lang.String[] { "Status", });
     internal_static_EmptyRequest_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_EmptyRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_EmptyRequest_descriptor,
         new java.lang.String[] { });
     internal_static_TurnRequest_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_TurnRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_TurnRequest_descriptor,
         new java.lang.String[] { "Angle", });
-    internal_static_CalibrateRequest_descriptor =
-      getDescriptor().getMessageTypes().get(4);
-    internal_static_CalibrateRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_CalibrateRequest_descriptor,
-        new java.lang.String[] { });
     internal_static_RobotStatus_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_RobotStatus_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RobotStatus_descriptor,
         new java.lang.String[] { "Mode", });
-    internal_static_MetricRequest_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_MetricRequest_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_MetricRequest_descriptor,
-        new java.lang.String[] { "Id", });
     internal_static_MetricResponse_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_MetricResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_MetricResponse_descriptor,
-        new java.lang.String[] { "Values", });
+        new java.lang.String[] { "Values", "Status", });
     internal_static_MetricResponse_ValuesEntry_descriptor =
       internal_static_MetricResponse_descriptor.getNestedTypes().get(0);
     internal_static_MetricResponse_ValuesEntry_fieldAccessorTable = new
@@ -6322,25 +7440,25 @@ public final class GrpcService {
     internal_static_Position_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Position_descriptor,
-        new java.lang.String[] { "X", "Y", });
+        new java.lang.String[] { "X", "Y", "Dir", });
     internal_static_MapDescription_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_MapDescription_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_MapDescription_descriptor,
-        new java.lang.String[] { "Description", });
-    internal_static_EchoRequest_descriptor =
+        new java.lang.String[] { "P1", "P2", });
+    internal_static_RobotInfo_descriptor =
       getDescriptor().getMessageTypes().get(10);
-    internal_static_EchoRequest_fieldAccessorTable = new
+    internal_static_RobotInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_EchoRequest_descriptor,
-        new java.lang.String[] { "Message", });
-    internal_static_EchoResponse_descriptor =
+        internal_static_RobotInfo_descriptor,
+        new java.lang.String[] { "Mode", "Pos", "Map", });
+    internal_static_ImageResponse_descriptor =
       getDescriptor().getMessageTypes().get(11);
-    internal_static_EchoResponse_fieldAccessorTable = new
+    internal_static_ImageResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_EchoResponse_descriptor,
-        new java.lang.String[] { "Message", "Status", });
+        internal_static_ImageResponse_descriptor,
+        new java.lang.String[] { "RawImage", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

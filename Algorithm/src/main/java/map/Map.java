@@ -161,6 +161,8 @@ public class Map extends JPanel {
 				else if (cell.isObstacle()) cellColor = MapConst.COLOR_OBSTACLE;
 				else if (cell.isWayPoint()) cellColor = MapConst.COLOR_WAYPOINT;
 				else if (cell.isFastestPath()) cellColor = MapConst.COLOR_FP;
+				else if (cell.isDetectedForImage()) cellColor = MapConst.COLOR_BLOCK_IMAGE_DETECTED;
+				else if (cell.isCanTakePhoto()) cellColor = MapConst.COLOR_ROBOT_CAN_TAKE_PHOTO;
 				else cellColor = MapConst.COLOR_FREE;
 
 				// draw a rectangle with corresponding color

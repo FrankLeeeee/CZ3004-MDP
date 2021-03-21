@@ -11,6 +11,7 @@ import config.SimulatorConst;
 import grpc.GrpcService;
 import map.Cell;
 import map.Map;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import robot.Robot;
 
@@ -21,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -47,64 +49,93 @@ public class Simulator {
 	private static int coverageLimit = RobotConst.COVERAGE_LIMIT;
 	private static int timeLimit = RobotConst.TIME_LIMIT;
 	private static int speed = RobotConst.SPEED; // steps per second
-	private static int wayPointR = 1;  // default
-	private static int wayPointC = 1;  // default
+	private static int wayPointR = 4;  // default
+	private static int wayPointC = 9;  // default
 
 	private static final String EXP_MAP = "EXPLORED_MAP";
 	private static final String ACT_MAP = "ACTUAL_MAP";
 	public static Logger logger = Logger.getLogger(Simulator.class);
 
 	private static final boolean realRun = false;
-	public static final String task = "FP";
-	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/map_MD_1";
+	private static final boolean testArduino = false;
+	public static final String task = "EXP";
+
+	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/TestMD/test2.txt";
+	public static final String imgPathforIMG = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/img_rec.jpg";
 
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, IOException {
+		BasicConfigurator.configure();
+
 		// create a Robot object
 		robot = new Robot(MapConst.START_ROW, MapConst.START_COL, realRun);
 
+//		GrpcClient client = GrpcClient.getInstance();
+//		logger.info("connecting grpc");
+//		while (!client.isConnected()) {
+//			try {
+//				client.connect(GrpcConst.CLIENT_HOST, GrpcConst.CLIENT_PORT);
+//			} catch (Exception e) {
+//				logger.error("data client encountered connection error, retrying after 5 seconds...");
+//				TimeUnit.SECONDS.sleep(5);
+//			}
+//		}
+//		logger.info("grpc connected");
+//		Map exploredMap = new Map(robot);
+//		exploredMap.setAllCellsExplored();
+//		client.setMap(exploredMap);
+//		client.takePhoto();
+//		System.exit(0);//		client.getFinalImageResults(imgPathforIMG);
+//
 		// initialize the map
 		exploredMap = new Map(robot);
 		exploredMap.setAllCellsUnexplored();
-
-		// initialize the app
+//
+//		initialize the app
 		initializeFrame();
 
 		if (realRun) {
-			logger.info("Initializing gRPC clients");
+			if (testArduino) {
+				test();
+			} else {
+				logger.info("Initializing gRPC clients");
 
-			// create gRPC client instances
-			GrpcClient client = GrpcClient.getInstance();
+				// create gRPC client instances
+				GrpcClient client = GrpcClient.getInstance();
 
-			while (!client.isConnected()) {
-				try {
-					client.connect(GrpcConst.CLIENT_HOST, GrpcConst.CLIENT_PORT);
-				} catch (Exception e) {
-					logger.error("data client encountered connection error, retrying after 5 seconds...");
-					TimeUnit.SECONDS.sleep(5);
+				while (!client.isConnected()) {
+					try {
+						client.connect(GrpcConst.CLIENT_HOST, GrpcConst.CLIENT_PORT);
+					} catch (Exception e) {
+						logger.error("data client encountered connection error, retrying after 5 seconds...");
+						TimeUnit.SECONDS.sleep(5);
+					}
+				}
+
+				assert client.isConnected();
+				logger.info("gRPC connection is set up.");
+
+				if (task == "EXP" || task == "IMG") {
+					mapPanel.add(exploredMap, EXP_MAP);
+					(new Simulator.Explore()).execute();
+				} else if (task == "FP") {
+					MapDescriptor.readMap(exploredMap, mapPathForFP);
+					mapPanel.add(exploredMap, EXP_MAP);
+					(new Simulator.Fastest()).execute();
 				}
 			}
-
-			assert client.isConnected();
-			logger.info("gRPC connection is set up.");
-
-			if (task == "EXP") {
-				(new Simulator.Explore()).execute();
-			} else if (task == "FP") {
-				MapDescriptor.readMap(exploredMap, mapPathForFP);
-				(new Simulator.Fastest()).execute();
-			}
-
 		} else {
 			// run virtual testing
 			logger.info("Run virtual testing");
 			actualMap = new Map(robot);
 			MapDescriptor.readMap(actualMap, mapPathForFP);
 
-			if (task == "EXP") {
+			if (task == "EXP" || task == "IMG") {
 				mapPanel.add(exploredMap, EXP_MAP);
 				mapPanel.add(actualMap, ACT_MAP);
+//				actualMap.getArena()[2][3].setObstacle(true);
 				(new Simulator.Explore()).execute();
+
 			} else if (task == "FP") {
 				MapDescriptor.readMap(exploredMap, mapPathForFP);
 				mapPanel.add(exploredMap, EXP_MAP);
@@ -112,6 +143,50 @@ public class Simulator {
 				(new Simulator.Fastest()).execute();
 			}
 		}
+	}
+
+	private static void test() throws InterruptedException {
+		// Test
+		// create gRPC client instances
+
+		GrpcClient client = GrpcClient.getInstance();
+
+		while (!client.isConnected()) {
+			try {
+				client.connect(GrpcConst.CLIENT_HOST, GrpcConst.CLIENT_PORT);
+			} catch (Exception e) {
+				logger.error("data client encountered connection error, retrying after 5 seconds...");
+				TimeUnit.SECONDS.sleep(5);
+			}
+		}
+
+		System.out.println("connected");
+
+		java.util.Map<Integer, Float> turnLeftResponse = client.moveRobot(RobotConst.MOVE.TURN_LEFT, 90);
+		System.out.println("turn left done");
+		System.out.println(turnLeftResponse);
+
+//		boolean cal = client.calibrate();
+//		System.out.println("calibrate done");
+//		System.out.println(cal);
+
+		java.util.Map<Integer, Float> turnRightResponse = client.moveRobot(RobotConst.MOVE.TURN_RIGHT, 90);
+		System.out.println("turn right done");
+		System.out.println(turnRightResponse);
+
+
+		java.util.Map<Integer, Float> forwardResponse = client.moveRobot(RobotConst.MOVE.FORWARD, 1);
+		System.out.println("forward done");
+		System.out.println(forwardResponse);
+
+		java.util.Map<Integer, Float> sensorData = client.getMetrics();
+		System.out.println("get sensor data done");
+		System.out.println(sensorData);
+
+		boolean stopRob = client.stopRobot();
+		System.out.println("stop robot done");
+		System.out.println(stopRob);
+
 	}
 
 
@@ -280,6 +355,8 @@ public class Simulator {
 
 	static class Explore extends SwingWorker<Integer, String> {
 		protected Integer doInBackground() throws Exception {
+			logger.info("starting exploration");
+
 			// disable button
 			if (!realRun) {
 				btnExplore.setEnabled(false);
@@ -295,17 +372,21 @@ public class Simulator {
 			exploredMap.repaint();
 			Exploration exploration;
 
-			if (!realRun)
+			if (!realRun) {
 				// the actual map is given to simulate sensor data
 				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit, actualMap);
-			else {
-				// check if android sets to start exploration
+			} else {
 				GrpcClient client = GrpcClient.getInstance();
-				boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
-				assert response : "Waiting for the robot to start returns 0";
-				logger.info("Android signals to start");
-
 				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit);
+				exploration.initialCalibration();
+
+				while (true) {
+					// waiting for android to send the start exploration message
+					boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
+					assert response : "gRPC server claims that the robot is not started";
+					logger.info("Rpi signals to start exploration after initial calibration.");
+					break;
+				}
 			}
 
 			exStartTime = System.currentTimeMillis();
@@ -316,11 +397,9 @@ public class Simulator {
 			MapDescriptor.writeFile(mapDescriptors);
 
 			if (realRun) {
-				robot.sendDataToAndroid("DATA", exploredMap);
-				// no need to run fastest path as it
-				// is an independent task now
-//				(new Fastest(exploration)).execute();
+				robot.sendDataToAndroid(exploredMap);
 			}
+
 			timer.stop();
 
 			// enable button
@@ -348,47 +427,67 @@ public class Simulator {
 		}
 
 		protected Integer doInBackground() throws Exception {
-			// disable button
-			btnExplore.setEnabled(false);
-			btnFastestPath.setEnabled(false);
-			btnReadMap.setEnabled(false);
-			btnSettings.setEnabled(false);
+			logger.info("start background task");
+			if (!realRun) {
+				btnExplore.setEnabled(false);
+				btnFastestPath.setEnabled(false);
+				btnReadMap.setEnabled(false);
+				btnSettings.setEnabled(false);
+			}
 
 			// start fastest path
 			robot.setRow(MapConst.START_ROW);
 			robot.setCol(MapConst.START_COL);
 			robot.setSpeed(speed);
 			exploredMap.repaint();
+
+			// send explored map to android
+			GrpcClient client = GrpcClient.getInstance();
+			logger.info("setting the map");
+			if (realRun) {
+				client.setMap(exploredMap);
+			}
+			logger.info("map is set");
+
+
+			// init mvoes
 			FastestPath fastestPathWayPoint, fastestPathGoal;
 			ArrayList<RobotConst.MOVE> movesWayPoint, movesGoal;
-
-			GrpcClient client = GrpcClient.getInstance();
 
 			// fastest path from start zone to way point
 			fastestPathWayPoint = !realRun ? new FastestPath(exploredMap, robot, actualMap)
 					: new FastestPath(exploredMap, robot);
 			fastestPathWayPoint.setExMode(exMode);
 			if (realRun) {
-				String msg;
+				// TODO: change back
 				logger.info("Waiting for Way Point command....");
 				while (true) {
 					GrpcService.Position pos = client.getWayPoint();
 					wayPointC = pos.getX();
 					wayPointR = pos.getY();
+					if (wayPointC == -1 || wayPointR == -1) {
+						continue;
+					}
 					break;
 				}
+				logger.info("Wait point is " + wayPointR + ", " + wayPointC);
+
+				// TODO: change back
 				logger.info("Waiting for FP_START command....");
 				while (true) {
 					boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.FASTEST_PATH);
 					assert response : "Waiting to start FP returns 0";
 					break;
 				}
+				logger.info("fastest path start");
+				exploredMap.repaint();
 
-				logger.info("Waiting for sensors data before starting Fastest Path....");
-				while (true) {
-					client.getMetrics();
-					break;
-				}
+//				initial calibration
+				robot.move(RobotConst.MOVE.TURN_LEFT, exploredMap, false, false);
+				robot.move(RobotConst.MOVE.CALIBRATE, exploredMap, false, false);
+				robot.move(RobotConst.MOVE.TURN_LEFT, exploredMap, false, false);
+				robot.move(RobotConst.MOVE.CALIBRATE, exploredMap, false, false);
+				robot.move(RobotConst.MOVE.TURN_LEFT, exploredMap, false, false);
 			}
 
 			fpStartTime = System.currentTimeMillis();
@@ -408,13 +507,18 @@ public class Simulator {
 			logger.info("Time taken: " + (System.currentTimeMillis() - fpStartTime) / 1000 + "s");
 
 			// enable button
-			btnExplore.setEnabled(true);
-			btnFastestPath.setEnabled(true);
-			btnReadMap.setEnabled(true);
-			btnSettings.setEnabled(true);
-
+			if (!realRun) {
+				btnExplore.setEnabled(true);
+				btnFastestPath.setEnabled(true);
+				btnReadMap.setEnabled(true);
+				btnSettings.setEnabled(true);
+			} else {
+				// TODO: change back
+				client.stopRobot();
+			}
 			return 222;
 		}
+
 	}
 
 	private static void showSettingDialog() {

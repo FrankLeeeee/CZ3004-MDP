@@ -94,10 +94,10 @@ public class FastestPath {
 		do {
 			this.loopCnt++;
 
-			if (getMinFCostCell(targetR, targetC)!=null) {
+			if (getMinFCostCell(targetR, targetC) != null) {
 				// get the min cost cell
 				this.curCell = getMinFCostCell(targetR, targetC);
-				
+
 			}
 
 			// update the list
@@ -343,26 +343,39 @@ public class FastestPath {
 	}
 
 	public void executeMoves(ArrayList<RobotConst.MOVE> moves, Robot robot) {
+		this.executeMoves(moves, robot, -1, null);
+	}
+
+	public void executeMoves(ArrayList<RobotConst.MOVE> moves, Robot robot, long endTime, Exploration exp) {
 		logger.info("Started fastest path!");
 		if (!robot.isRealRobot()) {
 			// simulation mode
 			RobotConst.MOVE m;
 			for (int _m = 0; _m < moves.size(); _m++) {
-				m = moves.get(_m);
-				if (m == RobotConst.MOVE.FORWARD) {
-					if (!canMoveForward(robot)) {
-						// TODO: should recompute fastest path?
-						logger.info("Early termination of fastestpath algorithm");
+
+				// stop when time is not enough
+				if (endTime > 0) {
+					if (endTime - System.currentTimeMillis() < 10 * 1000) {
+						return;
 					}
 				}
 
-				robot.move(m, this.exploredMap);
+				m = moves.get(_m);
+				if (m == RobotConst.MOVE.FORWARD) {
+					if (!canMoveForward(robot)) {
+						logger.info("Early termination of fastestpath algorithm");
+						return;
+					}
+				}
+
+				robot.move(m, this.exploredMap, false, false);
 				this.exploredMap.repaint();
 
 				// as there might be phantom blocks on fastest path
 				// better re-sense at every move
 				robot.updateSensorsDirections();
 				robot.simulateSense(this.exploredMap, this.actualMap);
+
 				this.exploredMap.repaint();
 
 				// get area coverage for exploration
@@ -371,33 +384,71 @@ public class FastestPath {
 					String areaCoveredPcStr = String.format("%.2f %%", areaCoveredPc);
 					Simulator.areaCoveredLbl.setText(areaCoveredPcStr);
 				}
+
+				if (Simulator.task == "IMG") {
+					exp.simulateTakingPhoto();
+				}
+
 			}
 		} else {
 			int forwardCnt = 0;
 			for (RobotConst.MOVE m : moves) {
+
+				// stop when time is not enough
+				if (endTime > 0) {
+					if (endTime - System.currentTimeMillis() < 10 * 1000) {
+						return;
+					}
+				}
+
 				if (m == RobotConst.MOVE.FORWARD) {
 					forwardCnt++;
 					// not making move first, until threshold of 9 is reached
 					if (forwardCnt == RobotConst.FORWARDLIMIT) {
-						robot.moveForward(forwardCnt, this.exploredMap);
+						// TODO: change back
+//						robot.moveForward(forwardCnt, this.exploredMap);
+						robot.moveForward(forwardCnt, this.exploredMap, false, true);
 						forwardCnt = 0;
 						this.exploredMap.repaint();
 					}
 				} else if (m == RobotConst.MOVE.TURN_RIGHT || m == RobotConst.MOVE.TURN_LEFT) {
 					if (forwardCnt > 0) {
-						robot.moveForward(forwardCnt, this.exploredMap);
+						// TODO: change back
+//						robot.moveForward(forwardCnt, this.exploredMap);
+						robot.moveForward(forwardCnt, this.exploredMap, false, true);
 						forwardCnt = 0;
 						this.exploredMap.repaint();
 					}
-
-					robot.move(m, this.exploredMap);
+					// TODO: change back
+//					robot.move(m, this.exploredMap);
+					robot.move(m, this.exploredMap, true, false);
 					this.exploredMap.repaint();
 				}
 			}
 
+			// stop when time is not enough
+			if (endTime > 0) {
+				if (endTime - System.currentTimeMillis() < 10 * 1000) {
+					return;
+				}
+			}
+
 			if (forwardCnt > 0) {
-				robot.moveForward(forwardCnt, this.exploredMap);
+				// TODO: change back
+//				robot.moveForward(forwardCnt, this.exploredMap);
+				robot.moveForward(forwardCnt, this.exploredMap, false, true);
 				this.exploredMap.repaint();
+			}
+
+			// stop when time is not enough
+			if (endTime > 0) {
+				if (endTime - System.currentTimeMillis() < 10 * 1000) {
+					return;
+				}
+			}
+
+			if (Simulator.task == "IMG") {
+				exp.tryTakePhoto();
 			}
 		}
 	}

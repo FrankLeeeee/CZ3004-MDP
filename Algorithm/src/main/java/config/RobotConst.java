@@ -2,9 +2,9 @@ package config;
 
 public class RobotConst {
 	public static final int SENSOR_SR_LOW = 1;
-	public static final int SENSOR_SR_HIGH = 2;
+	public static final int SENSOR_SR_HIGH = 1;
 	public static final int SENSOR_LR_LOW = 3;
-	public static final int SENSOR_LR_HIGH = 4;
+	public static final int SENSOR_LR_HIGH = 3;
 	public static final int START_ROW = 1;
 	public static final int START_COL = 1;
 	public static final int GOAL_ROW = 18;
@@ -13,10 +13,12 @@ public class RobotConst {
 	public static final int T_COST = 20;
 	public static final int INF_COST = 2056;
 	public static final int SPEED = 10;
-	public static final int TIME_LIMIT = 360;
+	public static final int TIME_LIMIT = 330; //360;
 	public static final int COVERAGE_LIMIT = 300;
 	public static final DIRECTION START_DIR = DIRECTION.NORTH;
-	public static final int FORWARDLIMIT = 8;
+
+	// TODO: change back for EXP
+	public static final int FORWARDLIMIT = 1;
 
 	public enum DIRECTION {
 		NORTH, EAST, SOUTH, WEST;

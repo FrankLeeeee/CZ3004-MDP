@@ -31,4 +31,6 @@ public class MapConst {
 	public static final Color COLOR_OBSTACLE = Color.BLACK;
 	public static final Color COLOR_ROBOT = Color.BLUE;
 	public static final Color COLOR_ROBOT_DIR = Color.WHITE;
+	public static final Color COLOR_ROBOT_CAN_TAKE_PHOTO = Color.YELLOW;
+	public static final Color COLOR_BLOCK_IMAGE_DETECTED = Color.MAGENTA;
 }

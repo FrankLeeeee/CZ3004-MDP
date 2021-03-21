@@ -9,23 +9,43 @@ public class Cell {
 	private boolean isObstacle;
 	private boolean isVirtualWall;
 	private boolean isWayPoint;
+	private boolean canTakePhoto;
+	private boolean isDetectedForImage;
 	private boolean isFastestPath;
 
 	// Graphics attributes
 	private final int x;
 	private final int y;
 	private final int size;
-	
+
 
 	public Cell(int row, int col) {
 		this.row = row;
 		this.col = col;
 		this.isExplored = false;
+		this.canTakePhoto = false;
+		this.isDetectedForImage = false;
 
 		// Graphics attributes
 		this.x = col * MapConst.CELL_SIZE + MapConst.BORDER + MapConst.X_OFFSET;
 		this.y = MapConst.MAP_HEIGHT - (row * MapConst.CELL_SIZE - MapConst.BORDER);
 		this.size = MapConst.CELL_SIZE - (MapConst.BORDER * 2);
+	}
+
+	public boolean isCanTakePhoto() {
+		return canTakePhoto;
+	}
+
+	public void setCanTakePhoto(boolean canTakePhoto) {
+		this.canTakePhoto = canTakePhoto;
+	}
+
+	public boolean isDetectedForImage() {
+		return isDetectedForImage;
+	}
+
+	public void setDetectedForImage(boolean detectedForImage) {
+		isDetectedForImage = detectedForImage;
 	}
 
 	public int getRow() {
