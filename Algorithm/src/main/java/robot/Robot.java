@@ -15,8 +15,8 @@ public class Robot {
 	private final Sensor SRFrontLeft;
 	private final Sensor SRFrontCenter;
 	private final Sensor SRFrontRight;
-	private final Sensor SRLeft;
-	private final Sensor SRRight;
+	private final Sensor SRRight1;
+	private final Sensor SRRight2;
 	private final Sensor LRLeft;
 	private final boolean isRealRobot;
 
@@ -41,9 +41,9 @@ public class Robot {
 		this.SRFrontLeft = new Sensor("SRFL", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col - 1, this.dir);
 		this.SRFrontCenter = new Sensor("SRFC", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col, this.dir);
 		this.SRFrontRight = new Sensor("SRFR", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col + 1, this.dir);
-		this.SRLeft = new Sensor("SRL", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
-		this.SRRight = new Sensor("SRR", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
-		this.LRLeft = new Sensor("LRL", RobotConst.SENSOR_LR_LOW, RobotConst.SENSOR_LR_HIGH, this.row, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
+		this.SRRight1 = new Sensor("SRR1", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+		this.SRRight2 = new Sensor("SRR2", RobotConst.SENSOR_SR_LOW, RobotConst.SENSOR_SR_HIGH, this.row - 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+		this.LRLeft = new Sensor("LRL", RobotConst.SENSOR_LR_LOW, RobotConst.SENSOR_LR_HIGH, this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_LEFT));
 
 		this.client = GrpcClient.getInstance();
 	}
@@ -60,12 +60,12 @@ public class Robot {
 		return this.SRFrontRight;
 	}
 
-	public Sensor getSRLeft() {
-		return this.SRLeft;
+	public Sensor getSRRight1() {
+		return this.SRRight1;
 	}
 
-	public Sensor getSRRight() {
-		return this.SRRight;
+	public Sensor getSRRight2() {
+		return this.SRRight2;
 	}
 
 	public Sensor getLRLeft() {
@@ -278,33 +278,33 @@ public class Robot {
 				this.SRFrontLeft.updateSensor(this.row + 1, this.col - 1, this.dir);
 				this.SRFrontCenter.updateSensor(this.row + 1, this.col, this.dir);
 				this.SRFrontRight.updateSensor(this.row + 1, this.col + 1, this.dir);
-				this.SRLeft.updateSensor(this.row + 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
-				this.SRRight.updateSensor(this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
-				this.LRLeft.updateSensor(this.row, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
+				this.SRRight1.updateSensor(this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.SRRight2.updateSensor(this.row - 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.LRLeft.updateSensor(this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_LEFT));
 				break;
 			case EAST:
 				this.SRFrontLeft.updateSensor(this.row + 1, this.col + 1, this.dir);
 				this.SRFrontCenter.updateSensor(this.row, this.col + 1, this.dir);
 				this.SRFrontRight.updateSensor(this.row - 1, this.col + 1, this.dir);
-				this.SRLeft.updateSensor(this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_LEFT));
-				this.SRRight.updateSensor(this.row - 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
-				this.LRLeft.updateSensor(this.row + 1, this.col, updateDir(RobotConst.MOVE.TURN_LEFT));
+				this.SRRight1.updateSensor(this.row - 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.SRRight2.updateSensor(this.row - 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.LRLeft.updateSensor(this.row - 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_LEFT));
 				break;
 			case SOUTH:
 				this.SRFrontLeft.updateSensor(this.row - 1, this.col + 1, this.dir);
 				this.SRFrontCenter.updateSensor(this.row - 1, this.col, this.dir);
 				this.SRFrontRight.updateSensor(this.row - 1, this.col - 1, this.dir);
-				this.SRLeft.updateSensor(this.row - 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_LEFT));
-				this.SRRight.updateSensor(this.row - 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
-				this.LRLeft.updateSensor(this.row, this.col + 1, updateDir(RobotConst.MOVE.TURN_LEFT));
+				this.SRRight1.updateSensor(this.row - 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.SRRight2.updateSensor(this.row + 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.LRLeft.updateSensor(this.row - 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
 				break;
 			case WEST:
 				this.SRFrontLeft.updateSensor(this.row - 1, this.col - 1, this.dir);
 				this.SRFrontCenter.updateSensor(this.row, this.col - 1, this.dir);
 				this.SRFrontRight.updateSensor(this.row + 1, this.col - 1, this.dir);
-				this.SRLeft.updateSensor(this.row - 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
-				this.SRRight.updateSensor(this.row + 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
-				this.LRLeft.updateSensor(this.row - 1, this.col, updateDir(RobotConst.MOVE.TURN_LEFT));
+				this.SRRight1.updateSensor(this.row + 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.SRRight2.updateSensor(this.row + 1, this.col + 1, updateDir(RobotConst.MOVE.TURN_RIGHT));
+				this.LRLeft.updateSensor(this.row + 1, this.col - 1, updateDir(RobotConst.MOVE.TURN_LEFT));
 				break;
 		}
 	}
@@ -313,8 +313,8 @@ public class Robot {
 		this.SRFrontLeft.simulateSense(exploredMap, actualMap);
 		this.SRFrontCenter.simulateSense(exploredMap, actualMap);
 		this.SRFrontRight.simulateSense(exploredMap, actualMap);
-		this.SRLeft.simulateSense(exploredMap, actualMap);
-		this.SRRight.simulateSense(exploredMap, actualMap);
+		this.SRRight1.simulateSense(exploredMap, actualMap);
+		this.SRRight2.simulateSense(exploredMap, actualMap);
 		this.LRLeft.simulateSense(exploredMap, actualMap);
 	}
 
@@ -340,8 +340,8 @@ public class Robot {
 		SRFrontLeft.sense(exploredMap, values.get(new Integer(1)).intValue());
 		SRFrontCenter.sense(exploredMap, values.get(new Integer(2)).intValue());
 		SRFrontRight.sense(exploredMap, values.get(new Integer(4)).intValue());
-		SRLeft.sense(exploredMap, values.get(new Integer(5)).intValue());
-		SRRight.sense(exploredMap, values.get(new Integer(3)).intValue());
+		SRRight1.sense(exploredMap, values.get(new Integer(5)).intValue());
+		SRRight2.sense(exploredMap, values.get(new Integer(3)).intValue());
 		LRLeft.sense(exploredMap, values.get(new Integer(6)).intValue());
 	}
 }

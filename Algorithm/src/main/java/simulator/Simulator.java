@@ -60,7 +60,7 @@ public class Simulator {
 	private static final boolean testArduino = false;
 	public static final String task = "EXP";
 
-	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/TestMD/test2.txt";
+	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/TestMD/test4.txt";
 	public static final String imgPathforIMG = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/img_rec.jpg";
 
 
