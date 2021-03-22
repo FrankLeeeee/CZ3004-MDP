@@ -2,8 +2,8 @@ import asyncio
 
 import pytest
 
-from core.arduino_service_pb2_serial import ArduinoRPCServiceStub
-from core.message_pb2 import EchoRequest, MoveRequest, TurnRequest, EmptyRequest
+from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
+from proto.message_pb2 import EchoRequest, MoveRequest, TurnRequest, EmptyRequest
 from core.serial.channel import SerialAioChannel
 from config import config
 

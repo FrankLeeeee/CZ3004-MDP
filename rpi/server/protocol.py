@@ -12,6 +12,7 @@ Reference:
     * https://pyserial-asyncio.readthedocs.io/en/latest/shortintro.html
 """
 import asyncio
+import time
 from typing import Optional
 
 import serial_asyncio
@@ -54,6 +55,20 @@ class UartProtocol(asyncio.Protocol):
     def connection_lost(self, exc):
         self.disconnect.set()
         self._logger.info(f'Connection lost, reason: {exc}')
+
+
+class UartProtocolPidFeedback(UartProtocol):
+
+    def data_received(self, data):
+        """Store characters until a newline is received.
+        """
+        self._logger.debug(f'Read {data}')
+        self._buffer += data
+        if b'\r\n' in self._buffer:
+            lines = self._buffer.split(b'\r\n')
+            self._buffer = lines[-1]  # whatever was left over
+            for line in lines[:-1]:
+                asyncio.ensure_future(self._queue.put((time.time(), line)))
 
 
 class BluetoothProtocol(asyncio.Protocol):

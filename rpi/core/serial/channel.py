@@ -103,7 +103,7 @@ class SerialAioChannel(object):
         # self.transport.write not working for windows (nt) FIXME: pyserial-asyncio v0.5
         async with self._channel_lock:
             if os.name == "nt":
-                await self._loop.run_in_executor(None, self.transport.serial.write_channel, data)
+                await self._loop.run_in_executor(None, self.transport.serial.write, data)
             else:
                 self.transport.write(data)
 
