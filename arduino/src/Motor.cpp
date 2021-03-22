@@ -45,7 +45,7 @@ void countTickL()
 int delayms = 10;
 double motorfactorL = 1; //6.2V 1.013
 double motorfactorR = 1; //6.14V 0.993   6.13V 0.95       0.99025
-double motorfactor = 1;
+double motorfactor = 1.05;
 double motorfactorB = 1; // 0.99775
 bool brakes = false;
 double circumference = PI * 6;
@@ -55,7 +55,7 @@ double dist_between_wheels = 17.315; // in cm
 //===== PID =====
 //10, 1, 0.25
 // double kp = 10, ki = 1, kd = 0.15;
-double kp = 14.5, ki = 10, kd = 0.01;
+double kp = 14.5, ki = 20, kd = 0;
 PID PID1(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 // PID PID2(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 
@@ -245,7 +245,7 @@ void moveB(double dist)
 void turnL(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle-0.5); // -1.8
+    targetTick = getTicksFromAngle(angle); // -1.8
     speedL = 300;
     speedR = speedL * motorfactorL;
     md.setSpeeds(speedR, -speedL);
@@ -279,7 +279,7 @@ void turnL(double angle)
 void turnR(double angle)
 {
     TickL = TickR = curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle-0.5); //-2.1
+    targetTick = getTicksFromAngle(angle); //-2.1
     speedL = 300;
     speedR = speedL * motorfactorR;
     md.setSpeeds(-speedR, speedL);
@@ -350,7 +350,7 @@ void wallCalibrate()
         return;
     }
     wallCalibrate();
-    wallCalibrate();
+    // wallCalibrate();
     recursionCount = 5;
 }
 

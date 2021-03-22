@@ -21,8 +21,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  // loopSeq();
-  readInput();
+  loopSeq();
+  // readInput();
 }
 
 //===== Inputs =====
@@ -93,15 +93,23 @@ void readInput()
 
 void testFunction()
 {
+  turnR(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnR(90);
+  delay(500);
+  calibrateProc();
+  delay(500);
+  turnR(90);
+  delay(500);
   while(1){
-    turnL(90);
-  delay(500);
-    turnL(90);
-  delay(500);
-    turnL(90);
-  delay(500);
-    turnL(90);
-  delay(500);
+    moveF(1);
+    delay(500);
+    moveF(1);
+    delay(500);
+    turnR(90);
+    delay(500);
   }
 
   // turnL(90);
