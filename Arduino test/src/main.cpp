@@ -147,11 +147,14 @@ void speed_left_handler(const char *request)
       break;
 
     // Read feedback
+    
+
+
     curTickR = TickR - oldTickR;
     curTickL = TickL - oldTickL;
-    Serial.print(curTickR);
+    Serial.print(curTickL);
     Serial.print(" ");
-    Serial.println(curTickL);
+    Serial.println(curTickR);
     oldTickR += curTickR;
     oldTickL += curTickL;
     
@@ -180,9 +183,9 @@ void speed_right_handler(const char *request)
     // Read feedback
     curTickR = TickR - oldTickR;
     curTickL = TickL - oldTickL;
-    Serial.print(curTickR);
+    Serial.print(curTickL);
     Serial.print(" ");
-    Serial.println(curTickL);
+    Serial.println(curTickR);
     oldTickR += curTickR;
     oldTickL += curTickL;
     
