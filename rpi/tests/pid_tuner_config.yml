@@ -1,5 +1,5 @@
 uart:
-  url: 'COM6'
+  url: '/dev/ttyACM0'
   baudrate: 115200
   protocol: 'server.protocol.UartProtocolPidFeedback'
   wait_for_connection:

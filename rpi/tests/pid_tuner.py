@@ -7,8 +7,6 @@ Date: 3/23/2021
 """
 import asyncio
 import struct
-import time
-from collections import defaultdict
 from enum import Enum
 
 import yaml
@@ -36,6 +34,13 @@ class MotorType(Enum):
     RIGHT = 'RIGHT'
 
 
+class Direction(Enum):
+    UP = 'UP'
+    DOWN = 'DOWN'
+    LEFT = 'LEFT'
+    RIGHT = 'RIGHT'
+
+
 ConfigParam = b'\x10'
 SetLeftSpeed = b'\x11'
 SetRightSpeed = b'\x12'
@@ -45,31 +50,16 @@ with open(PROJECT_ROOT_PATH / 'tests/pid_tuner_config.yml') as f:
 config = ServerConfig.parse_obj(config)
 app = FastAPI()
 uart = SerialAioChannel(config.uart)
-motor_feedback_per_second = list()
-FEEDBACK_SIZE = 4096
-motor_speed = defaultdict(list)
 motor_feedback = list()
+FEEDBACK_SIZE = 4096
 
 
 async def watch_feedback_task():
     while True:
-        _, feedback_byte = await uart.read_channel()
-        left, right = feedback_byte.decode().split(' ')
-        motor_feedback_per_second.append((float(left), float(right)))
-
-
-async def aggregate_task():
-    while True:
-        await asyncio.sleep(1)
-        if len(motor_feedback_per_second) > 0:
-            left, right = zip(*motor_feedback_per_second)
-            left_sum = sum(left) / len(left)
-            right_sum = sum(right) / len(right)
-        else:
-            left_sum = 0
-            right_sum = 0
-        motor_feedback.append((time.time(), left_sum, right_sum))
-        motor_feedback_per_second.clear()
+        timestamp, feedback_byte = await uart.read_channel()
+        left_input, right_input, left_feedback, right_feedback = feedback_byte.decode().split(' ')
+        motor_feedback.append(
+            (timestamp, float(left_input), float(right_input), float(left_feedback), float(right_feedback)))
         del motor_feedback[:-FEEDBACK_SIZE]
 
 
@@ -85,10 +75,6 @@ async def set_speed(motor: MotorType = MotorType.LEFT, speed: int = 0, running_t
 
     await uart.write_channel(method + args + SERIAL_MESSAGE_SEPARATOR)
 
-    cur_time = time.time()
-    motor_speed[motor.value.lower()].append((cur_time, speed))
-    motor_speed[motor.value.lower()].append((cur_time + running_time / 1000, 0))
-
 
 @app.post('/param')
 async def set_param(params: ParameterConfig):
@@ -103,14 +89,38 @@ async def set_param(params: ParameterConfig):
     await uart.write_channel(method + args + SERIAL_MESSAGE_SEPARATOR)
 
 
+@app.post('/move')
+async def robot_move(direction: Direction):
+    if direction == Direction.UP:
+        method = 'u'
+    elif direction == Direction.DOWN:
+        method = 'd'
+    elif direction == Direction.LEFT:
+        method = 'l'
+    else:
+        method = 'r'
+
+    await uart.write_channel(method + SERIAL_MESSAGE_SEPARATOR)
+
+
 @app.get('/feedback')
 async def get_motor_feedback():
-    times, left, right = zip(*motor_feedback)
-    return {
-        'feedback_time': times,
-        'left_feedback': left, 'right_feedback': right,
-        'left_input': motor_speed['left'], 'right_input': motor_speed['right'],
-    }
+    if len(motor_feedback):
+        times, left, right, left_feedback, right_feedback = zip(*motor_feedback)
+        return {
+            'feedback_time': times,
+            'left_input': left, 'right_input': right,
+            'left_feedback': left_feedback, 'right_feedback': right_feedback,
+        }
+    else:
+        return {
+            'feedback_time': [0], 'left_feedback': [0], 'right_feedback': [0], 'left_input': [0], 'right_input': [0],
+        }
+
+
+@app.post('/clear')
+def clear_feedback():
+    motor_feedback.clear()
 
 
 @app.on_event('startup')
@@ -118,7 +128,6 @@ async def startup():
     await uart.start()
     loop = asyncio.get_event_loop()
     loop.create_task(watch_feedback_task())
-    loop.create_task(aggregate_task())
 
 
 @app.on_event('shutdown')
