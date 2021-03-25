@@ -51,16 +51,18 @@ void readInput()
       break;
     case 'e':
       // printSensorReading();
-       printSensorBlocks();
-      //Serial.println(getAvg3());
-      // Serial.print(getAvg1());
+      printSensorBlocks();
+      // Serial.print(getDist3(getAvg3()));
       // Serial.print(" ");
-      // Serial.println(getAvg2());
+      // Serial.println(getDist5(getAvg5()));
+      // Serial.print(getDist1(getAvg1()));
       // Serial.print(" ");
-      // Serial.println(getAvg4());
+      // Serial.print(getDist2(getAvg2()));
+      // Serial.print(" ");
+      // Serial.println(getDist4(getAvg4()));
       break;
     case 'f':
-      //encodeMessage();
+      wallCalibrate(1);
       break;
     case 'g':
       //receiveMessage(rpi_receive1);
@@ -93,25 +95,51 @@ void readInput()
 
 void testFunction()
 {
-  turnR(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnR(90);
-  delay(500);
-  calibrateProc();
-  delay(500);
-  turnR(90);
-  delay(500);
-  while(1){
-    moveF(1);
-    delay(500);
-    moveF(1);
-    delay(500);
-    turnR(90);
+  // moveF(99999);
+  // turnR(90);
+  // delay(500);
+  // calibrateProc();
+  // delay(500);
+  // turnR(90);
+  // delay(500);
+  // calibrateProc();
+  // delay(500);
+  // turnR(90);
+  // delay(500);
+  // while(1){
+  //   moveF(1);
+  // delay(500);
+  //   moveF(1);
+  //   delay(500);
+  //   turnR(90);
+  //   delay(500);
+  // }
+
+  for (int i = 0; i < 11; i++)
+  {
+    turnL(90);
+    delay(100);
+    // wallCalibrate(1);
     delay(500);
   }
-
+  // turnR(90);
+  // delay(500);
+  // turnR(90);
+  // delay(500);
+  // for (int i = 0; i < 19; i++)
+  // {
+  //   moveF(1);
+  //   delay(500);
+  // }
+  // turnR(90);
+  // delay(500);
+  // turnR(90);
+  // delay(500);
+  // for (int i = 0; i < 5; i++)
+  // {
+  //   moveF(1);
+  //   delay(500);
+  // }
   // turnL(90);
   // delay(500);
   // calibrateProc();

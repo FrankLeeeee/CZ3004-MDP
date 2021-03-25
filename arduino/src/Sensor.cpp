@@ -28,30 +28,30 @@ double V1, V2, V3, V4, V5, V6;
 
 double distToBlocksFront1(double dist)
 {
-    double blocks = ((dist + 3.2) / 10) +1;
+    double blocks = ((dist + 3.2) / 10) + 1;
     return blocks;
 }
 
 double distToBlocksFront2(double dist)
 {
-    double blocks = ((dist + 2.2) / 10) +1;
+    double blocks = ((dist + 2.2) / 10) + 1;
     return blocks;
 }
 double distToBlocksFront4(double dist)
 {
-    double blocks = ((dist + 3.9) / 10) +1;
+    double blocks = ((dist + 3.9) / 10) + 1;
     return blocks;
 }
 
 double distToBlocksSide3(double dist)
 {
-    double blocks = ((dist + 4.5) / 10);
+    double blocks = ((dist + 9.0) / 10);
     return blocks;
 }
 
 double distToBlocksSide5(double dist)
 {
-    double blocks = ((dist + 7.5) / 10);
+    double blocks = ((dist + 7.6) / 10);
     return blocks;
 }
 
@@ -324,7 +324,10 @@ double getDist3(double x)
     // return 25.863 * pow(x, -1.268);
     //return 204.0816327 / (0.0483 * x - 0.0082);
     // return 1 / (0.0000004 * pow(x, 2) + 0.0001 * x + 0.0014);
-    return 1 / (0.0002 * x - 0.0063);
+    // return 1 / (0.0002 * x - 0.0063);
+
+    // return 1 / (0.00000008 * pow(x, 2) + 0.0002 * x - 0.0022) - 3.5;
+    return (1 / (0.0000001 * pow(x, 2) + 0.0002 * x - 0.00004) - 3.5 ) * 1.22;
 }
 
 double getDist4(double x)
@@ -343,7 +346,10 @@ double getDist5(double x)
     // return 26.353 * pow(x, -1.056);
     //return 204.0816327 / (0.0413 * x - 0.0027);
     // return 1 / (0.0000003 * pow(x, 2) + 0.0001 * x + 0.006);
-    return 1 / (0.0002 * x - 0.0016);
+    // return 1 / (0.0002 * x - 0.0016);
+
+    //  return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0059) - 3.5;
+    return (1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0053) - 3.5 ) * 0.85;
 }
 
 // Long distance sensor
@@ -352,7 +358,7 @@ double getDist6(double x)
     //return -17.686 * pow(x, 5) + 143.29 * pow(x, 4) - 454.79 * pow(x, 3) + 718.36 * pow(x, 2) - 600.2 * x + 265.99;
     // return 3.9597*pow(x,6) - 50.124*pow(x,5) + 247.27*pow(x,4) - 620.04*pow(x,3) + 854.23*pow(x,2) - 654.48*x + 274.19;
     //return 204.0816327 / (0.0181 * x + 0.0008);
-    return 1 / (0.00000009 * pow(x, 2) + 0.00002 * x + 0.0085);
+    return 1 / (0.00000009 * pow(x, 2) + 0.00002 * x + 0.0085) - 17;
 }
 
 double alpha = 0.1; // Smoothing Factor
@@ -362,6 +368,12 @@ double filter(double volt, double oldVal)
 }
 
 int sampleSize = 20;
+
+int compare(const void *a, const void *b)
+{
+    return (*(int *)a - *(int *)b);
+}
+
 double getAvg1()
 {
     // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
@@ -371,22 +383,49 @@ double getAvg1()
     for (int i = 0; i < readSample; i++)
     {
         getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
         sensorReadings[i] = get_curFiltered1();
     }
 
-    double sumL = 0;
+    qsort(sensorReadings, readSample, sizeof(double), compare);
 
-    for (int i = 0; i < readSample; i++)
-    {
-        sumL = sumL + sensorReadings[i];
-    }
-
-    double sensorAvg = sumL / readSample;
+    double median = sensorReadings[readSample / 2];
 
     // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // Serial.print("Time taken (ms): ");
+    // Serial.println(pepe2);
 
-    return (sensorAvg);
+    return median;
 }
+
+// double getAvg1()
+// {
+//     // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
+//     int readSample = sampleSize;
+//     double sensorReadings[readSample];
+
+//     for (int i = 0; i < readSample; i++)
+//     {
+//         getSensorReading();
+//         sensorReadings[i] = get_curFiltered1();
+//     }
+
+//     double sumL = 0;
+
+//     for (int i = 0; i < readSample; i++)
+//     {
+//         sumL = sumL + sensorReadings[i];
+//     }
+
+//     double sensorAvg = sumL / readSample;
+
+//     // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+
+//     return (sensorAvg);
+// }
 
 double getAvg2()
 {
@@ -397,21 +436,31 @@ double getAvg2()
     for (int i = 0; i < readSample; i++)
     {
         getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
         sensorReadings[i] = get_curFiltered2();
     }
 
-    double sumL = 0;
+    qsort(sensorReadings, readSample, sizeof(double), compare);
 
-    for (int i = 0; i < readSample; i++)
-    {
-        sumL = sumL + sensorReadings[i];
-    }
+    double median = sensorReadings[readSample / 2];
 
-    double sensorAvg = sumL / readSample;
+    return median;
 
-    // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // double sumL = 0;
 
-    return (sensorAvg);
+    // for (int i = 0; i < readSample; i++)
+    // {
+    //     sumL = sumL + sensorReadings[i];
+    // }
+
+    // double sensorAvg = sumL / readSample;
+
+    // // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+
+    // return (sensorAvg);
 }
 
 double getAvg3()
@@ -426,18 +475,24 @@ double getAvg3()
         sensorReadings[i] = get_curFiltered3();
     }
 
-    double sumL = 0;
+    qsort(sensorReadings, readSample, sizeof(double), compare);
 
-    for (int i = 0; i < readSample; i++)
-    {
-        sumL = sumL + sensorReadings[i];
-    }
+    double median = sensorReadings[readSample / 2];
 
-    double sensorAvg = sumL / readSample;
+    return median;
 
-    // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // double sumL = 0;
 
-    return (sensorAvg);
+    // for (int i = 0; i < readSample; i++)
+    // {
+    //     sumL = sumL + sensorReadings[i];
+    // }
+
+    // double sensorAvg = sumL / readSample;
+
+    // // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+
+    // return (sensorAvg);
 }
 
 double getAvg4()
@@ -452,18 +507,24 @@ double getAvg4()
         sensorReadings[i] = get_curFiltered4();
     }
 
-    double sumL = 0;
+    qsort(sensorReadings, readSample, sizeof(double), compare);
 
-    for (int i = 0; i < readSample; i++)
-    {
-        sumL = sumL + sensorReadings[i];
-    }
+    double median = sensorReadings[readSample / 2];
 
-    double sensorAvg = sumL / readSample;
+    return median;
 
-    //   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // double sumL = 0;
 
-    return (sensorAvg);
+    // for (int i = 0; i < readSample; i++)
+    // {
+    //     sumL = sumL + sensorReadings[i];
+    // }
+
+    // double sensorAvg = sumL / readSample;
+
+    // //   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+
+    // return (sensorAvg);
 }
 
 double getAvg5()
@@ -478,18 +539,24 @@ double getAvg5()
         sensorReadings[i] = get_curFiltered5();
     }
 
-    double sumL = 0;
+    qsort(sensorReadings, readSample, sizeof(double), compare);
 
-    for (int i = 0; i < readSample; i++)
-    {
-        sumL = sumL + sensorReadings[i];
-    }
+    double median = sensorReadings[readSample / 2];
 
-    double sensorAvg = sumL / readSample;
+    return median;
 
-    //   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // double sumL = 0;
 
-    return (sensorAvg);
+    // for (int i = 0; i < readSample; i++)
+    // {
+    //     sumL = sumL + sensorReadings[i];
+    // }
+
+    // double sensorAvg = sumL / readSample;
+
+    // //   unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+
+    // return (sensorAvg);
 }
 
 double getAvg6()
@@ -504,66 +571,72 @@ double getAvg6()
         sensorReadings[i] = get_curFiltered6();
     }
 
-    double sumL = 0;
+    qsort(sensorReadings, readSample, sizeof(double), compare);
 
-    for (int i = 0; i < readSample; i++)
-    {
-        sumL = sumL + sensorReadings[i];
-    }
+    double median = sensorReadings[readSample / 2];
 
-    double sensorAvg = sumL / readSample;
+    return median;
 
-    // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+    // double sumL = 0;
 
-    return (sensorAvg);
+    // for (int i = 0; i < readSample; i++)
+    // {
+    //     sumL = sumL + sensorReadings[i];
+    // }
+
+    // double sensorAvg = sumL / readSample;
+
+    // // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
+
+    // return (sensorAvg);
 }
 
-double medianOfMedians(double a[], int size)
-{
-    // double ans;
-    // double numMedians = size / 5;
-    // double *medians = new double[numMedians];
-    // for (int i = 0; i < numMedians; i++)
-    // {
-    //     partialSort(a, i * 5, i * 5 + 4);
-    //     medians[i] = a[i * 5 + 2];
-    // }
-    // if (numMedians > 25)
-    // {
-    //     ans = medianOfMedians(medians, numMedians);
-    // }
-    // else
-    // {
-    //     sort(medians, numMedians);
-    //     ans = medians[numMedians / 2];
-    // }
-    // delete[] medians;
-    // medians = nullptr;
-    // return ans;
-    return 0;
-}
+// double medianOfMedians(double a[], int size)
+// {
+//     double ans;
+//     int numMedians = size / 5;
+//     double *medians = new double[numMedians];
+//     for (int i = 0; i < numMedians; i++)
+//     {
+//         partialSort(a, i * 5, i * 5 + 4);
+//         medians[i] = a[i * 5 + 2];
+//     }
+//     if (numMedians > 25)
+//     {
+//         ans = medianOfMedians(medians, numMedians);
+//     }
+//     else
+//     {
+//         sort(medians, numMedians);
+//         ans = medians[numMedians / 2];
+//     }
+//     delete[] medians;
+//     medians = nullptr;
+//     return ans;
+//     return 0;
+// }
 
-void partialSort(double a[], double min, double max)
-{
-    double t;
-    bool flag;
-    for (int i = min; i < max; i++)
-    {
-        flag = true;
-        for (int o = min; o < (max - i); o++)
-        {
-            if (a[o] > a[o + 1])
-            {
-                t = a[o];
-                a[o] = a[o + 1];
-                a[o + 1] = t;
-                flag = false;
-            }
-        }
-        if (flag)
-            break;
-    }
-}
+// void partialSort(double a[], double min, double max)
+// {
+//     double t;
+//     bool flag;
+//     for (int i = min; i < max; i++)
+//     {
+//         flag = true;
+//         for (int o = min; o < (max - i); o++)
+//         {
+//             if (a[o] > a[o + 1])
+//             {
+//                 t = a[o];
+//                 a[o] = a[o + 1];
+//                 a[o + 1] = t;
+//                 flag = false;
+//             }
+//         }
+//         if (flag)
+//             break;
+//     }
+// }
 
 float getBlocksSR_float_front1(double dist)
 {

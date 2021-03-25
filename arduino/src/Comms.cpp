@@ -150,7 +150,8 @@ int calibrationHandler(int argument, uint8_t *response)
 {
   bool status = true;
 
-  calibrateProc();
+  // calibrateProc();
+  wallCalibrate(1);
   
   float data_values[] = {(float)getBlocksSR_float_front1(getDist1(getAvg1())), (float)getBlocksSR_float_front2(getDist2(getAvg2())), (float)getBlocksSR_float_side3(getDist3(getAvg3())), (float)getBlocksSR_float_front4(getDist4(getAvg4())), (float)getBlocksSR_float_side5(getDist5(getAvg5())), (float)getBlocksLR_float(getDist6(getAvg6()))};
 
