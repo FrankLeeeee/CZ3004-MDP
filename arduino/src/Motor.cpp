@@ -128,7 +128,7 @@ double blocksToCm(double blocks)
 }
 
 //===== Movement =====
-int emergencyDistance = 8; //in cm
+int emergencyDistance = 6; //in cm
 
 void moveF(double dist)
 {
@@ -180,10 +180,10 @@ void moveF(double dist)
     }
     md.setBrakes(400, 400);
     // (getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) &&
-    if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
-    {
-        calibrateProc();
-    }
+    // if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
+    // {
+    //     calibrateProc();
+    // }
 }
 
 // void moveFslow(double dist)
@@ -434,11 +434,11 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
         sensorL = getDist1(getAvg1());
         sensorR = getDist4(getAvg4());
         calibrationTolerence = 0.5;
-        calibrationBase = 0.0;
+        calibrationBase = -0.1;
         calibrationToleranceCCW = 0.3;
-        calibrationBaseCCW = 0.15;
+        calibrationBaseCCW = -0.1;
         calibrationTolerenceCW = 0.35;
-        calibrationBaseCW = 0.1;
+        calibrationBaseCW = -0.1;
     }
     else if (side == 1)
     {
@@ -511,15 +511,15 @@ void CCW_Calibrate(int side)
             return;
         }
         double diff = (readingsL - readingsR);
-        // Serial.println(diff);
+        Serial.println(diff);
         if ((diff > calibrationBaseCCW) && (diff < (calibrationBaseCCW + calibrationToleranceCCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        // if (readingsR < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
-        // {
-        //     return;
-        // }
+        if (readingsR+10 < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        {
+            return;
+        }
     }
 }
 
@@ -550,15 +550,15 @@ void CW_Calibrate(int side)
             return;
         }
         double diff = (readingsL - readingsR);
-        // Serial.println(diff);
+        Serial.println(diff);
         if ((diff > calibrationBaseCW) && (diff < (calibrationBaseCW + calibrationTolerenceCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        // if (readingsL < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
-        // {
-        //     return;
-        // }
+        if (readingsL+10 < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        {
+            return;
+        }
     }
 }
 
