@@ -28,36 +28,41 @@ double V1, V2, V3, V4, V5, V6;
 
 double distToBlocksFront1(double dist)
 {
-    double blocks = ((dist + 3.2) / 10) + 1;
+    // double blocks = ((dist + 3.2) / 10) + 1;
+    double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksFront2(double dist)
 {
-    double blocks = ((dist + 2.2) / 10) + 1;
+    // double blocks = ((dist + 2.2) / 10) + 1;
+    double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 double distToBlocksFront4(double dist)
 {
-    double blocks = ((dist + 3.9) / 10) + 1;
+    // double blocks = ((dist + 3.9) / 10) + 1;
+    double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksSide3(double dist)
 {
-    double blocks = ((dist + 9.0) / 10);
+    // double blocks = ((dist + 9.0) / 10);
+    double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksSide5(double dist)
 {
-    double blocks = ((dist + 7.6) / 10);
+    // double blocks = ((dist + 7.6) / 10);
+    double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksLR(double dist)
 {
-    double blocks = ((dist + 6.5) / 10);
+    double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
@@ -306,7 +311,7 @@ double getDist1(double x)
     // return 1 / (0.0000005 * pow(x, 2) + 0.00005 * x + 0.0081);
     // return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0043);
     //   return 1 / (0.0002 * x - 0.0003);
-    return 1 / (0.00000008 * pow(x, 2) + 0.0002 * x - 0.0002) - 5;
+    return (1 / (0.00000008 * pow(x, 2) + 0.0002 * x - 0.0002) - 5) * 1.18;
 }
 
 // Sensor 2
@@ -316,7 +321,7 @@ double getDist2(double x)
     //  return 204.0816327 / (0.0448 * x - 0.0022);
     //return 1 / (0.0002 * x - 0.0065);
     // return 1 / (0.0002 * x - 0.0054);
-    return 1 / (0.00000007 * pow(x, 2) + 0.0002 * x - 0.0007) - 2;
+    return (1 / (0.00000007 * pow(x, 2) + 0.0002 * x - 0.0007) - 2) * 1.15;
 }
 
 double getDist3(double x)
@@ -327,7 +332,7 @@ double getDist3(double x)
     // return 1 / (0.0002 * x - 0.0063);
 
     // return 1 / (0.00000008 * pow(x, 2) + 0.0002 * x - 0.0022) - 3.5;
-    return (1 / (0.0000001 * pow(x, 2) + 0.0002 * x - 0.00004) - 3.5 ) * 1.22;
+    return (1 / (0.0000001 * pow(x, 2) + 0.0002 * x - 0.00004) - 6) * 1.2;
 }
 
 double getDist4(double x)
@@ -338,7 +343,7 @@ double getDist4(double x)
     // return 1 / (0.0000005 * pow(x, 2) + 0.00006 * x + 0.0062);
     // return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0012);
     // return 1 / (0.0002 * x - 0.0037);
-    return 1 / (0.00000009 * pow(x, 2) + 0.0002 * x + 0.0003) - 5;
+    return (1 / (0.00000009 * pow(x, 2) + 0.0002 * x + 0.0003) - 5) * 1.32;
 }
 // 3 & 5
 double getDist5(double x)
@@ -349,7 +354,7 @@ double getDist5(double x)
     // return 1 / (0.0002 * x - 0.0016);
 
     //  return 1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0059) - 3.5;
-    return (1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0053) - 3.5 ) * 0.85;
+    return (1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0053) - 6) * 0.725;
 }
 
 // Long distance sensor
@@ -358,7 +363,7 @@ double getDist6(double x)
     //return -17.686 * pow(x, 5) + 143.29 * pow(x, 4) - 454.79 * pow(x, 3) + 718.36 * pow(x, 2) - 600.2 * x + 265.99;
     // return 3.9597*pow(x,6) - 50.124*pow(x,5) + 247.27*pow(x,4) - 620.04*pow(x,3) + 854.23*pow(x,2) - 654.48*x + 274.19;
     //return 204.0816327 / (0.0181 * x + 0.0008);
-    return 1 / (0.00000009 * pow(x, 2) + 0.00002 * x + 0.0085) - 17;
+    return 1 / (0.00000009 * pow(x, 2) + 0.00002 * x + 0.0085) - 17 - 2;
 }
 
 double alpha = 0.1; // Smoothing Factor
@@ -641,9 +646,13 @@ double getAvg6()
 float getBlocksSR_float_front1(double dist)
 {
     float blocks = distToBlocksFront1(dist);
-    if (blocks > 3 || blocks < 0)
+    if (blocks > 4 || blocks < 0)
     {
         return 0;
+    }
+    if (blocks > 0.5 && blocks < 1.0)
+    {
+        blocks = 1.0;
     }
     return blocks;
 }
@@ -651,9 +660,13 @@ float getBlocksSR_float_front1(double dist)
 float getBlocksSR_float_front2(double dist)
 {
     float blocks = distToBlocksFront2(dist);
-    if (blocks > 3 || blocks < 0)
+    if (blocks > 4 || blocks < 0)
     {
         return 0;
+    }
+    if (blocks > 0.5 && blocks < 1.0)
+    {
+        blocks = 1.0;
     }
     return blocks;
 }
@@ -661,9 +674,13 @@ float getBlocksSR_float_front2(double dist)
 float getBlocksSR_float_front4(double dist)
 {
     float blocks = distToBlocksFront4(dist);
-    if (blocks > 3 || blocks < 0)
+    if (blocks > 4 || blocks < 0)
     {
         return 0;
+    }
+    if (blocks > 0.5 && blocks < 1.0)
+    {
+        blocks = 1.0;
     }
     return blocks;
 }
@@ -671,9 +688,13 @@ float getBlocksSR_float_front4(double dist)
 float getBlocksSR_float_side3(double dist)
 {
     float blocks = distToBlocksSide3(dist);
-    if (blocks > 3 || blocks < 0)
+    if (blocks > 4 || blocks < 0)
     {
         return 0;
+    }
+    if (blocks > 0.5 && blocks < 1.0)
+    {
+        blocks = 1.0;
     }
     return blocks;
 }
@@ -681,9 +702,13 @@ float getBlocksSR_float_side3(double dist)
 float getBlocksSR_float_side5(double dist)
 {
     float blocks = distToBlocksSide5(dist);
-    if (blocks > 3 || blocks < 0)
+    if (blocks > 4 || blocks < 0)
     {
         return 0;
+    }
+    if (blocks > 0.5 && blocks < 1.0)
+    {
+        blocks = 1.0;
     }
     return blocks;
 }
@@ -746,7 +771,7 @@ int getBlocksSR_side5(double dist)
 float getBlocksLR_float(double dist)
 {
     float blocks = distToBlocksLR(dist);
-    if (blocks > 4 || blocks < 0)
+    if (blocks > 6 || blocks < 0)
     {
         return 0;
     }

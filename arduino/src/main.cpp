@@ -21,8 +21,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  loopSeq();
-  // readInput();
+  // loopSeq();
+  readInput();
 }
 
 //===== Inputs =====
@@ -60,6 +60,7 @@ void readInput()
       // Serial.print(getDist2(getAvg2()));
       // Serial.print(" ");
       // Serial.println(getDist4(getAvg4()));
+      // Serial.println(getDist6(getAvg6()));
       break;
     case 'f':
       wallCalibrate(1);
@@ -115,10 +116,10 @@ void testFunction()
   //   delay(500);
   // }
 
-  for (int i = 0; i < 11; i++)
+  for (int i = 0; i < 12; i++)
   {
-    turnL(90);
-    delay(100);
+    turnR(90);
+    // delay(100);
     // wallCalibrate(1);
     delay(500);
   }
@@ -126,9 +127,12 @@ void testFunction()
   // delay(500);
   // turnR(90);
   // delay(500);
-  // for (int i = 0; i < 19; i++)
+  // wallCalibrate(1);
+  // delay(500);
+  // for (int i = 0; i < 11; i++)
   // {
   //   moveF(1);
+  //   wallCalibrate(1);
   //   delay(500);
   // }
   // turnR(90);

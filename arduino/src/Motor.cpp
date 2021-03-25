@@ -54,6 +54,8 @@ double dist_between_wheels = 17.315; // in cm
 
 //===== PID =====
 double kp = 14.5, ki = 20, kd = 0;
+double kp_l = 14.5, ki_l = 20, kd_l = 0;
+double kp_r = 14.5, ki_r = 20, kd_r = 0;
 // double kp = 18, ki = 50, kd = 0;
 // double kp2 = 15, ki2 = 50, kd2 = 0;
 // PID PID1(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
@@ -65,13 +67,17 @@ double kp = 14.5, ki = 20, kd = 0;
 // PID PIDR(&curTickL, &speedL, &curTickR, kp_r, ki_r, kd_r, DIRECT);
 // double kp = 5, ki = 0, kd = 0;
 double targetTickDiff = 0.35;
+double targetTickDiffL = 1.0;
+double targetTickDiffR = 1.0;
 double tickDiff;
+double tickDiffL;
+double tickDiffR;
 
 PID PIDZ(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
 // PID PIDZ2(&tickDiff, &speedL, &targetTickDiff, kp2, ki2, kd2, REVERSE);
 // PID PIDZS(&tickDiff, &speedR, &targetTickDiff , kp, ki, kd, DIRECT);
-PID PIDZL(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
-PID PIDZR(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
+PID PIDZL(&tickDiffL, &speedR, &targetTickDiffL, kp_l, ki_l, kd_l, DIRECT);
+PID PIDZR(&tickDiffR, &speedR, &targetTickDiffR, kp_r, ki_r, kd_r, DIRECT);
 
 void PIDInit()
 {
@@ -87,15 +93,18 @@ void PIDInit()
     // PID PIDZ(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
     // PID PIDZL(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
     // PID PIDZR(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
+
     PIDZ.SetOutputLimits(-400, 400);
     PIDZ.SetSampleTime(delayms);
     PIDZ.SetMode(AUTOMATIC);
     // PIDZ2.SetOutputLimits(-400, 400);
     // PIDZ2.SetSampleTime(delayms);
     // PIDZ2.SetMode(AUTOMATIC);
+
     PIDZL.SetOutputLimits(-400, 400);
     PIDZL.SetSampleTime(delayms);
     PIDZL.SetMode(AUTOMATIC);
+
     PIDZR.SetOutputLimits(-400, 400);
     PIDZR.SetSampleTime(delayms);
     PIDZR.SetMode(AUTOMATIC);
@@ -105,7 +114,7 @@ void PIDInit()
 
 double calcTickFromDist(double dist)
 {
-    return ((0.965 * dist) * 1124.5) / circumference;
+    return ((0.955 * dist) * 1124.5) / circumference;
 }
 
 double getTicksFromAngle(double angle)
@@ -144,9 +153,7 @@ void moveF(double dist)
         //  unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
-        // PID1.Compute();
         PIDZ.Compute();
-        // PIDZ2.Compute();
         // Serial.print(speedL);
         // Serial.print(" ");
         // Serial.println(speedR);
@@ -171,7 +178,7 @@ void moveF(double dist)
         // Serial.print("Time taken (ms): ");
         // Serial.println(pepe2);
     }
-    md.setBrakes(400,400);
+    md.setBrakes(400, 400);
     // (getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) &&
     if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
     {
@@ -239,7 +246,11 @@ void moveFstopWall(double distToStop)
     while (!brakes)
     {
         getSensorReading();
-        if (getDist2(get_curFiltered2()) < distToStop)
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        if (getDist1(get_curFiltered1()) < distToStop || getDist4(get_curFiltered4()) < distToStop)
         {
             brakes = true;
             break;
@@ -258,7 +269,11 @@ void moveBstopWall(double distToStop)
     while (!brakes)
     {
         getSensorReading();
-        if (getDist2(get_curFiltered2()) >= distToStop)
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        if (getDist1(get_curFiltered1()) > distToStop || getDist4(get_curFiltered4()) > distToStop)
         {
             brakes = true;
             break;
@@ -302,11 +317,12 @@ void turnL(double angle)
 {
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
     // volatile long TickL = 0, TickR = 0;
-    TickL = TickR = 0;                     //curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle); // -1.8
-    speedL = 300;
-    speedR = speedL * motorfactorL;
-    md.setSpeeds(speedR, -speedL);
+    TickL = TickR = 0;                           //curTickL = curTickR = oldTickL = oldTickR = 0;
+    targetTick = getTicksFromAngle(angle - 1.8); // -1.8
+    speedL = -300;
+    // speedR = speedL * motorfactorL;
+    speedR = 300;
+    md.setSpeeds(speedR, speedL);
     delay(delayms + 3);
     oldTickR = (double)TickR;
     oldTickL = (double)TickL;
@@ -315,17 +331,31 @@ void turnL(double angle)
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        if (targetTick - TickR < 125)
-            md.setSpeeds(100 * motorfactorL, -100);
-        else
+        // if (targetTick - TickR < 125)
+        // {
+        //     // md.setSpeeds(100 * motorfactorL, -100);
+        //     md.setBrakes(200,200);
+        //     Serial.print(speedL);
+        //     Serial.print(" ");
+        //     Serial.println(speedR);
+        // }
+        // else
         {
             curTickR = TickR - oldTickR;
             curTickL = TickL - oldTickL;
-            tickDiff = curTickR - curTickL;
-            // PID1.Compute();
+            tickDiffL = curTickR - curTickL;
+
+            // Serial.print(curTickL);
+            // Serial.print(" ");
+            // Serial.println(curTickR);
+
             PIDZL.Compute();
-            // PIDL.Compute();
-            md.setSpeeds(speedR, -speedL);
+
+            // Serial.print(speedL);
+            // Serial.print(" ");
+            // Serial.println(speedR);
+
+            md.setSpeeds(speedR, speedL);
             oldTickR += curTickR;
             oldTickL += curTickL;
             delay(delayms);
@@ -340,11 +370,10 @@ void turnL(double angle)
 void turnR(double angle)
 {
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-    // volatile long TickL = 0, TickR = 0;
     TickL = TickR = 0;                     //curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = getTicksFromAngle(angle); //-2.1
     speedL = 300;
-    speedR = speedL * motorfactorR;
+    speedR = 300;
     md.setSpeeds(-speedR, speedL);
     delay(delayms + 3);
     oldTickR = (double)TickR;
@@ -354,15 +383,23 @@ void turnR(double angle)
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        if (targetTick - TickR < 125)
-            md.setSpeeds(-100 * motorfactorR, 100);
-        else
+        // if (targetTick - TickR < 125)
+        //     md.setSpeeds(-100 * motorfactorR, 100);
+        // else
         {
             curTickR = TickR - oldTickR;
             curTickL = TickL - oldTickL;
-            tickDiff = curTickR - curTickL;
+            tickDiffR = curTickR - curTickL;
+            // Serial.print(curTickL);
+            // Serial.print(" ");
+            // Serial.println(curTickR);
             PIDZR.Compute();
+            // Serial.print(speedL);
+            // Serial.print(" ");
+            // Serial.println(speedR);
+
             md.setSpeeds(-speedR, speedL);
+
             oldTickR += curTickR;
             oldTickL += curTickL;
             delay(delayms);
@@ -384,6 +421,8 @@ double calibrationTolerence;
 double calibrationBase;
 double calibrationToleranceCCW;
 double calibrationBaseCCW;
+double calibrationTolerenceCW;
+double calibrationBaseCW;
 int recursionCount = 10;
 
 void wallCalibrate(int side) // side 0: Front, 1: Right
@@ -394,19 +433,23 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
     {
         sensorL = getDist1(getAvg1());
         sensorR = getDist4(getAvg4());
-        calibrationTolerence = 0.3;
-        calibrationBase = -0.2;
+        calibrationTolerence = 0.5;
+        calibrationBase = 0.0;
         calibrationToleranceCCW = 0.3;
-        calibrationBaseCCW = -0.15;
+        calibrationBaseCCW = 0.15;
+        calibrationTolerenceCW = 0.35;
+        calibrationBaseCW = 0.1;
     }
     else if (side == 1)
     {
         sensorL = getDist3(getAvg3());
         sensorR = getDist5(getAvg5());
-        calibrationTolerence = 0.7;
-        calibrationBase = -1.1;
-        calibrationToleranceCCW = 0.7;
-        calibrationBaseCCW = -0.8;
+        calibrationTolerence = 0.4;
+        calibrationBase = -1.5;
+        calibrationToleranceCCW = 0.35;
+        calibrationBaseCCW = -1.3;
+        calibrationTolerenceCW = 0.35;
+        calibrationBaseCW = -1.6;
     }
     else
     {
@@ -473,10 +516,10 @@ void CCW_Calibrate(int side)
         {
             calibrated = true;
         }
-        if (readingsR < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
-        {
-            return;
-        }
+        // if (readingsR < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        // {
+        //     return;
+        // }
     }
 }
 
@@ -508,19 +551,19 @@ void CW_Calibrate(int side)
         }
         double diff = (readingsL - readingsR);
         // Serial.println(diff);
-        if ((diff > calibrationBase) && (diff < (calibrationBase + calibrationTolerence))) //if diff between readings is close to 0
+        if ((diff > calibrationBaseCW) && (diff < (calibrationBaseCW + calibrationTolerenceCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        if (readingsL < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
-        {
-            return;
-        }
+        // if (readingsL < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        // {
+        //     return;
+        // }
     }
 }
 
-double distTol = 0.1;
-double distTolBase = -0.1;
+double distTol = 0.3;
+double distTolBase = -0.3;
 int calibrationDist = 6; //cm from wall
 
 void wallDistCalibrate()
@@ -530,20 +573,20 @@ void wallDistCalibrate()
         getSensorReading();
     }
     // double FC = getDist2(get_curFiltered2());
-    double FL = getDist1(get_curFiltered1());
-    double FR = getDist4(get_curFiltered4());
+    double FL = getDist1(getAvg1());
+    double FR = getDist4(getAvg4());
 
-    if ((FL > calibrationDist + distTolBase && FL < calibrationDist + distTol) || (FL > calibrationDist + distTolBase && FL < calibrationDist + distTol))
+    if ((FL > calibrationDist + distTolBase && FL < calibrationDist + distTol) || (FR > calibrationDist + distTolBase && FR < calibrationDist + distTol))
     {
         return;
     }
     else if (FL > calibrationDist && FR > calibrationDist)
     {
-        moveFstopWall(calibrationDist - 2);
+        moveFstopWall(calibrationDist);
     }
     else if (FL < calibrationDist && FR < calibrationDist)
     {
-        moveBstopWall(calibrationDist - 2);
+        moveBstopWall(calibrationDist);
     }
     md.setBrakes(400, 400);
     recursionCount--;
