@@ -64,7 +64,7 @@ double kp = 14.5, ki = 20, kd = 0;
 // double kp_r = 14.5, ki_r = 11, kd_r = 0;
 // PID PIDR(&curTickL, &speedL, &curTickR, kp_r, ki_r, kd_r, DIRECT);
 // double kp = 5, ki = 0, kd = 0;
-double targetTickDiff = 0.4;
+double targetTickDiff = 0.35;
 double tickDiff;
 
 PID PIDZ(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
