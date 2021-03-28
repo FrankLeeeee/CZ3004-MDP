@@ -155,28 +155,28 @@ public final class GRPCServiceGrpc {
      return getTurnRightMethod;
   }
 
-  private static volatile io.grpc.MethodDescriptor<grpc.GrpcService.EmptyRequest,
+  private static volatile io.grpc.MethodDescriptor<grpc.GrpcService.CalibrationRequest,
       grpc.GrpcService.Status> getCalibrateMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "Calibrate",
-      requestType = grpc.GrpcService.EmptyRequest.class,
+      requestType = grpc.GrpcService.CalibrationRequest.class,
       responseType = grpc.GrpcService.Status.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<grpc.GrpcService.EmptyRequest,
+  public static io.grpc.MethodDescriptor<grpc.GrpcService.CalibrationRequest,
       grpc.GrpcService.Status> getCalibrateMethod() {
-    io.grpc.MethodDescriptor<grpc.GrpcService.EmptyRequest, grpc.GrpcService.Status> getCalibrateMethod;
+    io.grpc.MethodDescriptor<grpc.GrpcService.CalibrationRequest, grpc.GrpcService.Status> getCalibrateMethod;
     if ((getCalibrateMethod = GRPCServiceGrpc.getCalibrateMethod) == null) {
       synchronized (GRPCServiceGrpc.class) {
         if ((getCalibrateMethod = GRPCServiceGrpc.getCalibrateMethod) == null) {
           GRPCServiceGrpc.getCalibrateMethod = getCalibrateMethod = 
-              io.grpc.MethodDescriptor.<grpc.GrpcService.EmptyRequest, grpc.GrpcService.Status>newBuilder()
+              io.grpc.MethodDescriptor.<grpc.GrpcService.CalibrationRequest, grpc.GrpcService.Status>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
                   "GRPCService", "Calibrate"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  grpc.GrpcService.EmptyRequest.getDefaultInstance()))
+                  grpc.GrpcService.CalibrationRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   grpc.GrpcService.Status.getDefaultInstance()))
                   .setSchemaDescriptor(new GRPCServiceMethodDescriptorSupplier("Calibrate"))
@@ -500,7 +500,7 @@ public final class GRPCServiceGrpc {
 
     /**
      */
-    public void calibrate(grpc.GrpcService.EmptyRequest request,
+    public void calibrate(grpc.GrpcService.CalibrationRequest request,
         io.grpc.stub.StreamObserver<grpc.GrpcService.Status> responseObserver) {
       asyncUnimplementedUnaryCall(getCalibrateMethod(), responseObserver);
     }
@@ -595,7 +595,7 @@ public final class GRPCServiceGrpc {
             getCalibrateMethod(),
             asyncUnaryCall(
               new MethodHandlers<
-                grpc.GrpcService.EmptyRequest,
+                grpc.GrpcService.CalibrationRequest,
                 grpc.GrpcService.Status>(
                   this, METHODID_CALIBRATE)))
           .addMethod(
@@ -710,7 +710,7 @@ public final class GRPCServiceGrpc {
 
     /**
      */
-    public void calibrate(grpc.GrpcService.EmptyRequest request,
+    public void calibrate(grpc.GrpcService.CalibrationRequest request,
         io.grpc.stub.StreamObserver<grpc.GrpcService.Status> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getCalibrateMethod(), getCallOptions()), request, responseObserver);
@@ -829,7 +829,7 @@ public final class GRPCServiceGrpc {
 
     /**
      */
-    public grpc.GrpcService.Status calibrate(grpc.GrpcService.EmptyRequest request) {
+    public grpc.GrpcService.Status calibrate(grpc.GrpcService.CalibrationRequest request) {
       return blockingUnaryCall(
           getChannel(), getCalibrateMethod(), getCallOptions(), request);
     }
@@ -944,7 +944,7 @@ public final class GRPCServiceGrpc {
     /**
      */
     public com.google.common.util.concurrent.ListenableFuture<grpc.GrpcService.Status> calibrate(
-        grpc.GrpcService.EmptyRequest request) {
+        grpc.GrpcService.CalibrationRequest request) {
       return futureUnaryCall(
           getChannel().newCall(getCalibrateMethod(), getCallOptions()), request);
     }
@@ -1062,7 +1062,7 @@ public final class GRPCServiceGrpc {
               (io.grpc.stub.StreamObserver<grpc.GrpcService.MetricResponse>) responseObserver);
           break;
         case METHODID_CALIBRATE:
-          serviceImpl.calibrate((grpc.GrpcService.EmptyRequest) request,
+          serviceImpl.calibrate((grpc.GrpcService.CalibrationRequest) request,
               (io.grpc.stub.StreamObserver<grpc.GrpcService.Status>) responseObserver);
           break;
         case METHODID_WAIT_FOR_ROBOT_START:

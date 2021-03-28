@@ -1,12 +1,16 @@
 grpc/GrpcService$RobotInfo.class
 grpc/GrpcService$ImageResponse.class
+grpc/GrpcService$CalibrationRequest$1.class
 grpc/GrpcService$InfoMode$1.class
 grpc/GrpcService$InfoMode.class
 grpc/GrpcService$Position$Direction$1.class
 grpc/GrpcService$RobotInfo$Builder.class
 grpc/GrpcService$RobotInfoOrBuilder.class
+grpc/GrpcService$CalibrationRequest.class
 grpc/GrpcService$Position$Direction.class
 grpc/GrpcService$RobotInfo$1.class
 grpc/GrpcService$ImageResponse$1.class
+grpc/GrpcService$CalibrationRequestOrBuilder.class
+grpc/GrpcService$CalibrationRequest$Builder.class
 grpc/GrpcService$ImageResponseOrBuilder.class
 grpc/GrpcService$ImageResponse$Builder.class

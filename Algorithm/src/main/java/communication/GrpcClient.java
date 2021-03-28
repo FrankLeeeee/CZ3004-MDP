@@ -87,8 +87,8 @@ public class GrpcClient {
 		return response.getValuesMap();
 	}
 
-	public boolean calibrate() {
-		EmptyRequest req = EmptyRequest.newBuilder().build();
+	public boolean calibrate(int mode) {
+		CalibrationRequest req = CalibrationRequest.newBuilder().setMode(mode).build();
 		try {
 			Status response = blockingStub.withDeadlineAfter(10000, TimeUnit.MILLISECONDS).calibrate(req);
 			return response.getStatus();

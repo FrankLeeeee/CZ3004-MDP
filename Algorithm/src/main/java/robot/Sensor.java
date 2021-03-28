@@ -91,13 +91,13 @@ public class Sensor {
 
 	private void simulateSense(Map exploredMap, Map actualMap, int rowInc, int colInc) {
 		// Check if starting point is valid for sensors with lRange > 1.
-		for (int i = 1; i < this.lRange; i++) {
-			int r = this.row + (rowInc * i);
-			int c = this.col + (colInc * i);
-			if (!exploredMap.checkValidCoordinates(r, c)) return;
-			if (actualMap.getArena()[r][c].isObstacle()) return;
-			if (!exploredMap.getArena()[r][c].isExplored()) return;
-		}
+//		for (int i = 1; i < this.lRange; i++) {
+//			int r = this.row + (rowInc * i);
+//			int c = this.col + (colInc * i);
+//			if (!exploredMap.checkValidCoordinates(r, c)) return;
+//			if (actualMap.getArena()[r][c].isObstacle()) return;
+//			if (!exploredMap.getArena()[r][c].isExplored()) return;
+//		}
 
 		// Check if anything is detected by the sensor and return that value.
 		for (int i = this.lRange; i <= this.uRange; i++) {
@@ -155,6 +155,8 @@ public class Sensor {
 	}
 
 	public void sense(Map exploredMap, int sensorVal, int rowInc, int colInc) {
+
+
 		// to avoid negative value
 		if (sensorVal < 0) {
 			sensorVal = this.uRange + 1;
@@ -163,14 +165,14 @@ public class Sensor {
 //		if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lRange
 
 		// If above fails, check if starting point is valid for sensors with lowerRange > 1.
-		for (int i = 1; i < this.lRange; i++) {
-			int r = this.row + (rowInc * i);
-			int c = this.col + (colInc * i);
-
-			if (!exploredMap.checkValidCoordinates(r, c)) return;
-			if (exploredMap.getArena()[r][c].isObstacle()) return;
-			if (this.id.equals("LRL") && !exploredMap.getArena()[r][c].isExplored()) return;
-		}
+//		for (int i = 1; i < this.lRange; i++) {
+//			int r = this.row + (rowInc * i);
+//			int c = this.col + (colInc * i);
+//
+//			if (!exploredMap.checkValidCoordinates(r, c)) return;
+//			if (exploredMap.getArena()[r][c].isObstacle()) return;
+//			if (this.id.equals("LRL") && !exploredMap.getArena()[r][c].isExplored()) return;
+//		}
 
 		// Update map according to sensor's value.
 		for (int i = this.lRange; i <= this.uRange; i++) {

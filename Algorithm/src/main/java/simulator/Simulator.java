@@ -134,13 +134,13 @@ public class Simulator {
 				mapPanel.add(exploredMap, EXP_MAP);
 				mapPanel.add(actualMap, ACT_MAP);
 //				actualMap.getArena()[2][3].setObstacle(true);
-				(new Simulator.Explore()).execute();
+//				(new Simulator.Explore()).execute();
 
 			} else if (task == "FP") {
 				MapDescriptor.readMap(exploredMap, mapPathForFP);
 				mapPanel.add(exploredMap, EXP_MAP);
 				mapPanel.add(actualMap, ACT_MAP);
-				(new Simulator.Fastest()).execute();
+//				(new Simulator.Fastest()).execute();
 			}
 		}
 	}
@@ -380,6 +380,7 @@ public class Simulator {
 				exploration = new Exploration(exploredMap, robot, coverageLimit, timeLimit);
 				exploration.initialCalibration();
 
+
 				while (true) {
 					// waiting for android to send the start exploration message
 					boolean response = client.waitForRobotStart(GrpcService.RobotStatus.Mode.EXPLORATION);
@@ -395,6 +396,8 @@ public class Simulator {
 			exploration.run();
 			String[] mapDescriptors = MapDescriptor.generateMapDescriptor(exploredMap);
 			MapDescriptor.writeFile(mapDescriptors);
+
+			logger.info("Map descriptor saved");
 
 			if (realRun) {
 				robot.sendDataToAndroid(exploredMap);
@@ -484,9 +487,9 @@ public class Simulator {
 
 //				initial calibration
 				robot.move(RobotConst.MOVE.TURN_LEFT, exploredMap, false, false);
-				robot.move(RobotConst.MOVE.CALIBRATE, exploredMap, false, false);
+				robot.move(RobotConst.MOVE.CALIBRATE_FRONT, exploredMap, false, false);
 				robot.move(RobotConst.MOVE.TURN_LEFT, exploredMap, false, false);
-				robot.move(RobotConst.MOVE.CALIBRATE, exploredMap, false, false);
+				robot.move(RobotConst.MOVE.CALIBRATE_FRONT, exploredMap, false, false);
 				robot.move(RobotConst.MOVE.TURN_LEFT, exploredMap, false, false);
 			}
 

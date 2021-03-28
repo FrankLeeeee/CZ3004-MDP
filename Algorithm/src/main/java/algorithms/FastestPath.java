@@ -353,13 +353,6 @@ public class FastestPath {
 			RobotConst.MOVE m;
 			for (int _m = 0; _m < moves.size(); _m++) {
 
-				// stop when time is not enough
-				if (endTime > 0) {
-					if (endTime - System.currentTimeMillis() < 10 * 1000) {
-						return;
-					}
-				}
-
 				m = moves.get(_m);
 				if (m == RobotConst.MOVE.FORWARD) {
 					if (!canMoveForward(robot)) {

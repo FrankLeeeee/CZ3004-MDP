@@ -160,7 +160,9 @@ public class Robot {
 			case TURN_RIGHT:
 				this.dir = updateDir(m);
 				break;
-			case CALIBRATE:
+			case CALIBRATE_FRONT:
+				break;
+			case CALIBRATE_WALL:
 				break;
 			default:
 				logger.info("Error in movement!");
@@ -181,8 +183,11 @@ public class Robot {
 	}
 
 	private void sendMove(RobotConst.MOVE m, Map exploredMap, boolean sendMoveToAndroidFlag, boolean doSense) {
-		if (m.equals(RobotConst.MOVE.CALIBRATE)) {
-			Boolean response = client.calibrate();
+		if (m.equals(RobotConst.MOVE.CALIBRATE_FRONT)) {
+			Boolean response = client.calibrate(0);
+			assert response : "Calibration returns status 0";
+		} else if (m.equals(RobotConst.MOVE.CALIBRATE_WALL)) {
+			Boolean response = client.calibrate(1);
 			assert response : "Calibration returns status 0";
 		} else {
 			java.util.Map<Integer, Float> response = client.moveRobot(m, 1);
@@ -192,12 +197,12 @@ public class Robot {
 				this.updateSensorsDirections();
 				processSensorValue(response, exploredMap);
 			}
-
 		}
 
 		if (sendMoveToAndroidFlag) {
 			sendDataToAndroid(exploredMap);
 		}
+
 	}
 
 	public void moveForward(int numSteps, Map exploredMap) {
@@ -319,6 +324,7 @@ public class Robot {
 	}
 
 	public void sense(Map exploredMap) {
+		logger.info("getting metrics from grpc client");
 		java.util.Map<Integer, Float> response = client.getMetrics();
 		processSensorValue(response, exploredMap);
 		client.setMap(exploredMap);
@@ -337,11 +343,13 @@ public class Robot {
 //		logger.info(valueFCSR);
 //		logger.info(valueFCSR.intValue());
 
+		logger.info("LRL value: " + values.get(new Integer(6)).intValue());
+
 		SRFrontLeft.sense(exploredMap, values.get(new Integer(1)).intValue());
 		SRFrontCenter.sense(exploredMap, values.get(new Integer(2)).intValue());
 		SRFrontRight.sense(exploredMap, values.get(new Integer(4)).intValue());
-		SRRight1.sense(exploredMap, values.get(new Integer(5)).intValue());
-		SRRight2.sense(exploredMap, values.get(new Integer(3)).intValue());
-		LRLeft.sense(exploredMap, values.get(new Integer(6)).intValue());
+		SRRight1.sense(exploredMap, values.get(new Integer(3)).intValue());
+		SRRight2.sense(exploredMap, values.get(new Integer(5)).intValue());
+		LRLeft.sense(exploredMap, values.get(new Integer(6)).intValue() + 2);
 	}
 }

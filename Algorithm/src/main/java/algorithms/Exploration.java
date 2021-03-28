@@ -24,7 +24,7 @@ public class Exploration {
 	public static long endTime;
 	public static int prevCalibrateTurns;
 	private boolean caliMode;
-	private int caliLimit = 3;
+	private int caliLimit = 1;
 	public static boolean overwritten = false;
 	public boolean expEnded = false;
 	private static int RFCount = 0;
@@ -119,6 +119,7 @@ public class Exploration {
 
 	private void robotSenseAndMapRepaint() {
 		// update the sensor direction
+		logger.info("updating sensor and repainting");
 		this.robot.updateSensorsDirections();
 
 		// sense the update the explored map
@@ -131,6 +132,7 @@ public class Exploration {
 
 //		// repaint the map
 		this.exploredMap.repaint();
+		logger.info("Fnished updating sensor and repainting");
 	}
 
 	private void explore() throws IOException {
@@ -143,13 +145,9 @@ public class Exploration {
 		}
 
 		do {
-			// stop when time is not enough
-			if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
-				break;
-			}
-
 			// move the robot
 			nextMove();
+//			nextMoveLeftWall();
 
 			if (Simulator.task == "IMG") {
 				if (this.robot.isRealRobot()) {
@@ -169,6 +167,12 @@ public class Exploration {
 					&& ((new Double(this.areaExplored) / MapConst.NUM_CELLS) * 100 > 60)) {
 				break;
 			}
+
+			// stop when time is not enough
+			if (System.currentTimeMillis() > (this.getEndTime() - 0.20 * this.timeLimit * 1000)) {
+				break;
+			}
+
 		} while (this.areaExplored < this.coverageLimit);
 
 		// explore unexplored cells when the areaExplored is smaller than 99% of the map
@@ -177,12 +181,7 @@ public class Exploration {
 		// A: remove 0.99, run normally with different map
 		logger.info("Start exploring the remaining unknown area");
 		boolean state = true;
-		while (state && this.areaExplored < this.coverageLimit * 1 && System.currentTimeMillis() < (this.getEndTime() - 0.15 * this.timeLimit * 1000)) {
-			// stop when time is not enough
-			if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
-				break;
-			}
-
+		while (state && this.areaExplored < this.coverageLimit * 0.60 && System.currentTimeMillis() < (this.getEndTime() - 0.20 * this.timeLimit * 1000)) {
 			state = exploreUnexplored();
 			this.areaExplored = this.exploredMap.calAreaExplored();
 			System.out.println("Area explored: " + this.areaExplored);
@@ -194,6 +193,7 @@ public class Exploration {
 			if (this.robot.isRealRobot()
 					|| (!this.robot.isRealRobot() && this.areaExplored <= this.coverageLimit && System.currentTimeMillis() < (endTime - 0.1 * this.timeLimit * 1000))) {
 				goToStart();
+				logger.info("back to start");
 			}
 		} else if (Simulator.task == "IMG" && this.endTime - System.currentTimeMillis() < 10 * 1000) {
 			if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
@@ -234,9 +234,81 @@ public class Exploration {
 
 		int r = this.robot.getRow();
 		int c = this.robot.getCol();
-		if (isRightFree(this.robot.getRow(), this.robot.getCol())) {
-			// turn right and move forward
+
+		if (RFCount > 4) {
+			// TODO: why compare row index with number of columns?
+			// DONE: ?after go right and forward 4 times
+			if (this.robot.getCol() > MapConst.NUM_COLS / 2)
+				turnRobot(RobotConst.DIRECTION.EAST);
+			else
+				turnRobot(RobotConst.DIRECTION.WEST);
+
+			// keep moving forward
+			while (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+				moveRobot(RobotConst.MOVE.FORWARD);
+			}
+
+			turnRobot(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()));
+			RFCount = 0;
+		} else if (isRightFree(r, c)) {
 			moveRobot(RobotConst.MOVE.TURN_RIGHT);
+			RFCount++;
+
+			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+				moveRobot(RobotConst.MOVE.FORWARD);
+			}
+		}
+//
+//		if (isRightFree(r, c) && isLeftFree(r, c) &&
+//				(this.robot.getDir().equals(RobotConst.DIRECTION.NORTH) || this.robot.getDir().equals(RobotConst.DIRECTION.SOUTH) && overwritten)) {
+//			// TODO: what does overwritten mean here?
+//			// DONE: ?Cannot stop exploration if remove overwritten
+//			// Q: where set overwritten True?
+//			// A: in sensor
+//			// the robot must be in vertical direction and have nothing blocking on the left and right
+//			// the cell on the left and right must be explored, not an obstacle and not a virtual wall
+//			moveRobot(RobotConst.MOVE.TURN_RIGHT);
+//
+//			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+//				moveRobot(RobotConst.MOVE.FORWARD);
+//			}
+//
+//			// Q: what does RF mean?
+//			// A: only increment when turn right and move forward -> RF: Right Forward?
+//			RFCount = 0;
+//		}
+		else if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+			// turn right and move forward
+			moveRobot(RobotConst.MOVE.FORWARD);
+//			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
+//				moveRobot(RobotConst.MOVE.FORWARD);
+//				RFCount++;
+//			}
+
+		} else if (isLeftFree(this.robot.getRow(), this.robot.getCol())) {
+			// move forward
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			RFCount = 0;
+		} else {
+			// move forward
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			RFCount = 0;
+		}
+		overwritten = false;
+	}
+
+	private void nextMoveLeftWall() {
+		// stop when time is not enough
+		if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
+			return;
+		}
+
+		int r = this.robot.getRow();
+		int c = this.robot.getCol();
+		if (isLeftFree(this.robot.getRow(), this.robot.getCol())) {
+			// turn right and move forward
+			moveRobot(RobotConst.MOVE.TURN_LEFT);
 
 			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
 				moveRobot(RobotConst.MOVE.FORWARD);
@@ -256,7 +328,7 @@ public class Exploration {
 					moveRobot(RobotConst.MOVE.FORWARD);
 				}
 
-				turnRobot(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()));
+				turnRobot(RobotConst.DIRECTION.getNextClk(this.robot.getDir()));
 				RFCount = 0;
 			}
 		} else if (isRightFree(r, c) && isLeftFree(r, c) &&
@@ -267,7 +339,7 @@ public class Exploration {
 			// A: in sensor
 			// the robot must be in vertical direction and have nothing blocking on the left and right
 			// the cell on the left and right must be explored, not an obstacle and not a virtual wall
-			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
 
 			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
 				moveRobot(RobotConst.MOVE.FORWARD);
@@ -280,17 +352,17 @@ public class Exploration {
 			// move forward
 			moveRobot(RobotConst.MOVE.FORWARD);
 			RFCount = 0;
-		} else if (isLeftFree(this.robot.getRow(), this.robot.getCol())) {
+		} else if (isRightFree(this.robot.getRow(), this.robot.getCol())) {
 			// turn left and move forward
-			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
 			if (isFrontFree(this.robot.getRow(), this.robot.getCol())) {
 				moveRobot(RobotConst.MOVE.FORWARD);
 			}
 			RFCount = 0;
 		} else {
 			// u turn
-			moveRobot(RobotConst.MOVE.TURN_LEFT);
-			moveRobot(RobotConst.MOVE.TURN_LEFT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
+			moveRobot(RobotConst.MOVE.TURN_RIGHT);
 			RFCount = 0;
 		}
 		overwritten = false;
@@ -298,58 +370,30 @@ public class Exploration {
 
 	private void moveRobot(RobotConst.MOVE m) {
 		// move the robot
-		this.robot.move(m, this.exploredMap, true, false);
 		logger.info("move: " + m);
+		this.robot.move(m, this.exploredMap, true, false);
 
 		// sense and re-render on the map
 		this.exploredMap.repaint();
 		robotSenseAndMapRepaint();
 
 		// calibrate after movement
-		if (this.robot.isRealRobot() && !this.caliMode && !this.expEnded) {
-			this.caliMode = true;
-
-			if (canCalibrate(this.robot.getDir())) {
-				// if the robot is now at a corner, turn and calibrate too. This helps to ensure the robot's orientation
-				// the threshold of 3 is to prevent the bot from calibrating too much
-				if (prevCalibrateTurns >= 3 &&
-						!(this.canCalibrate(RobotConst.DIRECTION.getNextClk(this.robot.getDir())) &&
-								this.canCalibrate(RobotConst.DIRECTION.getNextAntiClk(this.robot.getDir()))))
-					this.turnAndCalibrate();
-
-				this.moveRobot(RobotConst.MOVE.CALIBRATE);
-				prevCalibrateTurns = 0;
-			} else {
-				prevCalibrateTurns++;
-				// if never calibrate for more than or equals to caliLimit steps
-				// shall force the robot to calibrate
-				if (prevCalibrateTurns >= this.caliLimit) {
-					this.turnAndCalibrate();
-				}
+		if (this.robot.isRealRobot()) {
+			if (canCalibrateFront(this.robot.getDir())) {
+				this.robot.move(RobotConst.MOVE.CALIBRATE_FRONT, this.exploredMap, true, false);
+				logger.info("Calibrating against the front");
 			}
 
-			this.caliMode = false;
+			prevCalibrateTurns++;
+			if (prevCalibrateTurns >= 1 && canCalibrateRight(this.robot.getDir())) {
+				this.robot.move(RobotConst.MOVE.CALIBRATE_WALL, this.exploredMap, true, false);
+				logger.info("Calibrating against the right wall");
+				prevCalibrateTurns = 0;
+			}
 		}
 	}
 
-	private void turnAndCalibrate() {
-		RobotConst.DIRECTION targetDir;
-		RobotConst.DIRECTION curDir;
-		targetDir = getCalibrateDir();
-
-		// if can calibrate in the next clockwise or
-		// anticlockwise direction, turn to that direction
-		// and calibrate and then turn back
-		if (targetDir != null) {
-			prevCalibrateTurns = 0;
-			curDir = this.robot.getDir();
-			turnRobot(targetDir);
-			moveRobot(RobotConst.MOVE.CALIBRATE);
-			turnRobot(curDir);
-		}
-	}
-
-	private boolean canCalibrate(RobotConst.DIRECTION targetDir) {
+	private boolean canCalibrateFront(RobotConst.DIRECTION targetDir) {
 		int r = this.robot.getRow();
 		int c = this.robot.getCol();
 
@@ -369,9 +413,36 @@ public class Exploration {
 						&& this.exploredMap.isObstacleOrWall(r - 2, c)
 						&& this.exploredMap.isObstacleOrWall(r - 2, c + 1);
 			case WEST:
+				return this.exploredMap.isObstacleOrWall(r - 1, c - 2)
+						&& this.exploredMap.isObstacleOrWall(r, c - 2)
+						&& this.exploredMap.isObstacleOrWall(r + 1, c - 2);
+		}
+		return false;
+	}
+
+	private boolean canCalibrateRight(RobotConst.DIRECTION targetDir) {
+		int r = this.robot.getRow();
+		int c = this.robot.getCol();
+
+		// using the 3 front SR sensors to do the calibration
+		// TODO: why only calibrate when these conditions are met?
+		switch (targetDir) {
+			case NORTH:
+				return this.exploredMap.isObstacleOrWall(r + 1, c + 2)
+						&& this.exploredMap.isObstacleOrWall(r, c + 2)
+						&& this.exploredMap.isObstacleOrWall(r - 1, c + 2);
+			case EAST:
+				return this.exploredMap.isObstacleOrWall(r - 2, c + 1)
+						&& this.exploredMap.isObstacleOrWall(r - 2, c)
+						&& this.exploredMap.isObstacleOrWall(r - 2, c - 1);
+			case SOUTH:
 				return this.exploredMap.isObstacleOrWall(r + 1, c - 2)
 						&& this.exploredMap.isObstacleOrWall(r, c - 2)
 						&& this.exploredMap.isObstacleOrWall(r - 1, c - 2);
+			case WEST:
+				return this.exploredMap.isObstacleOrWall(r + 2, c - 1)
+						&& this.exploredMap.isObstacleOrWall(r + 2, c)
+						&& this.exploredMap.isObstacleOrWall(r + 2, c + 1);
 		}
 		return false;
 	}
@@ -548,10 +619,10 @@ public class Exploration {
 		RobotConst.DIRECTION targetDir;
 
 		targetDir = RobotConst.DIRECTION.getNextAntiClk(curDir);
-		if (this.canCalibrate(targetDir)) return targetDir;
+		if (this.canCalibrateRight(targetDir)) return targetDir;
 
 		targetDir = RobotConst.DIRECTION.getNextClk(curDir);
-		if (this.canCalibrate(targetDir)) return targetDir;
+		if (this.canCalibrateRight(targetDir)) return targetDir;
 
 		return null;
 	}
@@ -747,7 +818,7 @@ public class Exploration {
 
 	private void goToStart() {
 		// stop when time is not enough
-		if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
+		if (this.endTime - System.currentTimeMillis() < 5 * 1000) {
 			return;
 		}
 
@@ -755,12 +826,12 @@ public class Exploration {
 		ArrayList<RobotConst.MOVE> moves;
 
 		// if robot has not reached goal, go to goal
-//		if (!this.robot.hasReachedGoal() && this.coverageLimit == 300 && this.timeLimit == 3600) {
-//			FastestPath pathToGoal = new FastestPath(this.exploredMap, this.robot, this.actualMap);
-//			pathToGoal.setExMode(this);
-//			moves = pathToGoal.computeFastestPath(RobotConst.GOAL_ROW, RobotConst.GOAL_COL);
-//			pathToGoal.executeMoves(moves, this.robot, this.endTime, this);
-//		}
+		if (!this.robot.hasReachedGoal() && this.coverageLimit == 300 && this.timeLimit == 3600) {
+			FastestPath pathToGoal = new FastestPath(this.exploredMap, this.robot, this.actualMap);
+			pathToGoal.setExMode(this);
+			moves = pathToGoal.computeFastestPath(RobotConst.GOAL_ROW, RobotConst.GOAL_COL);
+			pathToGoal.executeMoves(moves, this.robot, this.endTime, this);
+		}
 
 		FastestPath pathToStart = new FastestPath(this.exploredMap, this.robot, this.actualMap);
 		pathToStart.setExMode(this);
@@ -786,10 +857,11 @@ public class Exploration {
 
 	public void initialCalibration() {
 		this.robot.move(RobotConst.MOVE.TURN_LEFT, this.exploredMap, true, false);
-		this.robot.move(RobotConst.MOVE.CALIBRATE, this.exploredMap, true, false);
+		this.robot.move(RobotConst.MOVE.CALIBRATE_FRONT, this.exploredMap, true, false);
 		this.robot.move(RobotConst.MOVE.TURN_LEFT, this.exploredMap, true, false);
-		this.robot.move(RobotConst.MOVE.CALIBRATE, this.exploredMap, true, false);
+		this.robot.move(RobotConst.MOVE.CALIBRATE_FRONT, this.exploredMap, true, false);
 		this.robot.move(RobotConst.MOVE.TURN_LEFT, this.exploredMap, true, false);
+		this.robot.move(RobotConst.MOVE.CALIBRATE_WALL, this.exploredMap, true, false);
 	}
 
 	private void finalCalibration() {
@@ -797,13 +869,13 @@ public class Exploration {
 			client.stopRobot();
 
 		turnRobot(RobotConst.DIRECTION.WEST);
-		this.robot.move(RobotConst.MOVE.CALIBRATE, this.exploredMap, true, false);
+		this.robot.move(RobotConst.MOVE.CALIBRATE_FRONT, this.exploredMap, true, false);
 
 		turnRobot(RobotConst.DIRECTION.SOUTH);
-		this.robot.move(RobotConst.MOVE.CALIBRATE, this.exploredMap, true, false);
+		this.robot.move(RobotConst.MOVE.CALIBRATE_FRONT, this.exploredMap, true, false);
 
 		turnRobot(RobotConst.DIRECTION.WEST);
-		this.robot.move(RobotConst.MOVE.CALIBRATE, this.exploredMap, true, false);
+		this.robot.move(RobotConst.MOVE.CALIBRATE_FRONT, this.exploredMap, true, false);
 	}
 
 	private boolean canTakePhoto() {

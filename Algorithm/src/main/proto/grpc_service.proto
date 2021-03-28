@@ -10,7 +10,7 @@ service GRPCService {
 
   rpc TurnRight(TurnRequest) returns (MetricResponse) {}
 
-  rpc Calibrate(EmptyRequest) returns (Status) {}
+  rpc Calibrate(CalibrationRequest) returns (Status) {}
 
   rpc WaitForRobotStart(RobotStatus) returns (Status) {}
 
@@ -100,4 +100,11 @@ message RobotInfo {
 
 message ImageResponse {
   bytes raw_image = 1;
+}
+
+message CalibrationRequest{
+  // mdoe 0: front
+  // mode 1: wall
+
+  int32 mode = 1;
 }
