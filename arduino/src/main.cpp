@@ -21,8 +21,8 @@ void setup()
 void loop()
 {
   getSensorReading();
-  // loopSeq();
-  readInput();
+  loopSeq();
+  // readInput();
 }
 
 //===== Inputs =====

@@ -66,9 +66,9 @@ double kp_r = 14.5, ki_r = 20, kd_r = 0;
 // double kp_r = 14.5, ki_r = 11, kd_r = 0;
 // PID PIDR(&curTickL, &speedL, &curTickR, kp_r, ki_r, kd_r, DIRECT);
 // double kp = 5, ki = 0, kd = 0;
-double targetTickDiff = 0.35;
-double targetTickDiffL = 1.0;
-double targetTickDiffR = 1.0;
+double targetTickDiff = 0.35;   // R minus L
+double targetTickDiffL = 1.0;   // R minus L
+double targetTickDiffR = 1.0;   // R minus L
 double tickDiff;
 double tickDiffL;
 double tickDiffR;
@@ -318,7 +318,7 @@ void turnL(double angle)
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
     // volatile long TickL = 0, TickR = 0;
     TickL = TickR = 0;                           //curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle - 1.8); // -1.8
+    targetTick = getTicksFromAngle(angle - 1.55); // -1.8
     speedL = -300;
     // speedR = speedL * motorfactorL;
     speedR = 300;
@@ -371,7 +371,7 @@ void turnR(double angle)
 {
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
     TickL = TickR = 0;                     //curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle); //-2.1
+    targetTick = getTicksFromAngle(angle-1.35); //-2.1
     speedL = 300;
     speedR = 300;
     md.setSpeeds(-speedR, speedL);
@@ -433,8 +433,8 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
     {
         sensorL = getDist1(getAvg1());
         sensorR = getDist4(getAvg4());
-        calibrationTolerence = 0.5;
-        calibrationBase = -0.1;
+        calibrationTolerence = 0.6;
+        calibrationBase = -0.2;
         calibrationToleranceCCW = 0.3;
         calibrationBaseCCW = -0.1;
         calibrationTolerenceCW = 0.35;
@@ -444,12 +444,12 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
     {
         sensorL = getDist3(getAvg3());
         sensorR = getDist5(getAvg5());
-        calibrationTolerence = 0.4;
+        calibrationTolerence = 1.1;
         calibrationBase = -1.5;
-        calibrationToleranceCCW = 0.35;
+        calibrationToleranceCCW = 0.45;
         calibrationBaseCCW = -1.3;
         calibrationTolerenceCW = 0.35;
-        calibrationBaseCW = -1.6;
+        calibrationBaseCW = -1.3;
     }
     else
     {
@@ -486,7 +486,7 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
 
 void CCW_Calibrate(int side)
 {
-    int speed = 70;
+    int speed = 75;
     double readingsL;
     double readingsR;
     md.setSpeeds(speed, -speed);
@@ -511,12 +511,12 @@ void CCW_Calibrate(int side)
             return;
         }
         double diff = (readingsL - readingsR);
-        Serial.println(diff);
+        // Serial.println(diff);
         if ((diff > calibrationBaseCCW) && (diff < (calibrationBaseCCW + calibrationToleranceCCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        if (readingsR+10 < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        if (readingsR+5 < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
         {
             return;
         }
@@ -525,7 +525,7 @@ void CCW_Calibrate(int side)
 
 void CW_Calibrate(int side)
 {
-    int speed = 70;
+    int speed = 75;
     double readingsL;
     double readingsR;
     md.setSpeeds(-speed, speed);
@@ -550,12 +550,12 @@ void CW_Calibrate(int side)
             return;
         }
         double diff = (readingsL - readingsR);
-        Serial.println(diff);
+        // Serial.println(diff);
         if ((diff > calibrationBaseCW) && (diff < (calibrationBaseCW + calibrationTolerenceCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        if (readingsL+10 < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        if (readingsL+5 < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
         {
             return;
         }
