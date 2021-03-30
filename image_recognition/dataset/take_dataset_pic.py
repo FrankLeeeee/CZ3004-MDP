@@ -8,9 +8,9 @@ Date: 2/16/2021
 import io
 import time
 
+import picamera
 import requests
 import typer
-import picamera
 
 from core.common import Label, ImageEncodeFormat
 

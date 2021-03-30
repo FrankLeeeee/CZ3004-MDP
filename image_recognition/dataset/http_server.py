@@ -5,10 +5,10 @@ Author: Li Yuanming
 Email: yli056@e.ntu.edu.sg
 Date: 2/16/2021
 """
-from bson import ObjectId
 from pathlib import Path
 
 import aiofiles
+from bson import ObjectId
 from fastapi import FastAPI, File
 
 from core.common import Label, ImageEncodeFormat

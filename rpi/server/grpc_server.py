@@ -9,16 +9,15 @@ gRPC server for interfacing with the PC.
 """
 import asyncio
 import io
-from typing import Tuple
 
 import cv2
 import numpy as np
 import picamera
-from proto.message_pb2 import MetricResponse, RobotStatus, Status, Position, ImagePosition, ImageResponse
 
 from config import ServerConfig, config
 from core.common import Label2
 from core.grpc_aio_server import GRPCAioServer
+from core.image_recognizer import locate_position
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
 from core.serial.server import SerialAioServer
@@ -27,6 +26,7 @@ from image_recognition.server.prediction import DarknetModel
 from proto import grpc_service_pb2_grpc
 from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
+from proto.message_pb2 import MetricResponse, RobotStatus, Status, ImagePosition, ImageResponse
 from server.bluetooth_channel import BluetoothControlServicer
 from utils.constants import IMAGE_ROOT_DIR
 from utils.logger import Logger
@@ -50,41 +50,6 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
             # FIXME: may require a sleep
 
         self._logger = Logger('Backend gRPC server', welcome=False, severity_levels={'StreamHandler': 'DEBUG'})
-
-    @staticmethod
-    def get_target_coord(bbox: Tuple[float, float, float, float]):
-        """Get image coordination when RPi is configured in a right wall hugging manner."""
-        detection_center, y, _, _ = bbox
-
-        # find the image pasted on left block, middle block or right block
-        block_offset = 0
-        if detection_center <= 0.3:
-            block_offset = -1
-        elif detection_center > 0.65:
-            block_offset = 1
-        # FIXME: try the image size to get distance?
-        distance_offset = 2
-
-        robot_position = context.get_position()
-        x, y = robot_position.x, robot_position.y
-        direction = robot_position.dir
-        if direction == Position.Direction.WEST:
-            # RPi facing north
-            img_x = x + block_offset
-            img_y = y + distance_offset
-        elif direction == Position.Direction.NORTH:
-            # RPi facing east
-            img_x = x + distance_offset
-            img_y = y - block_offset
-        elif direction == Position.Direction.EAST:
-            # RPi facing south
-            img_x = x - block_offset
-            img_y = y - distance_offset
-        else:
-            # RPi facing west
-            img_x = x - distance_offset
-            img_y = y + block_offset
-        return max(img_x, 0), max(img_y, 0)
 
     async def Echo(self, request, context):
         serial_client = ArduinoRPCServiceStub(self.serial_channel)
@@ -161,7 +126,7 @@ class ControlServicer(grpc_service_pb2_grpc.GRPCServiceServicer):
 
                 # get target image's coordinates
                 self._logger.debug((image_id, bbox, confidence))
-                x, y = self.get_target_coord(bbox)
+                x, y = locate_position(self.context, bbox)
                 self._logger.debug((x, y))
                 # send to updated coordinates to android
                 image_position = ImagePosition(id=image_id, x=x, y=y)
