@@ -56,16 +56,7 @@ double dist_between_wheels = 17.315; // in cm
 double kp = 14.5, ki = 20, kd = 0;
 double kp_l = 14.5, ki_l = 20, kd_l = 0;
 double kp_r = 14.5, ki_r = 20, kd_r = 0;
-// double kp = 18, ki = 50, kd = 0;
-// double kp2 = 15, ki2 = 50, kd2 = 0;
-// PID PID1(&curTickL, &speedL, &curTickR, kp, ki, kd, DIRECT);
 
-// double kp_l = 14.5, ki_l = 18, kd_l = 0;
-// PID PIDL(&curTickL, &speedL, &curTickR, kp_l, ki_l, kd_l, DIRECT);
-
-// double kp_r = 14.5, ki_r = 11, kd_r = 0;
-// PID PIDR(&curTickL, &speedL, &curTickR, kp_r, ki_r, kd_r, DIRECT);
-// double kp = 5, ki = 0, kd = 0;
 double targetTickDiff = 0.35;   // R minus L
 double targetTickDiffL = 1.0;   // R minus L
 double targetTickDiffR = 1.0;   // R minus L
@@ -74,32 +65,17 @@ double tickDiffL;
 double tickDiffR;
 
 PID PIDZ(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
-// PID PIDZ2(&tickDiff, &speedL, &targetTickDiff, kp2, ki2, kd2, REVERSE);
-// PID PIDZS(&tickDiff, &speedR, &targetTickDiff , kp, ki, kd, DIRECT);
 PID PIDZL(&tickDiffL, &speedR, &targetTickDiffL, kp_l, ki_l, kd_l, DIRECT);
 PID PIDZR(&tickDiffR, &speedR, &targetTickDiffR, kp_r, ki_r, kd_r, DIRECT);
 
 void PIDInit()
 {
-    // PID1.SetOutputLimits(-400, 400);
-    // PID1.SetSampleTime(delayms);
-    // PID1.SetMode(AUTOMATIC);
-    // PIDL.SetOutputLimits(-400, 400);
-    // PIDL.SetSampleTime(delayms);
-    // PIDL.SetMode(AUTOMATIC);
-    // PIDR.SetOutputLimits(-400, 400);
-    // PIDR.SetSampleTime(delayms);
-    // PIDR.SetMode(AUTOMATIC);
-    // PID PIDZ(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
-    // PID PIDZL(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
-    // PID PIDZR(&tickDiff, &speedR, &targetTickDiff, kp, ki, kd, DIRECT);
+   
 
     PIDZ.SetOutputLimits(-400, 400);
     PIDZ.SetSampleTime(delayms);
     PIDZ.SetMode(AUTOMATIC);
-    // PIDZ2.SetOutputLimits(-400, 400);
-    // PIDZ2.SetSampleTime(delayms);
-    // PIDZ2.SetMode(AUTOMATIC);
+  
 
     PIDZL.SetOutputLimits(-400, 400);
     PIDZL.SetSampleTime(delayms);
@@ -150,20 +126,14 @@ void moveF(double dist)
 
     while (targetTick > TickR && targetTick > TickL && brakes == false)
     {
-        //  unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
         PIDZ.Compute();
-        // Serial.print(speedL);
-        // Serial.print(" ");
-        // Serial.println(speedR);
+
         md.setSpeeds(speedR * motorfactor, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
-        // Serial.print(curTickL);
-        // Serial.print(" ");
-        // Serial.println(curTickR);
-        // tickDiff = curTickL - curTickR;
+       
         tickDiff = curTickR - curTickL;
         getSensorReading();
         getSensorReading();
@@ -174,68 +144,13 @@ void moveF(double dist)
             brakes = emergencyStop();
         }
         delay(delayms);
-        // unsigned long pepe2 = millis() - pepe1; // the following gives you the time taken to get the measurement
-        // Serial.print("Time taken (ms): ");
-        // Serial.println(pepe2);
+      
     }
     md.setBrakes(400, 400);
-    // (getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) &&
-    // if (((getDist2(get_curFiltered2()) < emergencyDistance) && getDist2(get_curFiltered2()) > 0) && ((getDist1(get_curFiltered1()) < emergencyDistance) && getDist1(get_curFiltered1()) > 0) && ((getDist4(get_curFiltered4()) < emergencyDistance) && getDist4(get_curFiltered4()) > 0))
-    // {
-    //     calibrateProc();
-    // }
+    
 }
 
-// void moveFslow(double dist)
-// {
-//     dist = blocksToCm(dist);
-//     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-//     TickL = TickR = 0; //curTickL = curTickR = oldTickL = oldTickR = 0;
-//     // volatile long TickL = 0, TickR = 0;
-//     targetTick = calcTickFromDist(dist);
-//     speedL = 100;
-//     speedR = speedL;
-//     md.setSpeeds(speedR, speedL);
-//     Serial.print(speedL);
-//     Serial.print(" ");
-//     Serial.println(speedR);
-//     delay(delayms + 3);
-//     oldTickR = (double)TickR;
-//     oldTickL = (double)TickL;
-//     brakes = false;
-//     PIDInit();
 
-//     while (targetTick > TickR && targetTick > TickL && brakes == false)
-//     {
-//         curTickR = TickR - oldTickR;
-//         curTickL = TickL - oldTickL;
-//         tickDiff = curTickR - curTickL;
-//         // Serial.print(TickL);
-//         // Serial.print(" ");
-//         // Serial.print(TickR);
-//         // Serial.print(" ");
-//         // Serial.print(oldTickL);
-//         // Serial.print(" ");
-//         // Serial.print(oldTickR);
-//         // Serial.print(" ");
-//         // Serial.print(curTickL);
-//         // Serial.print(" ");
-//         // Serial.println(curTickR);
-//         // // PID1.Compute();
-//         // // PIDZ.Compute();
-//         // Serial.print(speedL);
-//         // Serial.print(" ");
-//         // Serial.println(speedR);
-//         md.setSpeeds(speedR, speedL);
-//         oldTickR += curTickR;
-//         oldTickL += curTickL;
-//         getSensorReading();
-//         getSensorReading();
-//         getSensorReading();
-//         delay(delayms);
-//     }
-//     md.setBrakes(400, 400);
-// }
 
 void moveFstopWall(double distToStop)
 {
@@ -316,11 +231,9 @@ void moveB(double dist)
 void turnL(double angle)
 {
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-    // volatile long TickL = 0, TickR = 0;
     TickL = TickR = 0;                           //curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = getTicksFromAngle(angle - 1.55); // -1.8
     speedL = -300;
-    // speedR = speedL * motorfactorL;
     speedR = 300;
     md.setSpeeds(speedR, speedL);
     delay(delayms + 3);
@@ -331,29 +244,17 @@ void turnL(double angle)
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        // if (targetTick - TickR < 125)
-        // {
-        //     // md.setSpeeds(100 * motorfactorL, -100);
-        //     md.setBrakes(200,200);
-        //     Serial.print(speedL);
-        //     Serial.print(" ");
-        //     Serial.println(speedR);
-        // }
-        // else
+       
         {
             curTickR = TickR - oldTickR;
             curTickL = TickL - oldTickL;
             tickDiffL = curTickR - curTickL;
 
-            // Serial.print(curTickL);
-            // Serial.print(" ");
-            // Serial.println(curTickR);
+        
 
             PIDZL.Compute();
 
-            // Serial.print(speedL);
-            // Serial.print(" ");
-            // Serial.println(speedR);
+            
 
             md.setSpeeds(speedR, speedL);
             oldTickR += curTickR;
