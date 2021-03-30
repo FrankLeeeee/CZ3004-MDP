@@ -98,3 +98,9 @@ message ImagePosition {
 message ImageResponse {
   bytes raw_image = 1;
 }
+
+message CalibrationRequest {
+  // mode 0 = front
+  // mode 1 = wall
+  int32 mode = 1;
+}

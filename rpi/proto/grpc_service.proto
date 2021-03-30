@@ -11,7 +11,7 @@ service GRPCService {
 
   rpc TurnRight(TurnRequest) returns (MetricResponse) {}
 
-  rpc Calibrate(EmptyRequest) returns (Status) {}
+  rpc Calibrate(CalibrationRequest) returns (Status) {}
 
   rpc WaitForRobotStart(RobotMode) returns (Status) {}
 

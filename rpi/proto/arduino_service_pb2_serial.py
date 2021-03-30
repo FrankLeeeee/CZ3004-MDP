@@ -90,7 +90,7 @@ class ArduinoRPCServiceStub(object):
         )
         self.Calibration = channel.unary_unary(
             b'\x06',
-            request_serializer=default_serializer_gen(core_dot_message__pb2.EmptyRequest),
+            request_serializer=default_serializer_gen(core_dot_message__pb2.CalibrationRequest),
             response_deserializer=status_deserializer,
         )
         self.Terminate = channel.unary_unary(
