@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "proto/message.proto";
+
+service GRPCService {
+  rpc Echo(EchoRequest) returns (EchoResponse) {}
+
+  rpc Forward(MoveRequest) returns (MetricResponse) {}
+
+  rpc TurnLeft(TurnRequest) returns (MetricResponse) {}
+
+  rpc TurnRight(TurnRequest) returns (MetricResponse) {}
+
+  rpc Calibrate(CalibrationRequest) returns (Status) {}
+
+  rpc WaitForRobotStart(RobotMode) returns (Status) {}
+
+  rpc StopRobot(EmptyRequest) returns (Status) {}
+
+  rpc GetMetrics(EmptyRequest) returns (MetricResponse) {}
+
+  rpc SetPosition(Position) returns (Status) {}
+
+  rpc SetMap(MapDescription) returns (Status) {}
+
+  rpc GetWayPoint(EmptyRequest) returns (Position) {}
+
+  rpc TakePhoto(EmptyRequest) returns (Status) {}
+
+  rpc GetImageResult(EmptyRequest) returns (ImageResponse) {}
+}

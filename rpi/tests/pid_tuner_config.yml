@@ -1,0 +1,13 @@
+uart:
+  url: '/dev/ttyACM0'
+  baudrate: 115200
+  protocol: 'server.protocol.UartProtocolPidFeedback'
+  wait_for_connection:
+    enable: true
+  auto_reconnect:
+    enable: true
+  logger:
+    name: 'UART [RPC Client]'
+    welcome: false
+    severity_levels:
+      StreamHandler: 'DEBUG'

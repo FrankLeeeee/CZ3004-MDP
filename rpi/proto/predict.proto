@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+service Predict {
+    // Inference
+    rpc ModelInfer (InferRequest) returns (InferResponse) {
+    }
+}
+
+// TODO: refer https://github.com/triton-inference-server/server/blob/796b631bd08f8e48ca4806d814f090636599a8f6/src/core/grpc_service.proto#L543
+message InferRequest {
+
+    // The model name.
+    string model_name = 1;
+
+    // The tensor data type.
+    string datatype = 2;
+
+    // The tensor shape.
+    repeated int64 shape = 3;
+
+    // Optional inference input tensor parameters.
+    //    map<string, InferParameter> parameters = 4;
+
+    // The data contained in an input tensor can be represented in
+    // "raw" bytes form or in the repeated type that matches the
+    // tensor's data type. Using the "raw" bytes form will
+    // typically allow higher performance due to the way protobuf
+    // allocation and reuse interacts with GRPC. For example, see
+    // https://github.com/grpc/grpc/issues/23231.
+    //
+    // To use the raw representation 'raw_input_contents' must be
+    // initialized with data for each tensor in the same order as
+    // 'inputs'. For each tensor, the size of this content must
+    // match what is expected by the tensor's shape and data
+    // type. The raw data must be the flattened, one-dimensional,
+    // row-major order of the tensor elements without any stride
+    // or padding between the elements. Note that the FP16 data
+    // type must be represented as raw content as there is no
+    // specific data type for a 16-bit float type.
+    //
+    // If this field is specified then InferInputTensor::contents
+    // must not be specified for any input tensor.
+    //
+    repeated bytes raw_input_contents = 7;
+}
+
+message InferResponse {
+    // Json as string
+    string json = 1;
+
+    // timing data in the order of [ preprocessing time, batching time,
+    // inference time, postprocessing time]
+    repeated float times = 2;
+}

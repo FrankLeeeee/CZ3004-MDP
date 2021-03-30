@@ -1,0 +1,29 @@
+uart:
+  url: '/dev/ttyACM0'
+  baudrate: 115200
+  protocol: 'server.protocol.UartProtocol'
+  wait_for_connection:
+    enable: true
+  auto_reconnect:
+    enable: true
+  logger:
+    name: 'UART [RPC Client]'
+    welcome: false
+    severity_levels:
+      StreamHandler: 'INFO'
+bluetooth:
+  url: '/dev/rfcomm7'
+  wait_for_connection:
+    enable: true
+    max_retry: 16
+  auto_reconnect:
+    enable: true
+    cooldown: 3
+  protocol: 'server.protocol.BluetoothProtocol'
+  logger:
+    name: 'BT [RPC Server]'
+    welcom: false
+    severity_levels:
+      StreamHandler: 'INFO'
+camera: true
+recognition_server_url: '155.69.146.35:50051'

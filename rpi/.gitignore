@@ -1,0 +1,15 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# dataset
+./data
+
+# grpc-tools generated python protobuf
+**/*_pb2.py
+**/*_pb2_grpc.py
