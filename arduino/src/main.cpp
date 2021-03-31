@@ -50,17 +50,8 @@ void readInput()
       brake();
       break;
     case 'e':
-      // printSensorReading();
+      printSensorReading();
       printSensorBlocks();
-      // Serial.print(getDist3(getAvg3()));
-      // Serial.print(" ");
-      // Serial.println(getDist5(getAvg5()));
-      // Serial.print(getDist1(getAvg1()));
-      // Serial.print(" ");
-      // Serial.print(getDist2(getAvg2()));
-      // Serial.print(" ");
-      // Serial.println(getDist4(getAvg4()));
-      // Serial.println(getDist6(getAvg6()));
       break;
     case 'f':
       wallCalibrate(1);
@@ -96,108 +87,9 @@ void readInput()
 
 void testFunction()
 {
-  // moveF(99999);
-  // turnR(90);
-  // delay(500);
-  // calibrateProc();
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-  // calibrateProc();
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-  // while(1){
-  //   moveF(1);
-  // delay(500);
-  //   moveF(1);
-  //   delay(500);
-  //   turnR(90);
-  //   delay(500);
-  // }
-
   for (int i = 0; i < 12; i++)
   {
     turnR(90);
-    // delay(100);
-    // wallCalibrate(1);
     delay(500);
   }
-  // turnR(90);
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-  // wallCalibrate(1);
-  // delay(500);
-  // for (int i = 0; i < 11; i++)
-  // {
-  //   moveF(1);
-  //   wallCalibrate(1);
-  //   delay(500);
-  // }
-  // turnR(90);
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-  // for (int i = 0; i < 5; i++)
-  // {
-  //   moveF(1);
-  //   delay(500);
-  // }
-  // turnL(90);
-  // delay(500);
-  // calibrateProc();
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // calibrateProc();
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // moveF(20);
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // moveF(20);
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // moveF(20);
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // moveF(20);
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-  // calibrateProc();
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-
-  // moveF(20);
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // calibrateProc();
-  // delay(500);
-  // turnL(90);
-  // delay(500);
-  // moveF(20);
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-  // turnR(90);
-  // delay(500);
-
-  // for(int i = 0;i<8;i++){
-  //   moveF(1);
-  //   delay(300);
-  // }
-  // turnR(180);
-  // delay(100);
-  // for(int i = 0;i<8;i++){
-  //   moveF(1);
-  //   delay(300);
-  // }
 }

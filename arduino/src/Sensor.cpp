@@ -21,37 +21,31 @@ double V1, V2, V3, V4, V5, V6;
 
 //=====Conversion Functions=====
 
-
 double distToBlocksFront1(double dist)
 {
-    // double blocks = ((dist + 3.2) / 10) + 1;
     double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksFront2(double dist)
 {
-    // double blocks = ((dist + 2.2) / 10) + 1;
     double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 double distToBlocksFront4(double dist)
 {
-    // double blocks = ((dist + 3.9) / 10) + 1;
     double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksSide3(double dist)
 {
-    // double blocks = ((dist + 9.0) / 10);
     double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
 
 double distToBlocksSide5(double dist)
 {
-    // double blocks = ((dist + 7.6) / 10);
     double blocks = ((dist + 8.5) / 10);
     return blocks;
 }
@@ -106,8 +100,6 @@ void sensorInit()
 
 void getSensorReading()
 {
-    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
-
     //Change according to pin (A0 = PS1, A1 = PS2, etc)
     V1 = analogRead(A0); // Read voltage
     V2 = analogRead(A1);
@@ -116,31 +108,23 @@ void getSensorReading()
     V5 = analogRead(A4);
     V6 = analogRead(A5);
 
-  
     curFiltered1 = filter(V1, oldFiltered1); // Exponential filter
     oldFiltered1 = curFiltered1;             // get old value
 
-  
     curFiltered2 = filter(V2, oldFiltered2); // Exponential filter
     oldFiltered2 = curFiltered2;             // get old value
 
-  
     curFiltered3 = filter(V3, oldFiltered3); // Exponential filter
     oldFiltered3 = curFiltered3;             // get old value
 
-   
     curFiltered4 = filter(V4, oldFiltered4); // Exponential filter
     oldFiltered4 = curFiltered4;             // get old value
 
-    
     curFiltered5 = filter(V5, oldFiltered5); // Exponential filter
     oldFiltered5 = curFiltered5;             // get old value
 
-  
     curFiltered6 = filter(V6, oldFiltered6); // Exponential filter
     oldFiltered6 = curFiltered6;             // get old value
-
-   
 }
 
 double get_curFiltered1()
@@ -175,12 +159,6 @@ double get_curFiltered6()
 
 void printSensorReading()
 {
-    
-}
-
-void printSensorBlocks()
-{
-
     Serial.print("Sensor 1: ");
     Serial.println(getDist1(getAvg1()));
     Serial.print("Sensor 2: ");
@@ -194,7 +172,10 @@ void printSensorBlocks()
     Serial.print("Sensor 6: ");
     Serial.println(getDist6(getAvg6()));
     Serial.println("");
+}
 
+void printSensorBlocks()
+{
     Serial.print("Sensor 1: ");
     Serial.println(getBlocksSR_front1(getDist1(getAvg1())));
     Serial.print("  ");
@@ -205,7 +186,6 @@ void printSensorBlocks()
     Serial.print("  ");
     Serial.print(getBlocksSR_float_front2(getDist2(getAvg2())));
     Serial.println("    ");
-
     Serial.print("Sensor 3: ");
     Serial.println(getBlocksSR_side3(getDist3(getAvg3())));
     Serial.print("  ");
@@ -226,45 +206,36 @@ void printSensorBlocks()
     Serial.print("  ");
     Serial.print(getBlocksLR_float(getDist6(getAvg6())));
     Serial.println("");
-
 }
 
-// Used for sensor 1 & 4
 double getDist1(double x)
 {
-   
     return (1 / (0.00000008 * pow(x, 2) + 0.0002 * x - 0.0002) - 5) * 1.18;
 }
 
-// Sensor 2
 double getDist2(double x)
 {
-    
     return (1 / (0.00000007 * pow(x, 2) + 0.0002 * x - 0.0007) - 2) * 1.15;
 }
 
 double getDist3(double x)
 {
-    
     return (1 / (0.0000001 * pow(x, 2) + 0.0002 * x - 0.00004) - 6) * 1.2;
 }
 
 double getDist4(double x)
 {
-    
     return (1 / (0.00000009 * pow(x, 2) + 0.0002 * x + 0.0003) - 5) * 1.32;
 }
-// 3 & 5
+
 double getDist5(double x)
 {
-    
     return (1 / (0.0000001 * pow(x, 2) + 0.0001 * x + 0.0053) - 6) * 0.725;
 }
 
 // Long distance sensor
 double getDist6(double x)
 {
-
     return 1 / (0.00000009 * pow(x, 2) + 0.00002 * x + 0.0085) - 17 - 2;
 }
 
@@ -274,7 +245,7 @@ double filter(double volt, double oldVal)
     return (alpha * volt) + (1 - alpha) * oldVal;
 }
 
-int sampleSize = 20;
+int sampleSize = 25;
 
 int compare(const void *a, const void *b)
 {
@@ -283,140 +254,201 @@ int compare(const void *a, const void *b)
 
 double getAvg1()
 {
-    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
     int readSample = sampleSize;
     double sensorReadings[readSample];
 
-    for (int i = 0; i < readSample; i++)
+    for (int i = 0; i < readSample; i+=5)
     {
         getSensorReading();
         getSensorReading();
         getSensorReading();
+        sensorReadings[i] = curFiltered1;
         getSensorReading();
         getSensorReading();
-        sensorReadings[i] = get_curFiltered1();
+        getSensorReading();
+        sensorReadings[i+1] = curFiltered1;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+2] = curFiltered1;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+3] = curFiltered1;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+4] = curFiltered1;
     }
-
     qsort(sensorReadings, readSample, sizeof(double), compare);
-
     double median = sensorReadings[readSample / 2];
-
- 
-
     return median;
 }
 
-
 double getAvg2()
 {
-    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
     int readSample = sampleSize;
     double sensorReadings[readSample];
 
-    for (int i = 0; i < readSample; i++)
+    for (int i = 0; i < readSample; i+=5)
     {
         getSensorReading();
         getSensorReading();
         getSensorReading();
+        sensorReadings[i] = curFiltered2;
         getSensorReading();
         getSensorReading();
-        sensorReadings[i] = get_curFiltered2();
+        getSensorReading();
+        sensorReadings[i+1] = curFiltered2;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+2] = curFiltered2;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+3] = curFiltered2;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+4] = curFiltered2;
     }
-
     qsort(sensorReadings, readSample, sizeof(double), compare);
-
     double median = sensorReadings[readSample / 2];
-
     return median;
-
-    
 }
 
 double getAvg3()
 {
-    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
     int readSample = sampleSize;
     double sensorReadings[readSample];
 
-    for (int i = 0; i < readSample; i++)
+    for (int i = 0; i < readSample; i+=5)
     {
         getSensorReading();
-        sensorReadings[i] = get_curFiltered3();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i] = curFiltered3;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+1] = curFiltered3;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+2] = curFiltered3;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+3] = curFiltered3;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+4] = curFiltered3;
     }
-
     qsort(sensorReadings, readSample, sizeof(double), compare);
-
     double median = sensorReadings[readSample / 2];
-
     return median;
-
 }
 
 double getAvg4()
 {
-    //   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
     int readSample = sampleSize;
     double sensorReadings[readSample];
 
-    for (int i = 0; i < readSample; i++)
+    for (int i = 0; i < readSample; i+=5)
     {
         getSensorReading();
-        sensorReadings[i] = get_curFiltered4();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i] = curFiltered4;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+1] = curFiltered4;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+2] = curFiltered4;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+3] = curFiltered4;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+4] = curFiltered4;
     }
-
     qsort(sensorReadings, readSample, sizeof(double), compare);
-
     double median = sensorReadings[readSample / 2];
-
     return median;
-
-   
 }
 
 double getAvg5()
 {
-    //   unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
     int readSample = sampleSize;
     double sensorReadings[readSample];
 
-    for (int i = 0; i < readSample; i++)
+    for (int i = 0; i < readSample; i+=5)
     {
         getSensorReading();
-        sensorReadings[i] = get_curFiltered5();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i] = curFiltered5;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+1] = curFiltered5;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+2] = curFiltered5;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+3] = curFiltered5;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+4] = curFiltered5;
     }
-
     qsort(sensorReadings, readSample, sizeof(double), compare);
-
     double median = sensorReadings[readSample / 2];
-
     return median;
-
-   
 }
 
 double getAvg6()
 {
-    // unsigned long pepe1 = millis(); // takes the time before the loop on the library begins
     int readSample = sampleSize;
     double sensorReadings[readSample];
 
-    for (int i = 0; i < readSample; i++)
+    for (int i = 0; i < readSample; i+=5)
     {
         getSensorReading();
-        sensorReadings[i] = get_curFiltered6();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i] = curFiltered6;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+1] = curFiltered6;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+2] = curFiltered6;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+3] = curFiltered6;
+        getSensorReading();
+        getSensorReading();
+        getSensorReading();
+        sensorReadings[i+4] = curFiltered6;
     }
-
     qsort(sensorReadings, readSample, sizeof(double), compare);
-
     double median = sensorReadings[readSample / 2];
-
     return median;
-
-   
 }
-
-
-
 
 float getBlocksSR_float_front1(double dist)
 {

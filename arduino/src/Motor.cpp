@@ -57,9 +57,9 @@ double kp = 14.5, ki = 20, kd = 0;
 double kp_l = 14.5, ki_l = 20, kd_l = 0;
 double kp_r = 14.5, ki_r = 20, kd_r = 0;
 
-double targetTickDiff = 0.35;   // R minus L
-double targetTickDiffL = 1.0;   // R minus L
-double targetTickDiffR = 1.0;   // R minus L
+double targetTickDiff = 0.35; // R minus L
+double targetTickDiffL = 1.0; // R minus L
+double targetTickDiffR = 1.0; // R minus L
 double tickDiff;
 double tickDiffL;
 double tickDiffR;
@@ -70,12 +70,10 @@ PID PIDZR(&tickDiffR, &speedR, &targetTickDiffR, kp_r, ki_r, kd_r, DIRECT);
 
 void PIDInit()
 {
-   
 
     PIDZ.SetOutputLimits(-400, 400);
     PIDZ.SetSampleTime(delayms);
     PIDZ.SetMode(AUTOMATIC);
-  
 
     PIDZL.SetOutputLimits(-400, 400);
     PIDZL.SetSampleTime(delayms);
@@ -110,11 +108,9 @@ void moveF(double dist)
 {
     dist = blocksToCm(dist);
     TickL = TickR = 0;
-    // volatile long TickL = 0, TickR = 0;
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
     // curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = calcTickFromDist(dist);
-    // speedL = 300;
     speedL = 300;
     speedR = speedL * motorfactor;
     md.setSpeeds(speedR, speedL);
@@ -129,11 +125,10 @@ void moveF(double dist)
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
         PIDZ.Compute();
-
         md.setSpeeds(speedR * motorfactor, speedL);
         oldTickR += curTickR;
         oldTickL += curTickL;
-       
+
         tickDiff = curTickR - curTickL;
         getSensorReading();
         getSensorReading();
@@ -144,13 +139,9 @@ void moveF(double dist)
             brakes = emergencyStop();
         }
         delay(delayms);
-      
     }
     md.setBrakes(400, 400);
-    
 }
-
-
 
 void moveFstopWall(double distToStop)
 {
@@ -218,7 +209,6 @@ void moveB(double dist)
         curTickR = TickR - oldTickR;
         curTickL = TickL - oldTickL;
         tickDiff = curTickR - curTickL;
-        // PID1.Compute();
         PIDZ.Compute();
         md.setSpeeds(-speedR * motorfactor, -speedL);
         oldTickR += curTickR;
@@ -231,7 +221,7 @@ void moveB(double dist)
 void turnL(double angle)
 {
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-    TickL = TickR = 0;                           //curTickL = curTickR = oldTickL = oldTickR = 0;
+    TickL = TickR = 0;                            //curTickL = curTickR = oldTickL = oldTickR = 0;
     targetTick = getTicksFromAngle(angle - 1.55); // -1.8
     speedL = -300;
     speedR = 300;
@@ -244,23 +234,14 @@ void turnL(double angle)
 
     while (targetTick > TickR && targetTick > TickL)
     {
-       
-        {
-            curTickR = TickR - oldTickR;
-            curTickL = TickL - oldTickL;
-            tickDiffL = curTickR - curTickL;
-
-        
-
-            PIDZL.Compute();
-
-            
-
-            md.setSpeeds(speedR, speedL);
-            oldTickR += curTickR;
-            oldTickL += curTickL;
-            delay(delayms);
-        }
+        curTickR = TickR - oldTickR;
+        curTickL = TickL - oldTickL;
+        tickDiffL = curTickR - curTickL;
+        PIDZL.Compute();
+        md.setSpeeds(speedR, speedL);
+        oldTickR += curTickR;
+        oldTickL += curTickL;
+        delay(delayms);
         getSensorReading();
         getSensorReading();
         getSensorReading();
@@ -271,8 +252,8 @@ void turnL(double angle)
 void turnR(double angle)
 {
     double curTickR = 0, curTickL = 0, oldTickR = 0, oldTickL = 0;
-    TickL = TickR = 0;                     //curTickL = curTickR = oldTickL = oldTickR = 0;
-    targetTick = getTicksFromAngle(angle-1.35); //-2.1
+    TickL = TickR = 0;                            //curTickL = curTickR = oldTickL = oldTickR = 0;
+    targetTick = getTicksFromAngle(angle - 1.35); //-2.1
     speedL = 300;
     speedR = 300;
     md.setSpeeds(-speedR, speedL);
@@ -284,27 +265,14 @@ void turnR(double angle)
 
     while (targetTick > TickR && targetTick > TickL)
     {
-        // if (targetTick - TickR < 125)
-        //     md.setSpeeds(-100 * motorfactorR, 100);
-        // else
-        {
-            curTickR = TickR - oldTickR;
-            curTickL = TickL - oldTickL;
-            tickDiffR = curTickR - curTickL;
-            // Serial.print(curTickL);
-            // Serial.print(" ");
-            // Serial.println(curTickR);
-            PIDZR.Compute();
-            // Serial.print(speedL);
-            // Serial.print(" ");
-            // Serial.println(speedR);
-
-            md.setSpeeds(-speedR, speedL);
-
-            oldTickR += curTickR;
-            oldTickL += curTickL;
-            delay(delayms);
-        }
+        curTickR = TickR - oldTickR;
+        curTickL = TickL - oldTickL;
+        tickDiffR = curTickR - curTickL;
+        PIDZR.Compute();
+        md.setSpeeds(-speedR, speedL);
+        oldTickR += curTickR;
+        oldTickL += curTickL;
+        delay(delayms);
         getSensorReading();
         getSensorReading();
         getSensorReading();
@@ -365,12 +333,10 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
     }
     else if (diff < 0) //if Sensor 2(L) nearer than Sensor 4(R)
     {
-        // Serial.print("CCW");
         CCW_Calibrate(side);
     }
     else if (diff > 0) //if Sensor 4(R) nearer than Sensor 2(L)
     {
-        // Serial.print("CW");
         CW_Calibrate(side);
     }
     md.setBrakes(400, 400);
@@ -379,9 +345,7 @@ void wallCalibrate(int side) // side 0: Front, 1: Right
     {
         return;
     }
-    // delay(100);
     wallCalibrate(side);
-    // wallCalibrate();
     recursionCount = 10;
 }
 
@@ -412,12 +376,11 @@ void CCW_Calibrate(int side)
             return;
         }
         double diff = (readingsL - readingsR);
-        // Serial.println(diff);
         if ((diff > calibrationBaseCCW) && (diff < (calibrationBaseCCW + calibrationToleranceCCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        if (readingsR+5 < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        if (readingsR + 5 < readingsL) //sanity check so the robot doesn't keep turning if it goes past the midpoint
         {
             return;
         }
@@ -451,12 +414,11 @@ void CW_Calibrate(int side)
             return;
         }
         double diff = (readingsL - readingsR);
-        // Serial.println(diff);
         if ((diff > calibrationBaseCW) && (diff < (calibrationBaseCW + calibrationTolerenceCW))) //if diff between readings is close to 0
         {
             calibrated = true;
         }
-        if (readingsL+5 < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
+        if (readingsL + 5 < readingsR) //sanity check so the robot doesn't keep turning if it goes past the midpoint
         {
             return;
         }
@@ -473,10 +435,8 @@ void wallDistCalibrate()
     {
         getSensorReading();
     }
-    // double FC = getDist2(get_curFiltered2());
     double FL = getDist1(getAvg1());
     double FR = getDist4(getAvg4());
-
     if ((FL > calibrationDist + distTolBase && FL < calibrationDist + distTol) || (FR > calibrationDist + distTolBase && FR < calibrationDist + distTol))
     {
         return;
@@ -504,7 +464,6 @@ void calibrateProc()
 {
     wallCalibrate(0);
     wallDistCalibrate();
-    // moveFslow(0.45);
     wallCalibrate(0);
 }
 
