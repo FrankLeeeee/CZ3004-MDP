@@ -1,0 +1,12 @@
+syntax="proto3";
+
+message Example {
+  int32 value = 1;
+}
+
+message Movement {
+  string movement = 2;
+  // w, a, d
+
+  robotposition"robotposition": "[0,3,5]"
+}
