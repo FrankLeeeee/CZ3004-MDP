@@ -12,10 +12,10 @@ import asyncio
 
 from core.robot_context import RobotContext
 from core.serial.channel import SerialAioChannel
-from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import BtRPCServiceServicer
 from proto.message_pb2 import EchoResponse, RobotInfo, TurnRequest, Status, Position, EmptyRequest, MoveRequest, \
     EchoRequest, RobotStatus, RobotMode
+from proto.uart_service_pb2_serial import ArduinoRPCServiceStub
 
 
 class BluetoothControlServicer(BtRPCServiceServicer):

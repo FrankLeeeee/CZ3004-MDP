@@ -24,9 +24,9 @@ from core.serial.server import SerialAioServer
 from image_recognition.client import detect, CLASS_COLORS
 from image_recognition.server.prediction import DarknetModel
 from proto import grpc_service_pb2_grpc
-from proto.arduino_service_pb2_serial import ArduinoRPCServiceStub
 from proto.bt_service_pb2_serial import add_bt_rpc_servicer_to_server
 from proto.message_pb2 import MetricResponse, RobotStatus, Status, ImagePosition, ImageResponse
+from proto.uart_service_pb2_serial import ArduinoRPCServiceStub
 from server.bluetooth_channel import BluetoothControlServicer
 from utils.constants import IMAGE_ROOT_DIR
 from utils.logger import Logger

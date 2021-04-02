@@ -30,8 +30,8 @@ import numpy as np
 
 from core.grpc_aio_server import GRPCAioServer
 from image_recognition.server.prediction import DarknetModel
-from proto.predict_pb2 import InferResponse, InferRequest
-from proto.predict_pb2_grpc import PredictServicer, add_PredictServicer_to_server
+from rpi.proto.predict_pb2 import InferResponse, InferRequest
+from rpi.proto.predict_pb2_grpc import PredictServicer, add_PredictServicer_to_server
 from utils.dtype import deserialize_bytes_tensor, model_data_type_to_np
 from utils.logger import Logger
 

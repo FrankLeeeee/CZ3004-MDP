@@ -3,3 +3,7 @@
 ./venv/
 rpi/image_recognition/darknet/images_taken/
 rpi/image_recognition/darknet/images_detected/
+**/*.idea
+**/.vscode
+**/*.pyc
+**/*.DS_Store
