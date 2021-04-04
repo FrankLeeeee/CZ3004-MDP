@@ -50,7 +50,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/arrowUp"
+                android:background="@drawable/control_arrow_up"
                 android:scaleType="fitXY" />
 
             <LinearLayout
@@ -67,7 +67,7 @@
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="3dp"
                     android:layout_marginRight="25dp"
-                    android:background="@drawable/arrowLeft"
+                    android:background="@drawable/control_arrow_left"
                     android:scaleType="fitXY" />
 
                 <Button
@@ -77,7 +77,7 @@
                     android:layout_marginLeft="25dp"
                     android:layout_marginTop="5dp"
                     android:layout_marginRight="5dp"
-                    android:background="@drawable/arrowRight" />
+                    android:background="@drawable/control_arrow_right" />
 
             </LinearLayout>
         </LinearLayout>
@@ -97,7 +97,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/rounded_buttons"
+                android:background="@drawable/rounded_button"
                 android:text="EX" />
 
             <Button
@@ -107,7 +107,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/rounded_buttons"
+                android:background="@drawable/rounded_button"
                 android:text="FP" />
 
         </LinearLayout>
@@ -128,7 +128,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="97"
-                android:background="@drawable/rounded_buttons"
+                android:background="@drawable/rounded_button"
                 android:text="End EX" />
 
             <Button
@@ -139,7 +139,7 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
                 android:layout_weight="97"
-                android:background="@drawable/rounded_buttons_reset"
+                android:background="@drawable/rounded_button_reset"
                 android:text="RESET" />
 
 
@@ -161,7 +161,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/rounded_buttons"
+                android:background="@drawable/rounded_button"
                 android:text="F1" />
 
             <Button
@@ -171,7 +171,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:background="@drawable/rounded_buttons"
+                android:background="@drawable/rounded_button"
                 android:text="F2" />
 
         </LinearLayout>
