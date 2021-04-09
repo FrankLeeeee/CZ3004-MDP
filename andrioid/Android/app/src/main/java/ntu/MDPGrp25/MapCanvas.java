@@ -1,12 +1,10 @@
-package ntu.mdpg1app;
+package ntu.MDPGrp25;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -18,11 +16,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ntu.mdpg1app.model.IDblock;
-import ntu.mdpg1app.model.Map;
-import ntu.mdpg1app.model.Position;
-import ntu.mdpg1app.model.Robot;
-import ntu.mdpg1app.model.WayPoint;
+import ntu.MDPGrp25.model.IDblock;
+import ntu.MDPGrp25.model.Map;
+import ntu.MDPGrp25.model.Position;
+import ntu.MDPGrp25.model.Robot;
+import ntu.MDPGrp25.model.WayPoint;
 
 public class MapCanvas extends View implements View.OnTouchListener {
     final float scale = getResources().getDisplayMetrics().density;

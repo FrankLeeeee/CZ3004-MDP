@@ -1,4 +1,4 @@
-package ntu.mdpg1app;
+package ntu.MDPGrp25;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

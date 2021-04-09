@@ -1,4 +1,4 @@
-package ntu.mdpg1app.model;
+package ntu.MDPGrp25.model;
 
 public class Position{
 	int posX;

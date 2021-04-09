@@ -136,7 +136,7 @@
             <Button
                 android:id="@+id/btn_reset"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
@@ -153,15 +153,15 @@
             <Button
                 android:id="@+id/btn_terminate"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="5dp"
-                android:layout_weight="97"
+                android:layout_marginBottom="5dp"
                 android:background="@drawable/rounded_button"
                 android:backgroundTint="#FF4A4A"
-                android:textColor="#ffffff"
-                android:text="STOP" />
+                android:text="STOP"
+                android:textColor="#ffffff" />
 
 
         </LinearLayout>

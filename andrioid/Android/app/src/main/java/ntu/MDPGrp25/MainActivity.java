@@ -1,4 +1,4 @@
-package ntu.mdpg1app;
+    package ntu.MDPGrp25;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import ntu.mdpg1app.bluetooth.BluetoothChatFragment;
-import ntu.mdpg1app.model.HexBin;
-import ntu.mdpg1app.model.IDblock;
-import ntu.mdpg1app.model.Map;
-import ntu.mdpg1app.model.Position;
-import ntu.mdpg1app.model.Robot;
-import ntu.mdpg1app.model.WayPoint;
+import ntu.MDPGrp25.bluetooth.BluetoothChatFragment;
+import ntu.MDPGrp25.model.HexBin;
+import ntu.MDPGrp25.model.IDblock;
+import ntu.MDPGrp25.model.Map;
+import ntu.MDPGrp25.model.Position;
+import ntu.MDPGrp25.model.Robot;
+import ntu.MDPGrp25.model.WayPoint;
 
 public class MainActivity extends AppCompatActivity {
     GridLayout base_layout;

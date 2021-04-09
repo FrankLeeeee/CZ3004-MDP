@@ -1,7 +1,5 @@
-package ntu.mdpg1app.model;
+package ntu.MDPGrp25.model;
 
-
-import com.example.android.common.logger.Log;
 
 import java.util.ArrayList;
 
