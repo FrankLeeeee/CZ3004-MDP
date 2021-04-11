@@ -1,12 +1,10 @@
-package ntu.mdpg1app;
+package ntu.MDPGrp25;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -18,11 +16,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import ntu.mdpg1app.model.IDblock;
-import ntu.mdpg1app.model.Map;
-import ntu.mdpg1app.model.Position;
-import ntu.mdpg1app.model.Robot;
-import ntu.mdpg1app.model.WayPoint;
+import ntu.MDPGrp25.model.IDblock;
+import ntu.MDPGrp25.model.Map;
+import ntu.MDPGrp25.model.Position;
+import ntu.MDPGrp25.model.Robot;
+import ntu.MDPGrp25.model.WayPoint;
 
 public class MapCanvas extends View implements View.OnTouchListener {
     final float scale = getResources().getDisplayMetrics().density;
@@ -78,14 +76,14 @@ public class MapCanvas extends View implements View.OnTouchListener {
     public MapCanvas(Context context) {
         super(context);
         separator.setColor(Color.parseColor("#000000"));
-        exploredArea.setColor(Color.parseColor("#FFFFFF")); //#808080
-        obstacle.setColor(Color.BLACK);
-        robot.setColor(Color.parseColor("#34E4EA"));
+        exploredArea.setColor(Color.parseColor("#d5e0f2")); //#808080 #d5e0f2
+        obstacle.setColor(Color.parseColor("#1A1C2E"));
+        robot.setColor(Color.parseColor("#8a8fba"));
 
-        robotEye.setColor((Color.parseColor("#0EB1D2")));
-        unexploredArea.setColor(Color.parseColor("#FFFF00"));
-        waypoint.setColor(Color.parseColor("#1B998B"));
-        startEndPoint.setColor(Color.parseColor("#00CD00"));
+        robotEye.setColor((Color.parseColor("#d5e0f2")));
+        unexploredArea.setColor(Color.parseColor("#696969"));
+        waypoint.setColor(Color.parseColor("#09E340"));
+        startEndPoint.setColor(Color.parseColor("#ffcdc4")); //#ffcdc4
 
         numberedObstacle.setColor(Color.parseColor("#F8F4F9"));
         numberedObstacle.setTypeface(Typeface.DEFAULT_BOLD);

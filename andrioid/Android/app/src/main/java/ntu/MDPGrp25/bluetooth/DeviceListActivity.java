@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ntu.mdpg1app.bluetooth;
+package ntu.MDPGrp25.bluetooth;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -36,7 +36,7 @@ import com.example.android.common.logger.Log;
 
 import java.util.Set;
 
-import ntu.mdpg1app.R;
+import ntu.MDPGrp25.R;
 
 /**
  * This Activity appears as a dialog. It lists any paired devices and

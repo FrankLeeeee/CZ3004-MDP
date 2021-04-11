@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package ntu.mdpg1app.bluetooth;
+package ntu.MDPGrp25.bluetooth;
 
 import android.Manifest;
 import android.app.ActionBar;
@@ -58,8 +58,8 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
-import ntu.mdpg1app.MainActivity;
-import ntu.mdpg1app.R;
+import ntu.MDPGrp25.MainActivity;
+import ntu.MDPGrp25.R;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
