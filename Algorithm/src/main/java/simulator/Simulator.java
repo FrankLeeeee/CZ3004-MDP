@@ -49,8 +49,8 @@ public class Simulator {
 	private static int coverageLimit = RobotConst.COVERAGE_LIMIT;
 	private static int timeLimit = RobotConst.TIME_LIMIT;
 	private static int speed = RobotConst.SPEED; // steps per second
-	private static int wayPointR = 4;  // default
-	private static int wayPointC = 9;  // default
+	private static int wayPointR = 7;  // default
+	private static int wayPointC = 8;  // default
 
 	private static final String EXP_MAP = "EXPLORED_MAP";
 	private static final String ACT_MAP = "ACTUAL_MAP";
@@ -58,9 +58,9 @@ public class Simulator {
 
 	private static final boolean realRun = false;
 	private static final boolean testArduino = false;
-	public static final String task = "EXP";
+	public static final String task = "FP";
 
-	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/TestMD/test4.txt";
+	private static final String mapPathForFP = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/TestMD/real.txt";
 	public static final String imgPathforIMG = "/Users/franklee/Documents/CZ3004-MDP/Algorithm/img_rec.jpg";
 
 

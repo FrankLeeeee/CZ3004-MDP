@@ -190,7 +190,7 @@ public class FastestPath {
 		moveCost = (Math.abs(targetR - cell.getRow()) + Math.abs(targetC - cell.getCol()));
 		if (moveCost == 0) return 0; // reached target cell
 
-		// turn cost here is an estimated cost as it only involves 1x turn cost
+		// turn  here is an estimated costcost as it only involves 1x turn cost
 		// and doesnt take into account the exact number of turns required
 		// TODO: is the value of this turn cost reasonable?
 		if (targetR != cell.getRow() || targetC != cell.getCol()) turnCost = RobotConst.T_COST;

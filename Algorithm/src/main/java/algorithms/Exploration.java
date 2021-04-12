@@ -179,14 +179,14 @@ public class Exploration {
 		// and there is still more than 15% of the time left until endTime
 		// Q: no need to explore the whole map?
 		// A: remove 0.99, run normally with different map
-		logger.info("Start exploring the remaining unknown area");
-		boolean state = true;
-		while (state && this.areaExplored < this.coverageLimit * 0.60 && System.currentTimeMillis() < (this.getEndTime() - 0.20 * this.timeLimit * 1000)) {
-			state = exploreUnexplored();
-			this.areaExplored = this.exploredMap.calAreaExplored();
-			System.out.println("Area explored: " + this.areaExplored);
-		}
-		logger.info("finish exploring the unexplored area");
+//		logger.info("Start exploring the remaining unknown area");
+//		boolean state = true;
+//		while (state && this.areaExplored < this.coverageLimit * 0.60 && System.currentTimeMillis() < (this.getEndTime() - 0.20 * this.timeLimit * 1000)) {
+//			state = exploreUnexplored();
+//			this.areaExplored = this.exploredMap.calAreaExplored();
+//			System.out.println("Area explored: " + this.areaExplored);
+//		}
+//		logger.info("finish exploring the unexplored area");
 
 		// go back to start
 		if (Simulator.task == "EXP") {
@@ -195,15 +195,16 @@ public class Exploration {
 				goToStart();
 				logger.info("back to start");
 			}
-		} else if (Simulator.task == "IMG" && this.endTime - System.currentTimeMillis() < 10 * 1000) {
-			if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
+		} else if (Simulator.task == "IMG") {
+
+			if (this.endTime - System.currentTimeMillis() > 10 * 1000) {
 				logger.info("Start to detect the undetected area");
 				goToStart();
 
 				findTheUndetected();
 
 				boolean imgRecState = true;
-				while (imgRecState && this.endTime - System.currentTimeMillis() < 10 * 1000) {
+				while (imgRecState && this.endTime - System.currentTimeMillis() > 10 * 1000) {
 					// stop when time is not enough
 					if (this.endTime - System.currentTimeMillis() < 10 * 1000) {
 						break;
@@ -211,6 +212,9 @@ public class Exploration {
 					imgRecState = detectTheUndetected();
 				}
 			}
+
+			clearUnreachableBlock();
+			this.exploredMap.repaint();
 
 			if (robot.isRealRobot()) {
 				logger.info("trying to get the image");

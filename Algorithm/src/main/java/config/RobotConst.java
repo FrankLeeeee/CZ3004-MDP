@@ -12,10 +12,10 @@ public class RobotConst {
 	public static final int M_COST = 10;
 	public static final int T_COST = 20;
 	public static final int INF_COST = 2056;
-	public static final int SPEED = 1;
+	public static final int SPEED = 10;
 	public static final int TIME_LIMIT = 330; //360;
 	public static final int COVERAGE_LIMIT = 300;
-	public static final DIRECTION START_DIR = DIRECTION.NORTH;
+	public static final DIRECTION START_DIR = DIRECTION.EAST;
 
 	// TODO: change back for EXP
 	public static final int FORWARDLIMIT = 1;
